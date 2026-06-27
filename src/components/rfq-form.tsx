@@ -4,15 +4,28 @@ import { useState } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 
 export function RfqForm() {
-  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [feedback, setFeedback] = useState("");
 
   async function submit(formData: FormData) {
     setStatus("sending");
-    await fetch("/api/rfq", {
+    setFeedback("");
+
+    const response = await fetch("/api/rfq", {
       method: "POST",
       body: formData,
     });
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || !result?.ok) {
+      setStatus("error");
+      setFeedback(result?.error ?? "RFQ email could not be sent. Please email ada@hcjpistonrod.com directly.");
+      return;
+    }
+
     setStatus("sent");
+    setFeedback("Your RFQ has been emailed to ada@hcjpistonrod.com.");
   }
 
   return (
@@ -61,9 +74,9 @@ export function RfqForm() {
         {status === "sending" ? <Loader2 className="animate-spin" size={18} /> : status === "sent" ? <CheckCircle2 size={18} /> : <Send size={18} />}
         {status === "sent" ? "RFQ Received" : "Submit RFQ"}
       </button>
-      {status === "sent" && (
-        <p className="text-sm text-[var(--teal-dark)]">
-          Your request is saved in the local demo flow. Email delivery can be connected before Vercel launch.
+      {feedback && (
+        <p className={`text-sm ${status === "error" ? "text-red-700" : "text-[var(--teal-dark)]"}`}>
+          {feedback}
         </p>
       )}
     </form>

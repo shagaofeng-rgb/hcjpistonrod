@@ -42,3 +42,16 @@ pnpm exec next build
 ## Deployment
 
 This project is ready for GitHub and Vercel. After pushing to GitHub, import the repository in Vercel and keep the default Next.js build settings.
+
+## RFQ Email
+
+The `/api/rfq` route sends form submissions through SMTP. Configure these environment variables in Vercel:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM_EMAIL`
+- `SMTP_FROM_NAME`
+- `RFQ_TO_EMAIL`
