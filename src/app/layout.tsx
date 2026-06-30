@@ -41,6 +41,13 @@ export const metadata: Metadata = {
     url: "https://www.hcjpistonrod.com",
     siteName: "XIJIU Intelligent Equipment",
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
+  },
 };
 
 export default function RootLayout({
