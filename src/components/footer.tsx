@@ -46,6 +46,7 @@ export function Footer() {
             <Link href="/news" className="hover:text-white">News</Link>
             <Link href="/contact" className="hover:text-white">Contact</Link>
             <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
+            <Link href="/image-credits" className="hover:text-white">Image Credits</Link>
           </div>
         </div>
 

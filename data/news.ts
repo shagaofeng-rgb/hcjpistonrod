@@ -18,7 +18,7 @@ export const newsArticles: NewsArticle[] = [
     category: "Hydraulic Cylinder",
     excerpt:
       "A practical purchasing guide for checking bore size, stroke, mounting, pressure, sealing, and testing before ordering welded hydraulic cylinders.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/construction-machinery.jpg",
     relatedProducts: ["welded-hydraulic-cylinder", "custom-hydraulic-cylinder"],
     sections: [
       {
@@ -52,7 +52,7 @@ export const newsArticles: NewsArticle[] = [
     category: "Quality Control",
     excerpt:
       "Leakage is often connected to seal selection, rod surface, bore finish, assembly quality, contamination, and pressure testing discipline.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/pressure-testing.jpg",
     relatedProducts: ["hydraulic-cylinder", "ck45-chrome-plated-rod", "st52-honed-tube"],
     sections: [
       {
@@ -86,7 +86,7 @@ export const newsArticles: NewsArticle[] = [
     category: "Purchasing Guide",
     excerpt:
       "Before custom production, buyers should confirm drawing details, material, pressure, stroke, mounting, seals, testing, packing, and lead time assumptions.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/cnc-machining.jpg",
     relatedProducts: ["custom-hydraulic-cylinder", "welded-hydraulic-cylinder"],
     sections: [
       {

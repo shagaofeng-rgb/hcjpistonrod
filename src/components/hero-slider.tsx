@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 const slides = [
   {
+    image: "/images/site/hero-welding.jpg",
     title: "Reliable Hydraulic Cylinders for Demanding Machinery",
     subtitle:
       "XIJIU Intelligent Equipment supplies custom hydraulic cylinders and precision hydraulic components for construction, agriculture, mining, material handling, and industrial automation.",
@@ -16,6 +17,7 @@ const slides = [
     secondaryHref: "/products",
   },
   {
+    image: "/images/site/hero-cnc.jpg",
     title: "Custom Hydraulic Solutions Built Around Your Application",
     subtitle:
       "From bore size and stroke length to mounting style, seal system, surface treatment, and testing requirements, our engineering team supports OEM and project-based hydraulic cylinder customization.",
@@ -25,6 +27,7 @@ const slides = [
     secondaryHref: "/products/custom-hydraulic-cylinder",
   },
   {
+    image: "/images/site/hero-pressure-test.jpg",
     title: "Stable Quality. Controlled Process. Faster Delivery.",
     subtitle:
       "With precision machining, strict inspection, and reliable production management, XIJIU helps customers reduce sourcing risk and keep projects moving.",
@@ -51,8 +54,8 @@ export function HeroSlider() {
   return (
     <section className="relative min-h-[720px] overflow-hidden bg-[#071428] text-white">
       <Image
-        src="/hero-piston-rods.png"
-        alt="XIJIU hydraulic cylinders and precision hydraulic components manufacturing"
+        src={slide.image}
+        alt={`${slide.title} - XIJIU hydraulic manufacturing visual`}
         fill
         priority
         className="object-cover opacity-55 motion-safe:animate-[pulse_8s_ease-in-out_infinite]"

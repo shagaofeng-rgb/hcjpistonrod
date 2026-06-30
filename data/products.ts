@@ -25,7 +25,7 @@ export const products: Product[] = [
       "Compact and durable welded cylinders for mobile machinery, agricultural equipment, construction equipment, and industrial systems.",
     definition:
       "XIJIU welded hydraulic cylinders are designed for compact installation, stable output, and reliable performance in demanding hydraulic systems.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/welded-cylinder.jpg",
     model: "Welded Cylinder Series",
     availability: "Inquire",
     customization: "Available",
@@ -94,7 +94,7 @@ export const products: Product[] = [
       "OEM hydraulic cylinder solutions based on your drawing, pressure, stroke, mounting, and working environment requirements.",
     definition:
       "A custom hydraulic cylinder is engineered around the machine's load, movement, pressure, installation space, and operating environment.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/custom-cylinder.jpg",
     model: "Custom OEM Series",
     availability: "Inquire",
     customization: "Available",
@@ -140,7 +140,7 @@ export const products: Product[] = [
       "Hydraulic cylinders that generate force in both extension and retraction directions for controlled motion.",
     definition:
       "A double acting hydraulic cylinder uses hydraulic pressure on both sides of the piston to extend and retract with controlled force.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/hydraulic-cylinder.jpg",
     model: "Double Acting Series",
     availability: "Inquire",
     customization: "Available",
@@ -181,7 +181,7 @@ export const products: Product[] = [
       "Single direction hydraulic force cylinders for lifting, clamping, and simple actuation systems.",
     definition:
       "A single acting hydraulic cylinder uses hydraulic pressure in one direction and returns by load, spring, or external force.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/hydraulic-cylinder-detail.jpg",
     model: "Single Acting Series",
     availability: "Inquire",
     customization: "Available",
@@ -222,7 +222,7 @@ export const products: Product[] = [
       "Multi-stage hydraulic cylinders for long stroke applications with limited installation space.",
     definition:
       "A telescopic hydraulic cylinder uses multiple stages to provide a longer stroke from a compact retracted length.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/excavator-hydraulics.jpg",
     model: "Telescopic Series",
     availability: "Inquire",
     customization: "Available",
@@ -263,7 +263,7 @@ export const products: Product[] = [
       "Flange-mounted cylinder options for stable installation in industrial and mobile hydraulic systems.",
     definition:
       "A flange mounted hydraulic cylinder uses a flange interface to provide stable installation and load transfer.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/chrome-plated-rod.jpg",
     model: "Flange Mounted Series",
     availability: "Inquire",
     customization: "Available",
@@ -303,7 +303,7 @@ export const products: Product[] = [
       "ST52 honed tubes for hydraulic cylinder barrels requiring stable bore finish and machinability.",
     definition:
       "ST52 honed tube is a steel tube with precision-finished inner bore for hydraulic cylinder barrel production.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/honed-tube.jpg",
     model: "ST52 Honed Tube",
     availability: "Inquire",
     customization: "Available",
@@ -343,7 +343,7 @@ export const products: Product[] = [
       "CK45 honed tube options for hydraulic cylinder barrels and machined components.",
     definition:
       "CK45 honed tube is a medium carbon steel tube finished for cylinder barrel applications where bore finish matters.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/factory-workshop.jpg",
     model: "CK45 Honed Tube",
     availability: "Inquire",
     customization: "Available",
@@ -383,7 +383,7 @@ export const products: Product[] = [
       "Skived and roller burnished tubes for efficient cylinder barrel production and smooth bore finish.",
     definition:
       "A skived and roller burnished tube is processed to produce a smooth inner bore for hydraulic cylinder applications.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/cnc-machining.jpg",
     model: "SRB Tube",
     availability: "Inquire",
     customization: "Available",
@@ -423,7 +423,7 @@ export const products: Product[] = [
       "CK45 hard chrome plated piston rods with stable dimensional accuracy for hydraulic cylinder applications.",
     definition:
       "CK45 chrome plated rod is a precision ground and hard chrome plated steel rod used as a hydraulic piston rod.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/hydraulic-cylinder-detail.jpg",
     model: "CK45 Chrome Rod",
     availability: "Inquire",
     customization: "Available",
@@ -463,7 +463,7 @@ export const products: Product[] = [
       "20MnV6 chrome plated rod options for hydraulic piston rod applications requiring reliable steel selection.",
     definition:
       "20MnV6 chrome plated rod is a hard chrome plated piston rod material option for hydraulic cylinder production.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/chrome-plated-rod.jpg",
     model: "20MnV6 Chrome Rod",
     availability: "Inquire",
     customization: "Available",
@@ -503,7 +503,7 @@ export const products: Product[] = [
       "Induction hardened chrome rods for hydraulic applications requiring improved surface resistance.",
     definition:
       "An induction hardened chrome rod combines surface hardening with hard chrome plating for applications with demanding wear conditions.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/custom-cylinder.jpg",
     model: "Induction Hardened Rod",
     availability: "Inquire",
     customization: "Available",
@@ -543,7 +543,7 @@ export const products: Product[] = [
       "Hollow chrome plated rod options for weight-sensitive and special hydraulic cylinder applications.",
     definition:
       "A hollow chrome plated rod is a chrome plated piston rod with an internal bore for weight reduction or special cylinder design.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/hydraulic-cylinder.jpg",
     model: "Hollow Chrome Rod",
     availability: "Inquire",
     customization: "Available",
@@ -583,7 +583,7 @@ export const products: Product[] = [
       "Compact hydraulic power packs for lifting, clamping, automation, and machinery hydraulic control.",
     definition:
       "A compact hydraulic power pack is a hydraulic power source combining motor, pump, tank, valve, and control elements in a compact layout.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/hydraulic-power-unit.jpg",
     model: "Compact Power Pack",
     availability: "Inquire",
     customization: "Available",
@@ -623,7 +623,7 @@ export const products: Product[] = [
       "Customized hydraulic power units for project-based hydraulic systems and OEM machinery.",
     definition:
       "A custom hydraulic power unit is configured around the machine's hydraulic pressure, flow, control, tank, voltage, duty cycle, and installation requirements.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/hydraulic-press.jpg",
     model: "Custom HPU",
     availability: "Inquire",
     customization: "Available",

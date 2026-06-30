@@ -21,7 +21,7 @@ export const productCategories: ProductCategory[] = [
       "Custom hydraulic cylinders for construction, agriculture, mining, material handling, and industrial automation equipment.",
     intro:
       "XIJIU supplies hydraulic cylinders and precision hydraulic components for OEM machinery, distributors, and project-based hydraulic systems. Cylinders can be reviewed around bore size, stroke length, mounting style, pressure, seal system, rod material, and working environment.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/hydraulic-cylinder.jpg",
     keywords: ["hydraulic cylinder manufacturer", "custom hydraulic cylinders"],
     products: [
       "welded-hydraulic-cylinder",
@@ -70,7 +70,7 @@ export const productCategories: ProductCategory[] = [
       "Compact and durable welded hydraulic cylinders for mobile machinery and industrial hydraulic systems.",
     intro:
       "A welded hydraulic cylinder is a compact hydraulic actuator with a welded barrel and end structure. It is commonly used in mobile machinery and industrial hydraulic systems where strength, space-saving installation, and stable performance are required.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/welded-cylinder.jpg",
     keywords: ["welded hydraulic cylinder manufacturer", "welded hydraulic cylinder for agricultural equipment"],
     products: [
       "welded-hydraulic-cylinder",
@@ -123,7 +123,7 @@ export const productCategories: ProductCategory[] = [
       "Drawing-based OEM hydraulic cylinder solutions for machinery manufacturers and project hydraulic systems.",
     intro:
       "Custom hydraulic cylinders are designed around the buyer's drawing, load, pressure, stroke, mounting style, speed, sealing conditions, and operating environment. XIJIU supports technical review before quotation.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/custom-cylinder.jpg",
     keywords: ["custom hydraulic cylinder supplier", "hydraulic cylinder bore size and stroke customization"],
     products: ["custom-hydraulic-cylinder", "custom-welded-hydraulic-cylinder"],
     sections: [
@@ -154,7 +154,7 @@ export const productCategories: ProductCategory[] = [
       "Precision honed tubes for hydraulic cylinder barrels and high-performance actuator systems.",
     intro:
       "A honed tube is a precision-finished cylinder barrel tube with a smooth inner surface. It helps support stable sealing, smoother movement, and reliable hydraulic cylinder performance.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/honed-tube.jpg",
     keywords: ["honed tube manufacturer", "honed tube for hydraulic cylinder barrel"],
     products: ["st52-honed-tube", "ck45-honed-tube", "skived-and-roller-burnished-tube"],
     sections: [
@@ -185,7 +185,7 @@ export const productCategories: ProductCategory[] = [
       "Hard chrome plated rods for hydraulic piston rods with wear resistance and corrosion protection.",
     intro:
       "A chrome plated rod is a precision ground and hard chrome plated steel rod used as a hydraulic piston rod. It is selected for wear resistance, corrosion protection, surface finish, and dimensional stability.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/chrome-plated-rod.jpg",
     keywords: ["chrome plated rod supplier", "hard chrome plated rod for hydraulic piston"],
     products: [
       "ck45-chrome-plated-rod",
@@ -221,7 +221,7 @@ export const productCategories: ProductCategory[] = [
       "Compact and customized hydraulic power units for machinery, automation, lifting systems, and project hydraulic control.",
     intro:
       "A hydraulic power unit combines motor, pump, tank, valves, and controls to provide hydraulic power for machinery or automation systems. XIJIU supports application-based configuration review.",
-    image: "/hero-piston-rods.png",
+    image: "/images/site/hydraulic-power-unit.jpg",
     keywords: ["hydraulic power unit manufacturer", "custom hydraulic power unit"],
     products: ["compact-hydraulic-power-pack", "custom-hydraulic-power-unit"],
     sections: [

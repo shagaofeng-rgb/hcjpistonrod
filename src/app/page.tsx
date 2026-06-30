@@ -20,7 +20,7 @@ import { HeroSlider } from "@/components/hero-slider";
 import { NewsCard } from "@/components/news-card";
 import { ProductCard } from "@/components/product-card";
 import { StatsCounter } from "@/components/stats-counter";
-import { capabilities, industries, productCategories, site } from "@/lib/site";
+import { industries, productCategories, site } from "@/lib/site";
 import { company } from "../../data/company";
 import { newsArticles } from "../../data/news";
 
@@ -113,6 +113,22 @@ const testimonials = [
       "Clear packing, product labeling, and responsive quotation support are valuable when we handle repeat orders for different local customers.",
   },
 ];
+
+const capabilityImages = [
+  { label: "CNC Machining", image: "/images/site/cnc-machining.jpg" },
+  { label: "Welding and Assembly", image: "/images/site/welding-robot.jpg" },
+  { label: "Pressure Testing", image: "/images/site/pressure-testing.jpg" },
+  { label: "Surface Treatment", image: "/images/site/factory-workshop.jpg" },
+];
+
+const applicationImages: Record<string, string> = {
+  "Construction machinery": "/images/site/construction-machinery.jpg",
+  "Agricultural equipment": "/images/site/agricultural-equipment.jpg",
+  "Mining machinery": "/images/site/mining-machinery.jpg",
+  "Material handling": "/images/site/material-handling.jpg",
+  "Industrial automation": "/images/site/industrial-automation.jpg",
+  "Marine and offshore equipment": "/images/site/marine-offshore.jpg",
+};
 
 export default function Home() {
   const organizationJsonLd = {
@@ -213,17 +229,17 @@ export default function Home() {
         <section className="section bg-white">
           <div className="container grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
             <div className="grid grid-cols-2 gap-4">
-              {capabilities.slice(0, 4).map((item) => (
-                <div key={item} className="relative aspect-square overflow-hidden rounded-md bg-[var(--muted)]">
+              {capabilityImages.map((item) => (
+                <div key={item.label} className="relative aspect-square overflow-hidden rounded-md bg-[var(--muted)]">
                   <Image
-                    src="/hero-piston-rods.png"
-                    alt={`${item} capability at XIJIU Intelligent Equipment`}
+                    src={item.image}
+                    alt={`${item.label} capability at XIJIU Intelligent Equipment`}
                     fill
                     className="object-cover"
                     sizes="(min-width: 1024px) 25vw, 50vw"
                   />
                   <div className="absolute inset-0 bg-[#071428]/55" />
-                  <span className="absolute bottom-4 left-4 right-4 text-sm font-semibold text-white">{item}</span>
+                  <span className="absolute bottom-4 left-4 right-4 text-sm font-semibold text-white">{item.label}</span>
                 </div>
               ))}
             </div>
@@ -253,7 +269,16 @@ export default function Home() {
             <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {industries.map((industry) => (
                 <Link key={industry} href="/products" className="rounded-md border border-[var(--line)] bg-white p-5 transition hover:-translate-y-1 hover:border-[var(--teal)]">
-                  <HardHat className="text-[var(--amber)]" size={24} />
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-md bg-[var(--muted)]">
+                    <Image
+                      src={applicationImages[industry]}
+                      alt={`${industry} hydraulic application for XIJIU products`}
+                      fill
+                      className="object-cover"
+                      sizes="(min-width: 1024px) 33vw, 100vw"
+                    />
+                  </div>
+                  <HardHat className="mt-5 text-[var(--amber)]" size={24} />
                   <h3 className="mt-4 text-xl font-semibold text-[var(--ink)]">{industry}</h3>
                   <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
                     Hydraulic cylinders and components for demanding motion, lifting, pushing, and control applications.
@@ -308,7 +333,7 @@ export default function Home() {
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              {["ISO 9001 document placeholder", "Material Inspection Report", "Pressure Test Report", "Export Packing Standard", "Customer Drawing Confidentiality"].map((item) => (
+              {["ISO 9001 quality system document", "Material Inspection Report", "Pressure Test Report", "Export Packing Standard", "Customer Drawing Confidentiality"].map((item) => (
                 <div key={item} className="flex gap-3 rounded-md border border-[var(--line)] bg-[var(--background)] p-4 font-semibold text-[var(--ink)]">
                   <PackageCheck className="shrink-0 text-[var(--teal)]" size={20} /> {item}
                 </div>
@@ -319,7 +344,7 @@ export default function Home() {
 
         <section className="relative overflow-hidden bg-[#071428] py-20 text-white">
           <Image
-            src="/hero-piston-rods.png"
+            src="/images/site/hydraulic-press.jpg"
             alt="XIJIU hydraulic project quotation support"
             fill
             className="object-cover opacity-35"
