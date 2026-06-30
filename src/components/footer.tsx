@@ -1,12 +1,22 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { navItems, products, site } from "@/lib/site";
+import { navItems, productCategories, site } from "@/lib/site";
 
 export function Footer() {
   return (
     <footer className="border-t border-[var(--line)] bg-[#151816] text-white">
       <div className="container grid gap-10 py-12 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
         <div>
+          <div className="relative mb-4 h-14 w-24 overflow-hidden rounded-md bg-white">
+            <Image
+              src="/xijiu-logo.jpg"
+              alt="Xijiu Intelligent Equipment logo"
+              fill
+              className="object-contain p-1.5"
+              sizes="96px"
+            />
+          </div>
           <div className="text-xl font-semibold">{site.factoryName}</div>
           <div className="mt-2 text-sm text-white/58">Export title: {site.exportCompanyName}</div>
           <p className="mt-4 max-w-xl text-sm leading-7 text-white/70">
@@ -31,11 +41,14 @@ export function Footer() {
             Products
           </div>
           <div className="mt-4 grid gap-3 text-sm text-white/72">
-            {products.map((product) => (
-              <Link key={product.slug} href={`/products/${product.slug}`} className="hover:text-white">
-                {product.name}
+            {productCategories.map((category) => (
+              <Link key={category.slug} href={`/products/categories/${category.slug}`} className="hover:text-white">
+                {category.name}
               </Link>
             ))}
+            <Link href="/products" className="font-semibold text-white hover:text-white">
+              All Products
+            </Link>
           </div>
         </div>
 

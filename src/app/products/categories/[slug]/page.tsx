@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
@@ -89,10 +90,26 @@ export default async function ProductCategoryPage({ params }: Props) {
                 <Link
                   key={product.slug}
                   href={`/products/${product.slug}`}
-                  className="group rounded-md border border-[var(--line)] bg-white p-6 transition hover:border-[var(--teal)]"
-                >
+                className="group overflow-hidden rounded-md border border-[var(--line)] bg-white transition hover:border-[var(--teal)]"
+              >
+                  <div className="relative aspect-[16/10] bg-[var(--background)]">
+                    {product.image ? (
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-contain p-4"
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                      />
+                    ) : (
+                      <div className="grid h-full place-items-center px-5 text-center text-sm font-semibold text-[var(--steel)]">
+                        {product.name}
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
                   <h2 className="text-2xl font-semibold text-[var(--ink)]">{product.name}</h2>
-                  <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{product.intro}</p>
+                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[var(--steel)]">{product.intro}</p>
                   <dl className="mt-5 grid gap-2 text-sm">
                     <div className="flex justify-between gap-3 border-t border-[var(--line)] pt-3">
                       <dt className="text-[var(--steel)]">Diameter</dt>
@@ -106,6 +123,7 @@ export default async function ProductCategoryPage({ params }: Props) {
                   <span className="mt-5 inline-flex items-center gap-2 font-semibold text-[var(--teal)]">
                     View product page <ArrowRight size={18} className="transition group-hover:translate-x-1" />
                   </span>
+                  </div>
                 </Link>
               ))}
             </div>

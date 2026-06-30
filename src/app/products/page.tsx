@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Footer } from "@/components/footer";
@@ -9,7 +10,7 @@ import { productCategories, products } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Hard chrome plated rods, induction hardened chrome rods, hollow piston rods, and honed tubes for hydraulic cylinder applications.",
+    "Synchronized product catalog for honed tubes, chrome plated rods, hydraulic cylinders, and hydraulic power packs.",
   alternates: { canonical: "/products" },
 };
 
@@ -24,11 +25,11 @@ export default function ProductsPage() {
               Products
             </p>
             <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
-              Hydraulic piston rod and honed tube supply for OEM buyers.
+              Synced hydraulic product catalog for rods, tubes, cylinders, and power packs.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--steel)]">
-              Each product page includes procurement-facing fields such as material, diameter,
-              tolerance, chrome thickness, roughness, straightness, hardness, and applications.
+              Product pages are synchronized from the EAST AI catalog, while factory identity,
+              export company title, and contact information stay with the current Huichenjin site.
             </p>
           </div>
         </section>
@@ -72,10 +73,26 @@ export default function ProductsPage() {
                 <Link
                   key={product.slug}
                   href={`/products/${product.slug}`}
-                  className="group rounded-md border border-[var(--line)] bg-[var(--background)] p-6 transition hover:border-[var(--teal)]"
-                >
+                className="group overflow-hidden rounded-md border border-[var(--line)] bg-[var(--background)] transition hover:border-[var(--teal)]"
+              >
+                  <div className="relative aspect-[16/10] bg-white">
+                    {product.image ? (
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-contain p-4"
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                      />
+                    ) : (
+                      <div className="grid h-full place-items-center px-5 text-center text-sm font-semibold text-[var(--steel)]">
+                        {product.name}
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
                   <h3 className="text-2xl font-semibold text-[var(--ink)]">{product.name}</h3>
-                  <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{product.intro}</p>
+                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[var(--steel)]">{product.intro}</p>
                   <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
                     <div>
                       <dt className="text-[var(--steel)]">Diameter</dt>
@@ -97,6 +114,7 @@ export default function ProductsPage() {
                   <span className="mt-6 inline-flex items-center gap-2 font-semibold text-[var(--teal)]">
                     View specifications <ArrowRight size={18} className="transition group-hover:translate-x-1" />
                   </span>
+                  </div>
                 </Link>
               ))}
             </div>

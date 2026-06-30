@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronDown, Factory, Mail, Menu, Send, X } from "lucide-react";
 import { useState } from "react";
 import { navItems, processRoutes, productCategories, products, site } from "@/lib/site";
@@ -30,15 +31,22 @@ export function Header() {
       </div>
       <div className="container flex min-h-18 items-center justify-between gap-4 py-3">
         <Link href="/" className="flex items-center gap-3" aria-label={`${site.name} home`} onClick={closeAll}>
-          <span className="grid h-11 w-11 place-items-center rounded-md bg-[var(--ink)] text-sm font-semibold text-white">
-            HCJ
+          <span className="relative h-12 w-16 overflow-hidden rounded-md border border-[var(--line)] bg-white">
+            <Image
+              src="/xijiu-logo.jpg"
+              alt="Xijiu Intelligent Equipment logo"
+              fill
+              priority
+              className="object-contain p-1"
+              sizes="64px"
+            />
           </span>
           <span className="leading-tight">
             <span className="block text-base font-semibold tracking-[0.04em] text-[var(--ink)]">
               {site.name}
             </span>
             <span className="block text-xs uppercase tracking-[0.18em] text-[var(--steel)]">
-              Piston Rod Supply
+              XIJIU Intelligent Equipment
             </span>
           </span>
         </Link>
@@ -104,7 +112,7 @@ export function Header() {
       </div>
       {activePanel && (
         <div className="absolute left-0 right-0 top-full hidden border-b border-[var(--line)] bg-white shadow-[0_24px_60px_rgba(17,20,17,0.14)] lg:block">
-          <div className="container grid gap-8 py-7 lg:grid-cols-[0.75fr_1.25fr]">
+          <div className="container grid max-h-[calc(100vh-9rem)] gap-8 overflow-y-auto py-7 lg:grid-cols-[0.72fr_1.28fr]">
             <div className="rounded-md bg-[var(--muted)] p-5">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--amber)]">
                 {activePanel === "products" ? "Product navigation" : "Engineering pages"}
@@ -146,7 +154,7 @@ export function Header() {
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--steel)]">
                     Product Detail Pages
                   </div>
-                  <div className="mt-3 grid gap-2">
+                  <div className="mt-3 grid max-h-[28rem] gap-2 overflow-y-auto pr-2">
                     {products.map((product) => (
                       <Link
                         key={product.slug}

@@ -20,11 +20,12 @@ const applicationOptions = [
   { label: "Custom drawings", value: "custom" },
 ];
 
-function matchesDiameter(productSlug: string, value: string) {
+function matchesDiameter(product: (typeof products)[number], value: string) {
   if (value === "all") return true;
-  if (value === "small") return productSlug === "hard-chrome-plated-rod";
-  if (value === "heavy") return productSlug === "induction-hardened-chrome-plated-rod";
-  if (value === "tube") return productSlug === "hollow-piston-rod" || productSlug === "honed-tube";
+  const text = `${product.slug} ${product.name} ${product.intro}`.toLowerCase();
+  if (value === "small") return text.includes("chrome") && !text.includes("hollow");
+  if (value === "heavy") return text.includes("hardened") || text.includes("cylinder") || text.includes("42crmo");
+  if (value === "tube") return text.includes("tube") || text.includes("honed") || text.includes("bored") || text.includes("hollow");
   return true;
 }
 
@@ -45,7 +46,7 @@ export function ProductSelector() {
   const filteredProducts = useMemo(
     () =>
       products.filter(
-        (product) => matchesDiameter(product.slug, diameter) && matchesApplication(product, application),
+        (product) => matchesDiameter(product, diameter) && matchesApplication(product, application),
       ),
     [application, diameter],
   );

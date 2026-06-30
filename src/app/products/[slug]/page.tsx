@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
@@ -88,7 +89,7 @@ export default async function ProductDetailPage({ params }: Props) {
             <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_0.45fr]">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">
-                  Product specification
+                  Synced product page
                 </p>
                 <h1 className="mt-3 text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
                   {product.h1}
@@ -96,6 +97,14 @@ export default async function ProductDetailPage({ params }: Props) {
                 <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--steel)]">
                   {product.intro}
                 </p>
+                <a
+                  href={product.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-5 inline-flex text-sm font-semibold text-[var(--teal)] hover:text-[var(--teal-dark)]"
+                >
+                  Source catalog page: EAST AI
+                </a>
               </div>
               <aside className="rounded-md border border-[var(--line)] bg-[var(--background)] p-5">
                 <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--steel)]">
@@ -114,6 +123,23 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        {product.image && (
+          <section className="section pt-0">
+            <div className="container">
+              <div className="relative aspect-[16/7] overflow-hidden rounded-md border border-[var(--line)] bg-white">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  priority
+                  className="object-contain p-6"
+                  sizes="100vw"
+                />
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="section">
           <div className="container grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
@@ -140,6 +166,65 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        {product.content.length > 0 && (
+          <section className="section bg-white">
+            <div className="container grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">
+                  EAST AI synced content
+                </p>
+                <h2 className="mt-3 text-3xl font-semibold text-[var(--ink)]">Original product details</h2>
+                <p className="mt-4 text-base leading-7 text-[var(--steel)]">
+                  The product detail content below is synchronized from the linked EAST AI product page.
+                  Company identity and RFQ contact remain Huichenjin / Xijiu.
+                </p>
+              </div>
+              <div className="grid gap-4">
+                {product.content.map((block, index) => {
+                  if (block.type === "heading") {
+                    return (
+                      <h3 key={`${block.text}-${index}`} className="mt-4 text-2xl font-semibold leading-tight text-[var(--ink)] first:mt-0">
+                        {block.text}
+                      </h3>
+                    );
+                  }
+
+                  if (block.type === "list") {
+                    return (
+                      <div key={`${block.text}-${index}`} className="flex gap-3 rounded-md border border-[var(--line)] bg-[var(--background)] p-4 text-sm leading-6 text-[var(--ink)]">
+                        <CheckCircle2 className="mt-0.5 shrink-0 text-[var(--teal)]" size={18} />
+                        <span>{block.text}</span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <p key={`${block.text}-${index}`} className="text-base leading-8 text-[var(--steel)]">
+                      {block.text}
+                    </p>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {product.faqs.length > 0 && (
+          <section className="section">
+            <div className="container">
+              <h2 className="text-3xl font-semibold text-[var(--ink)]">Product FAQ</h2>
+              <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                {product.faqs.map((item) => (
+                  <div key={item.question} className="rounded-md border border-[var(--line)] bg-white p-5">
+                    <h3 className="font-semibold text-[var(--ink)]">{item.question}</h3>
+                    <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{item.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="section bg-white">
           <div className="container grid gap-10 lg:grid-cols-2">
