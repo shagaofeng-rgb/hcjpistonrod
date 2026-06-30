@@ -7,17 +7,17 @@ import { useEffect, useState } from "react";
 
 const slides = [
   {
-    image: "/images/site/hero-welding.jpg",
-    title: "Reliable Hydraulic Cylinders for Demanding Machinery",
+    image: "/images/factory/workshop-overview.jpg",
+    title: "Reliable Hydraulic Components from a Real Factory Floor",
     subtitle:
-      "XIJIU Intelligent Equipment supplies custom hydraulic cylinders and precision hydraulic components for construction, agriculture, mining, material handling, and industrial automation.",
+      "XIJIU Intelligent Equipment supplies custom hydraulic cylinders, chrome plated rods, honed tubes, and precision hydraulic components from an organized production workshop.",
     primary: "Get A Quote",
     primaryHref: "/contact",
     secondary: "View Products",
     secondaryHref: "/products",
   },
   {
-    image: "/images/site/hero-cnc.jpg",
+    image: "/images/factory/chrome-rod-stock.jpg",
     title: "Custom Hydraulic Solutions Built Around Your Application",
     subtitle:
       "From bore size and stroke length to mounting style, seal system, surface treatment, and testing requirements, our engineering team supports OEM and project-based hydraulic cylinder customization.",
@@ -27,7 +27,7 @@ const slides = [
     secondaryHref: "/products/custom-hydraulic-cylinder",
   },
   {
-    image: "/images/site/hero-pressure-test.jpg",
+    image: "/images/factory/factory-exterior.jpg",
     title: "Stable Quality. Controlled Process. Faster Delivery.",
     subtitle:
       "With precision machining, strict inspection, and reliable production management, XIJIU helps customers reduce sourcing risk and keep projects moving.",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ClipboardCheck, FileCheck2, Globe2, Settings2, ShieldCheck, Truck, Wrench } from "lucide-react";
 import { AdvantageCard } from "@/components/advantage-card";
@@ -74,10 +75,32 @@ export default function WhyXijiuPage() {
         </section>
 
         <section className="section">
-          <div className="container grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {advantages.map((item) => (
-              <AdvantageCard key={item.title} {...item} />
-            ))}
+          <div className="container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { src: "/images/factory/cnc-machining-line.jpg", label: "CNC Machining" },
+                { src: "/images/factory/polishing-line.jpg", label: "Rod Polishing" },
+                { src: "/images/factory/chrome-rod-stock.jpg", label: "Chrome Rod Stock" },
+                { src: "/images/factory/packing-area.jpg", label: "Export Packing" },
+              ].map((item) => (
+                <div key={item.label} className="relative aspect-square overflow-hidden rounded-md bg-[var(--muted)]">
+                  <Image
+                    src={item.src}
+                    alt={`${item.label} at XIJIU factory`}
+                    fill
+                    className="object-cover"
+                    sizes="(min-width: 1024px) 25vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-[#071428]/45" />
+                  <span className="absolute bottom-4 left-4 right-4 text-sm font-semibold text-white">{item.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              {advantages.map((item) => (
+                <AdvantageCard key={item.title} {...item} />
+              ))}
+            </div>
           </div>
         </section>
 

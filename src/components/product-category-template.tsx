@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { FAQAccordion } from "@/components/faq-accordion";
@@ -49,18 +50,32 @@ export function ProductCategoryTemplate({ slug }: { slug: string }) {
       <section className="bg-white py-14">
         <div className="container">
           <Breadcrumb items={breadcrumbItems} />
-          <p className="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">Product category</p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
-            {category.title}
-          </h1>
-          <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">{category.intro}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/contact" className="inline-flex h-11 items-center justify-center rounded-md bg-[var(--amber)] px-4 font-semibold text-white">
-              Send Inquiry
-            </Link>
-            <Link href="/products" className="inline-flex h-11 items-center justify-center rounded-md border border-[var(--line)] px-4 font-semibold text-[var(--ink)]">
-              All Products
-            </Link>
+          <div className="mt-8 grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">Product category</p>
+              <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
+                {category.title}
+              </h1>
+              <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">{category.intro}</p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="/contact" className="inline-flex h-11 items-center justify-center rounded-md bg-[var(--amber)] px-4 font-semibold text-white">
+                  Send Inquiry
+                </Link>
+                <Link href="/products" className="inline-flex h-11 items-center justify-center rounded-md border border-[var(--line)] px-4 font-semibold text-[var(--ink)]">
+                  All Products
+                </Link>
+              </div>
+            </div>
+            <div className="relative aspect-[16/10] overflow-hidden rounded-md border border-[var(--line)] bg-[var(--muted)]">
+              <Image
+                src={category.image}
+                alt={`${category.name} manufacturing and supply visual`}
+                fill
+                priority
+                className="object-cover"
+                sizes="(min-width: 1024px) 50vw, 100vw"
+              />
+            </div>
           </div>
         </div>
       </section>

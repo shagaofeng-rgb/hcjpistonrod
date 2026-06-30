@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Building2, Factory, MapPin } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
@@ -6,6 +7,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { capabilities, site } from "@/lib/site";
 import { company } from "../../../data/company";
+import { factoryPhotos } from "../../../data/factory-photos";
 
 export const metadata: Metadata = {
   title: "About XIJIU",
@@ -77,6 +79,39 @@ export default function AboutPage() {
                 <div key={item} className="rounded-md border border-[var(--line)] bg-[var(--background)] p-4 font-semibold text-[var(--ink)]">
                   {item}
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container">
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">Factory Photos</p>
+                <h2 className="mt-3 max-w-3xl text-3xl font-semibold text-[var(--ink)]">Real workshop, production, and product details</h2>
+              </div>
+              <Link href="/contact" className="font-semibold text-[var(--teal)]">
+                Discuss a project
+              </Link>
+            </div>
+            <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {factoryPhotos.map((photo) => (
+                <article key={photo.file} className="overflow-hidden rounded-md border border-[var(--line)] bg-white">
+                  <div className="relative aspect-[16/10] bg-[var(--muted)]">
+                    <Image
+                      src={photo.file}
+                      alt={`${photo.title} at XIJIU factory`}
+                      fill
+                      className="object-cover"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold text-[var(--ink)]">{photo.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{photo.description}</p>
+                  </div>
+                </article>
               ))}
             </div>
           </div>

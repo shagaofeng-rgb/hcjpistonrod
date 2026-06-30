@@ -115,10 +115,10 @@ const testimonials = [
 ];
 
 const capabilityImages = [
-  { label: "CNC Machining", image: "/images/site/cnc-machining.jpg" },
-  { label: "Welding and Assembly", image: "/images/site/welding-robot.jpg" },
-  { label: "Pressure Testing", image: "/images/site/pressure-testing.jpg" },
-  { label: "Surface Treatment", image: "/images/site/factory-workshop.jpg" },
+  { label: "CNC Machining", image: "/images/factory/cnc-machining-line.jpg" },
+  { label: "Rod Polishing", image: "/images/factory/polishing-line.jpg" },
+  { label: "Chrome Rod Stock", image: "/images/factory/chrome-rod-stock.jpg" },
+  { label: "Export Packing", image: "/images/factory/packing-area.jpg" },
 ];
 
 const applicationImages: Record<string, string> = {
@@ -252,7 +252,7 @@ export default function Home() {
                 XIJIU Intelligent Equipment focuses on hydraulic cylinders and precision hydraulic components. Our manufacturing process covers machining, welding, honing, polishing, assembly, pressure testing, surface treatment, and export packing. We help machinery manufacturers, distributors, and engineering companies source reliable hydraulic products with consistent quality.
               </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {["CNC Machining", "Welding and Assembly", "Pressure Testing", "Surface Treatment"].map((item) => (
+                {["CNC Machining", "Rod Polishing", "Chrome Rod Stock", "Export Packing"].map((item) => (
                   <div key={item} className="rounded-md border border-[var(--line)] bg-[var(--background)] px-4 py-3 font-semibold text-[var(--ink)]">
                     {item}
                   </div>
@@ -344,7 +344,7 @@ export default function Home() {
 
         <section className="relative overflow-hidden bg-[#071428] py-20 text-white">
           <Image
-            src="/images/site/hydraulic-press.jpg"
+            src="/images/factory/factory-exterior.jpg"
             alt="XIJIU hydraulic project quotation support"
             fill
             className="object-cover opacity-35"

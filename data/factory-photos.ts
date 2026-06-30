@@ -1,0 +1,80 @@
+export const factoryPhotos = [
+  {
+    file: "/images/factory/factory-exterior.jpg",
+    title: "Factory Exterior",
+    description: "Aerial view of the XIJIU factory building with rooftop solar panels and production entrances.",
+    use: "Best for About page, company credibility, and factory overview sections.",
+  },
+  {
+    file: "/images/factory/raw-material-stock.jpg",
+    title: "Raw Bar and Tube Stock",
+    description: "Bundled steel bars and tube stock stored inside the workshop for piston rod and hydraulic component production.",
+    use: "Best for material preparation, honed tube, and production capacity sections.",
+  },
+  {
+    file: "/images/factory/rod-stock-workshop.jpg",
+    title: "Workshop Rod Stock Area",
+    description: "Long chrome plated rods and raw rods organized in the clean workshop storage area.",
+    use: "Best for chrome plated rod category, inventory, and factory supply visuals.",
+  },
+  {
+    file: "/images/factory/chrome-rod-stock.jpg",
+    title: "Chrome Plated Rod Stock",
+    description: "Finished bright chrome plated rods bundled in the production workshop.",
+    use: "Best for chrome plated rod product pages and homepage product cards.",
+  },
+  {
+    file: "/images/factory/polishing-line.jpg",
+    title: "Rod Polishing Line",
+    description: "Automated rod surface finishing line used for long rod polishing and surface preparation.",
+    use: "Best for surface treatment, polishing, and quality process sections.",
+  },
+  {
+    file: "/images/factory/polishing-workshop.jpg",
+    title: "Surface Finishing Workshop",
+    description: "Polishing and surface finishing equipment arranged with rod support tables.",
+    use: "Best for manufacturing process and finishing capability sections.",
+  },
+  {
+    file: "/images/factory/packing-area.jpg",
+    title: "Finished Rod Packing Area",
+    description: "Finished rods wrapped and protected for storage or export packing inside the workshop.",
+    use: "Best for export packing, delivery, and quality document sections.",
+  },
+  {
+    file: "/images/factory/cnc-machining-line.jpg",
+    title: "CNC Machining Line",
+    description: "CNC lathe line for rod, tube, and hydraulic component machining.",
+    use: "Best for machining capability, custom production, and drawing-based manufacturing sections.",
+  },
+  {
+    file: "/images/factory/cnc-workshop-active.jpg",
+    title: "Active CNC Workshop",
+    description: "Operators working along the CNC machining area with rod stock staged nearby.",
+    use: "Best for production management, precision machining, and factory operation sections.",
+  },
+  {
+    file: "/images/factory/heavy-processing-line.jpg",
+    title: "Heavy Processing Line",
+    description: "Heavy production equipment and conveyor-style processing line for long hydraulic components.",
+    use: "Best for manufacturing capability and workshop scale sections.",
+  },
+  {
+    file: "/images/factory/workshop-overview.jpg",
+    title: "Main Workshop Overview",
+    description: "Wide view of the production hall, overhead cranes, processing equipment, and rod stock areas.",
+    use: "Best for homepage hero, Why XIJIU, and factory capability sections.",
+  },
+  {
+    file: "/images/factory/machined-rod-ends-angle.jpg",
+    title: "Machined Rod Ends",
+    description: "Close-up of piston rods with machined threaded ends and finished shoulders.",
+    use: "Best for piston rod, chrome rod, and end machining product pages.",
+  },
+  {
+    file: "/images/factory/machined-rod-ends-front.jpg",
+    title: "Finished End Machining Detail",
+    description: "Front view of turned piston rod ends showing machining finish and threaded detail.",
+    use: "Best for technical detail, tolerance, and custom end machining sections.",
+  },
+];

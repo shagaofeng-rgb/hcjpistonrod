@@ -20,8 +20,8 @@ export default function ImageCreditsPage() {
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Image Credits" }]} />
             <h1 className="mt-8 text-4xl font-semibold text-[var(--ink)]">Image Credits</h1>
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
-              Website visuals use locally optimized copies of openly licensed or public-domain source images.
-              Product specifications, company information, and inquiry content remain XIJIU website content.
+              Factory, workshop, and product photos are owned company materials. The external application
+              visuals below use locally optimized copies of openly licensed or public-domain source images.
             </p>
           </div>
         </section>
