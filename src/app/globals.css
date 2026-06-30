@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f8f6;
-  --foreground: #151816;
-  --muted: #eef1ec;
-  --line: #d9ded6;
-  --ink: #111411;
-  --steel: #53615b;
-  --teal: #126b63;
-  --teal-dark: #0b4641;
-  --amber: #c46d2d;
+  --background: #f5f7fa;
+  --foreground: #111827;
+  --muted: #eef2f7;
+  --line: #d6dde8;
+  --ink: #0b1833;
+  --steel: #526071;
+  --teal: #174a8b;
+  --teal-dark: #0b2f5f;
+  --amber: #c8202f;
 }
 
 @theme inline {
@@ -30,7 +30,7 @@ html {
 }
 
 ::selection {
-  background: rgba(18, 107, 99, 0.2);
+  background: rgba(23, 74, 139, 0.2);
 }
 
 .container {
@@ -50,4 +50,18 @@ html {
   .section {
     padding-block: 48px;
   }
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

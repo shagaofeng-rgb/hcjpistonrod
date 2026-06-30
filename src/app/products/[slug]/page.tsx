@@ -2,32 +2,38 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { Mail, MessageCircle, Send, Share2 } from "lucide-react";
+import { Breadcrumb } from "@/components/breadcrumb";
+import { FAQAccordion } from "@/components/faq-accordion";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { products, site } from "@/lib/site";
+import { ProductSidebar } from "@/components/product-sidebar";
+import { productCategories, products, site } from "@/lib/site";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+  const categorySlugs = new Set(productCategories.map((category) => category.slug));
+  return products.filter((product) => !categorySlugs.has(product.slug)).map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = products.find((item) => item.slug === slug);
 
-  if (!product) {
-    return {};
-  }
+  if (!product) return {};
 
   return {
     title: product.name,
-    description: product.intro,
-    alternates: {
-      canonical: `/products/${product.slug}`,
+    description: product.shortDescription,
+    keywords: [product.name, product.category, "XIJIU Intelligent Equipment", "hydraulic components supplier"],
+    alternates: { canonical: `/products/${product.slug}` },
+    openGraph: {
+      title: `${product.name} | XIJIU Intelligent Equipment`,
+      description: product.shortDescription,
+      url: `/products/${product.slug}`,
     },
   };
 }
@@ -36,218 +42,184 @@ export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
   const product = products.find((item) => item.slug === slug);
 
-  if (!product) {
-    notFound();
-  }
+  if (!product) notFound();
 
-  const specs = [
-    ["Material", product.material],
-    ["Diameter", product.diameter],
-    ["Length", product.length],
-    ["Tolerance", product.tolerance],
-    ["Chrome Thickness", product.chrome],
-    ["Surface Roughness", product.roughness],
-    ["Straightness", product.straightness],
-    ["Hardness", product.hardness],
-  ];
+  const specs = Object.entries(product.specs);
+  const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
+  const pageUrl = `${site.domain}/products/${product.slug}`;
 
-  const jsonLd = {
+  const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.intro,
-    brand: {
-      "@type": "Brand",
-      name: site.name,
-    },
-    manufacturer: {
-      "@type": "Organization",
-      name: site.factoryName,
-    },
-    seller: {
-      "@type": "Organization",
-      name: site.exportCompanyName,
-    },
+    description: product.shortDescription,
+    brand: { "@type": "Brand", name: site.brandName },
+    manufacturer: { "@type": "Organization", name: site.factoryName },
+    url: pageUrl,
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: product.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: site.domain },
+      { "@type": "ListItem", position: 2, name: "Products", item: `${site.domain}/products` },
+      { "@type": "ListItem", position: 3, name: product.name, item: pageUrl },
+    ],
   };
 
   return (
     <>
       <Header />
       <main>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+
         <section className="bg-white py-14">
           <div className="container">
-            <nav className="text-sm text-[var(--steel)]" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-[var(--teal)]">Home</Link>
-              <span> / </span>
-              <Link href="/products" className="hover:text-[var(--teal)]">Products</Link>
-              <span> / {product.name}</span>
-            </nav>
-            <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_0.45fr]">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">
-                  Synced product page
-                </p>
-                <h1 className="mt-3 text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
-                  {product.h1}
-                </h1>
-                <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--steel)]">
-                  {product.intro}
-                </p>
-                <a
-                  href={product.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-5 inline-flex text-sm font-semibold text-[var(--teal)] hover:text-[var(--teal-dark)]"
-                >
-                  Source catalog page: EAST AI
-                </a>
-              </div>
-              <aside className="rounded-md border border-[var(--line)] bg-[var(--background)] p-5">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--steel)]">
-                  Fast RFQ fields
-                </div>
-                <ul className="mt-4 grid gap-3 text-sm text-[var(--ink)]">
-                  <li>Diameter and length</li>
-                  <li>Material grade</li>
-                  <li>Chrome thickness</li>
-                  <li>Quantity and destination</li>
-                </ul>
-                <Link href="/rfq" className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 font-semibold text-white hover:bg-[var(--teal-dark)]">
-                  Send RFQ <ArrowRight size={18} />
-                </Link>
-              </aside>
-            </div>
-          </div>
-        </section>
-
-        {product.image && (
-          <section className="section pt-0">
-            <div className="container">
-              <div className="relative aspect-[16/7] overflow-hidden rounded-md border border-[var(--line)] bg-white">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Products", href: "/products" }, { label: product.name }]} />
+            <div className="mt-8 grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
+              <div className="relative aspect-[16/11] overflow-hidden rounded-md border border-[var(--line)] bg-[var(--muted)]">
                 <Image
                   src={product.image}
-                  alt={product.name}
+                  alt={`${product.name} by XIJIU Intelligent Equipment`}
                   fill
                   priority
-                  className="object-contain p-6"
-                  sizes="100vw"
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                 />
               </div>
-            </div>
-          </section>
-        )}
-
-        <section className="section">
-          <div className="container grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
-            <div>
-              <h2 className="text-3xl font-semibold text-[var(--ink)]">Technical Specifications</h2>
-              <p className="mt-4 text-base leading-7 text-[var(--steel)]">
-                Values below are standard supply references. Final production follows confirmed
-                drawing, standard, or purchase specification.
-              </p>
-            </div>
-            <div className="overflow-hidden rounded-md border border-[var(--line)] bg-white">
-              <table className="w-full border-collapse text-left text-sm">
-                <tbody>
-                  {specs.map(([label, value]) => (
-                    <tr key={label} className="border-b border-[var(--line)] last:border-b-0">
-                      <th className="w-2/5 bg-[var(--muted)] px-4 py-4 font-semibold text-[var(--ink)]">
-                        {label}
-                      </th>
-                      <td className="px-4 py-4 text-[var(--steel)]">{value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">Product Summary</p>
+                <h1 className="mt-3 text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">{product.name}</h1>
+                <p className="mt-5 text-lg leading-8 text-[var(--steel)]">{product.definition}</p>
+                <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
+                  <div className="rounded-md bg-[var(--muted)] p-4">
+                    <dt className="text-[var(--steel)]">Model</dt>
+                    <dd className="mt-1 font-semibold text-[var(--ink)]">{product.model}</dd>
+                  </div>
+                  <div className="rounded-md bg-[var(--muted)] p-4">
+                    <dt className="text-[var(--steel)]">Brand</dt>
+                    <dd className="mt-1 font-semibold text-[var(--ink)]">XIJIU</dd>
+                  </div>
+                  <div className="rounded-md bg-[var(--muted)] p-4">
+                    <dt className="text-[var(--steel)]">Availability</dt>
+                    <dd className="mt-1 font-semibold text-[var(--ink)]">{product.availability}</dd>
+                  </div>
+                  <div className="rounded-md bg-[var(--muted)] p-4">
+                    <dt className="text-[var(--steel)]">Customization</dt>
+                    <dd className="mt-1 font-semibold text-[var(--ink)]">{product.customization}</dd>
+                  </div>
+                </dl>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link href="/contact" className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[var(--amber)] px-4 font-semibold text-white">
+                    <Send size={18} /> Send Inquiry
+                  </Link>
+                  <Link href="/contact" className="inline-flex h-11 items-center justify-center rounded-md border border-[var(--line)] px-4 font-semibold text-[var(--ink)]">
+                    Request Drawing Review
+                  </Link>
+                  <a href={whatsappHref} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[var(--line)] px-4 font-semibold text-[var(--teal)]">
+                    <MessageCircle size={18} /> WhatsApp
+                  </a>
+                </div>
+                <div className="mt-5 flex flex-wrap gap-3 text-sm text-[var(--steel)]">
+                  <span className="inline-flex items-center gap-2"><Share2 size={16} /> Share:</span>
+                  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noreferrer" className="hover:text-[var(--teal)]">LinkedIn</a>
+                  <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noreferrer" className="hover:text-[var(--teal)]">Facebook</a>
+                  <a href={whatsappHref} target="_blank" rel="noreferrer" className="hover:text-[var(--teal)]">WhatsApp</a>
+                  <a href={`mailto:?subject=${product.name}&body=${pageUrl}`} className="inline-flex items-center gap-1 hover:text-[var(--teal)]"><Mail size={15} /> Email</a>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {product.content.length > 0 && (
-          <section className="section bg-white">
-            <div className="container grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">
-                  EAST AI synced content
-                </p>
-                <h2 className="mt-3 text-3xl font-semibold text-[var(--ink)]">Original product details</h2>
+        <section className="section">
+          <div className="container grid gap-8 lg:grid-cols-[0.34fr_1fr]">
+            <ProductSidebar active={product.category} />
+            <div className="grid gap-8">
+              <section className="rounded-md border border-[var(--line)] bg-white p-6">
+                <h2 className="text-3xl font-semibold text-[var(--ink)]">Product Overview</h2>
                 <p className="mt-4 text-base leading-7 text-[var(--steel)]">
-                  The product detail content below is synchronized from the linked EAST AI product page.
-                  Company identity and RFQ contact remain Huichenjin / Xijiu.
+                  {product.shortDescription} XIJIU reviews drawings, applications, quality requirements,
+                  testing expectations, and export packing needs before quotation.
                 </p>
-              </div>
-              <div className="grid gap-4">
-                {product.content.map((block, index) => {
-                  if (block.type === "heading") {
-                    return (
-                      <h3 key={`${block.text}-${index}`} className="mt-4 text-2xl font-semibold leading-tight text-[var(--ink)] first:mt-0">
-                        {block.text}
-                      </h3>
-                    );
-                  }
+              </section>
 
-                  if (block.type === "list") {
-                    return (
-                      <div key={`${block.text}-${index}`} className="flex gap-3 rounded-md border border-[var(--line)] bg-[var(--background)] p-4 text-sm leading-6 text-[var(--ink)]">
-                        <CheckCircle2 className="mt-0.5 shrink-0 text-[var(--teal)]" size={18} />
-                        <span>{block.text}</span>
-                      </div>
-                    );
-                  }
+              <section className="rounded-md border border-[var(--line)] bg-white p-6">
+                <h2 className="text-3xl font-semibold text-[var(--ink)]">Technical Specifications</h2>
+                <div className="mt-5 overflow-hidden rounded-md border border-[var(--line)]">
+                  <table className="w-full border-collapse text-left text-sm">
+                    <tbody>
+                      {specs.map(([label, value]) => (
+                        <tr key={label} className="border-b border-[var(--line)] last:border-b-0">
+                          <th className="w-2/5 bg-[var(--muted)] px-4 py-4 font-semibold text-[var(--ink)]">{label}</th>
+                          <td className="px-4 py-4 text-[var(--steel)]">{value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
 
-                  return (
-                    <p key={`${block.text}-${index}`} className="text-base leading-8 text-[var(--steel)]">
-                      {block.text}
-                    </p>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
+              <section className="grid gap-6 md:grid-cols-2">
+                <div className="rounded-md border border-[var(--line)] bg-white p-6">
+                  <h2 className="text-2xl font-semibold text-[var(--ink)]">Key Advantages</h2>
+                  <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--steel)]">
+                    {product.advantages.map((item) => <li key={item}>- {item}</li>)}
+                  </ul>
+                </div>
+                <div className="rounded-md border border-[var(--line)] bg-white p-6">
+                  <h2 className="text-2xl font-semibold text-[var(--ink)]">Applications</h2>
+                  <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--steel)]">
+                    {product.applications.map((item) => <li key={item}>- {item}</li>)}
+                  </ul>
+                </div>
+              </section>
 
-        {product.faqs.length > 0 && (
-          <section className="section">
-            <div className="container">
-              <h2 className="text-3xl font-semibold text-[var(--ink)]">Product FAQ</h2>
-              <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                {product.faqs.map((item) => (
-                  <div key={item.question} className="rounded-md border border-[var(--line)] bg-white p-5">
-                    <h3 className="font-semibold text-[var(--ink)]">{item.question}</h3>
-                    <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{item.answer}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+              <section className="grid gap-6 md:grid-cols-2">
+                <div className="rounded-md border border-[var(--line)] bg-white p-6">
+                  <h2 className="text-2xl font-semibold text-[var(--ink)]">Manufacturing Process</h2>
+                  <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--steel)]">
+                    {product.process.map((item) => <li key={item}>- {item}</li>)}
+                  </ul>
+                </div>
+                <div className="rounded-md border border-[var(--line)] bg-white p-6">
+                  <h2 className="text-2xl font-semibold text-[var(--ink)]">Quality Control</h2>
+                  <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--steel)]">
+                    {product.quality.map((item) => <li key={item}>- {item}</li>)}
+                  </ul>
+                </div>
+              </section>
 
-        <section className="section bg-white">
-          <div className="container grid gap-10 lg:grid-cols-2">
-            <div>
-              <h2 className="text-3xl font-semibold text-[var(--ink)]">Applications</h2>
-              <div className="mt-5 grid gap-3">
-                {product.applications.map((item) => (
-                  <div key={item} className="flex gap-3 rounded-md border border-[var(--line)] bg-[var(--background)] p-4 text-sm font-medium text-[var(--ink)]">
-                    <CheckCircle2 className="mt-0.5 shrink-0 text-[var(--teal)]" size={18} />
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h2 className="text-3xl font-semibold text-[var(--ink)]">RFQ Checklist</h2>
-              <p className="mt-4 text-base leading-7 text-[var(--steel)]">
-                Send drawings, material grade, diameter, length, tolerance, chrome thickness,
-                roughness, packaging requirements, annual volume, and target delivery schedule.
-              </p>
-              <Link href="/rfq" className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-5 font-semibold text-white hover:bg-[var(--teal-dark)]">
-                Request Quote <ArrowRight size={18} />
-              </Link>
+              <section className="rounded-md border border-[var(--line)] bg-white p-6">
+                <h2 className="text-3xl font-semibold text-[var(--ink)]">FAQ</h2>
+                <div className="mt-5">
+                  <FAQAccordion items={product.faqs} />
+                </div>
+              </section>
+
+              <section className="rounded-md border border-[var(--line)] bg-[#071428] p-6 text-white">
+                <h2 className="text-3xl font-semibold">Need technical support?</h2>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-white/72">
+                  Send drawings, bore size, rod diameter, stroke length, working pressure, mounting style,
+                  quantity, and application environment. XIJIU will help review technical details before quotation.
+                </p>
+                <Link href="/contact" className="mt-5 inline-flex h-11 items-center justify-center rounded-md bg-[var(--amber)] px-4 font-semibold text-white">
+                  Contact XIJIU
+                </Link>
+              </section>
             </div>
           </div>
         </section>

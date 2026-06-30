@@ -1,0 +1,60 @@
+import type { Metadata } from "next";
+import { Breadcrumb } from "@/components/breadcrumb";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import { NewsCard } from "@/components/news-card";
+import { newsArticles } from "../../../data/news";
+
+export const metadata: Metadata = {
+  title: "News and Insights",
+  description:
+    "Practical hydraulic manufacturing knowledge for engineers, buyers, and equipment manufacturers.",
+  alternates: { canonical: "/news" },
+};
+
+const filters = ["All", "Hydraulic Cylinder", "Honed Tube", "Chrome Plated Rod", "Manufacturing", "Quality Control", "Purchasing Guide"];
+
+export default function NewsPage() {
+  return (
+    <>
+      <Header />
+      <main>
+        <section className="bg-white py-16">
+          <div className="container">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "News" }]} />
+            <p className="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">News and Insights</p>
+            <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
+              News and Insights
+            </h1>
+            <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
+              Practical hydraulic manufacturing knowledge for engineers, buyers, and equipment manufacturers.
+            </p>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container">
+            <div className="flex flex-wrap gap-2">
+              {filters.map((filter) => (
+                <span key={filter} className="rounded-md border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--steel)]">
+                  {filter}
+                </span>
+              ))}
+            </div>
+            <div className="mt-8 grid gap-5 lg:grid-cols-3">
+              {newsArticles.map((article) => (
+                <NewsCard key={article.slug} article={article} />
+              ))}
+            </div>
+            <div className="mt-8 flex gap-2">
+              <span className="grid h-10 w-10 place-items-center rounded-md bg-[var(--teal)] text-sm font-semibold text-white">1</span>
+              <span className="grid h-10 w-10 place-items-center rounded-md border border-[var(--line)] bg-white text-sm font-semibold text-[var(--steel)]">2</span>
+              <span className="inline-flex h-10 items-center rounded-md border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--steel)]">Next</span>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

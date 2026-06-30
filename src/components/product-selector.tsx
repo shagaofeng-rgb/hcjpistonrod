@@ -22,7 +22,7 @@ const applicationOptions = [
 
 function matchesDiameter(product: (typeof products)[number], value: string) {
   if (value === "all") return true;
-  const text = `${product.slug} ${product.name} ${product.intro}`.toLowerCase();
+  const text = `${product.slug} ${product.name} ${product.shortDescription}`.toLowerCase();
   if (value === "small") return text.includes("chrome") && !text.includes("hollow");
   if (value === "heavy") return text.includes("hardened") || text.includes("cylinder") || text.includes("42crmo");
   if (value === "tube") return text.includes("tube") || text.includes("honed") || text.includes("bored") || text.includes("hollow");
@@ -31,7 +31,7 @@ function matchesDiameter(product: (typeof products)[number], value: string) {
 
 function matchesApplication(product: (typeof products)[number], value: string) {
   if (value === "all") return true;
-  const text = `${product.name} ${product.intro} ${product.applications.join(" ")}`.toLowerCase();
+  const text = `${product.name} ${product.shortDescription} ${product.applications.join(" ")}`.toLowerCase();
   if (value === "construction") return text.includes("construction") || text.includes("heavy-duty");
   if (value === "agriculture") return text.includes("agricultural");
   if (value === "barrel") return text.includes("barrel");
@@ -60,8 +60,8 @@ export function ProductSelector() {
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-[var(--ink)]">Find a starting product page.</h2>
         </div>
-        <Link href="/rfq" className="inline-flex h-10 items-center justify-center rounded-md bg-[var(--teal)] px-4 text-sm font-semibold text-white">
-          Send Drawing RFQ
+        <Link href="/contact" className="inline-flex h-10 items-center justify-center rounded-md bg-[var(--teal)] px-4 text-sm font-semibold text-white">
+          Send Drawing
         </Link>
       </div>
 
@@ -105,9 +105,7 @@ export function ProductSelector() {
           >
             <span>
               <span className="block font-semibold text-[var(--ink)]">{product.name}</span>
-              <span className="mt-1 block text-xs text-[var(--steel)]">
-                {product.diameter} | {product.tolerance}
-              </span>
+              <span className="mt-1 block text-xs text-[var(--steel)]">{product.category}</span>
             </span>
             <ArrowRight className="shrink-0 text-[var(--teal)] transition group-hover:translate-x-1" size={18} />
           </Link>

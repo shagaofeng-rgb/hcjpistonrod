@@ -1,40 +1,63 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, Factory, Mail, Menu, Send, X } from "lucide-react";
-import { useState } from "react";
-import { navItems, processRoutes, productCategories, products, site } from "@/lib/site";
+import Link from "next/link";
+import { ChevronDown, Globe2, Mail, Menu, MessageCircle, Send, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { megaMenuGroups, navItems, site } from "@/lib/site";
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [activePanel, setActivePanel] = useState<"products" | "capabilities" | null>(null);
-  const [mobilePanel, setMobilePanel] = useState<"products" | "capabilities" | null>("products");
+  const [megaOpen, setMegaOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const closeAll = () => {
     setOpen(false);
-    setActivePanel(null);
+    setMegaOpen(false);
   };
+
+  const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(247,248,246,0.94)] backdrop-blur"
-      onMouseLeave={() => setActivePanel(null)}
+      className={`sticky top-0 z-50 border-b border-[var(--line)] transition ${
+        scrolled ? "bg-white shadow-[0_12px_30px_rgba(11,24,51,0.08)]" : "bg-white/94 backdrop-blur"
+      }`}
+      onMouseLeave={() => setMegaOpen(false)}
     >
-      <div className="hidden border-b border-[var(--line)] bg-[#151816] py-2 text-xs text-white/72 lg:block">
+      <div className="border-b border-[var(--line)] bg-[#071428] py-2 text-xs text-white/76">
         <div className="container flex items-center justify-between gap-4">
-          <span className="flex items-center gap-2">
-            <Factory size={14} /> Factory: {site.factoryName}
+          <span className="hidden sm:inline">
+            {site.brandName} | Hydraulic Manufacturer Since {site.since}
           </span>
-          <span>Export title: {site.exportCompanyName}</span>
+          <span className="sm:hidden">{site.brandName}</span>
+          <div className="flex items-center gap-3">
+            <a href={`mailto:${site.email}`} className="inline-flex items-center gap-1.5 hover:text-white">
+              <Mail size={14} /> <span className="hidden md:inline">{site.email}</span>
+            </a>
+            <a href={whatsappHref} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-white">
+              <MessageCircle size={14} /> <span className="hidden md:inline">WhatsApp</span>
+            </a>
+            <button type="button" className="hidden items-center gap-1.5 hover:text-white sm:inline-flex" title="Language selector">
+              <Globe2 size={14} /> EN
+            </button>
+          </div>
         </div>
       </div>
+
       <div className="container flex min-h-18 items-center justify-between gap-4 py-3">
-        <Link href="/" className="flex items-center gap-3" aria-label={`${site.name} home`} onClick={closeAll}>
+        <Link href="/" className="flex items-center gap-3" aria-label={`${site.brandName} home`} onClick={closeAll}>
           <span className="relative h-12 w-16 overflow-hidden rounded-md border border-[var(--line)] bg-white">
             <Image
               src="/xijiu-logo.jpg"
-              alt="Xijiu Intelligent Equipment logo"
+              alt="XIJIU Intelligent Equipment logo"
               fill
               priority
               className="object-contain p-1"
@@ -42,62 +65,46 @@ export function Header() {
             />
           </span>
           <span className="leading-tight">
-            <span className="block text-base font-semibold tracking-[0.04em] text-[var(--ink)]">
-              {site.name}
-            </span>
-            <span className="block text-xs uppercase tracking-[0.18em] text-[var(--steel)]">
-              XIJIU Intelligent Equipment
+            <span className="block text-base font-semibold tracking-[0.04em] text-[var(--ink)]">XIJIU</span>
+            <span className="block text-xs uppercase tracking-[0.16em] text-[var(--steel)]">
+              Intelligent Equipment
             </span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-2 text-sm font-medium text-[var(--steel)] lg:flex">
-          <button
-            type="button"
-            onMouseEnter={() => setActivePanel("products")}
-            onFocus={() => setActivePanel("products")}
-            className="inline-flex h-10 items-center gap-1 rounded-md px-3 transition hover:bg-white hover:text-[var(--teal)]"
-          >
-            Products <ChevronDown size={15} />
-          </button>
-          <button
-            type="button"
-            onMouseEnter={() => setActivePanel("capabilities")}
-            onFocus={() => setActivePanel("capabilities")}
-            className="inline-flex h-10 items-center gap-1 rounded-md px-3 transition hover:bg-white hover:text-[var(--teal)]"
-          >
-            Capabilities <ChevronDown size={15} />
-          </button>
-          {navItems
-            .filter((item) => !["Products", "Process", "Quality", "Industries"].includes(item.label))
-            .map((item) => (
+        <nav className="hidden items-center gap-1 text-sm font-medium text-[var(--steel)] lg:flex">
+          {navItems.map((item) =>
+            item.label === "Products" ? (
+              <button
+                key={item.href}
+                type="button"
+                onMouseEnter={() => setMegaOpen(true)}
+                onFocus={() => setMegaOpen(true)}
+                className="inline-flex h-10 items-center gap-1 rounded-md px-3 transition hover:bg-[var(--muted)] hover:text-[var(--teal)]"
+              >
+                Products <ChevronDown size={15} />
+              </button>
+            ) : (
               <Link
                 key={item.href}
                 href={item.href}
-                className="inline-flex h-10 items-center rounded-md px-3 transition hover:bg-white hover:text-[var(--teal)]"
-                onFocus={() => setActivePanel(null)}
+                onFocus={() => setMegaOpen(false)}
+                className="inline-flex h-10 items-center rounded-md px-3 transition hover:bg-[var(--muted)] hover:text-[var(--teal)]"
               >
                 {item.label}
               </Link>
-            ))}
+            ),
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
-          <a
-            href={`mailto:${site.email}`}
-            className="hidden h-10 w-10 items-center justify-center rounded-md border border-[var(--line)] bg-white text-[var(--steel)] transition hover:border-[var(--teal)] hover:text-[var(--teal)] sm:flex"
-            aria-label="Email sales"
-            title="Email sales"
-          >
-            <Mail size={18} />
-          </a>
           <Link
-            href="/rfq"
+            href="/contact"
             onClick={closeAll}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--teal-dark)]"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--amber)] px-4 text-sm font-semibold text-white transition hover:bg-[#a81825]"
           >
             <Send size={17} />
-            Send RFQ
+            Quote Now
           </Link>
           <button
             type="button"
@@ -110,142 +117,71 @@ export function Header() {
           </button>
         </div>
       </div>
-      {activePanel && (
-        <div className="absolute left-0 right-0 top-full hidden border-b border-[var(--line)] bg-white shadow-[0_24px_60px_rgba(17,20,17,0.14)] lg:block">
-          <div className="container grid max-h-[calc(100vh-9rem)] gap-8 overflow-y-auto py-7 lg:grid-cols-[0.72fr_1.28fr]">
-            <div className="rounded-md bg-[var(--muted)] p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--amber)]">
-                {activePanel === "products" ? "Product navigation" : "Engineering pages"}
-              </p>
+
+      {megaOpen && (
+        <div className="absolute left-0 right-0 top-full hidden border-b border-[var(--line)] bg-white shadow-[0_24px_60px_rgba(11,24,51,0.14)] lg:block">
+          <div className="container grid gap-8 py-7 lg:grid-cols-[0.72fr_1.28fr]">
+            <div className="rounded-md bg-[var(--muted)] p-6">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--amber)]">Product navigation</p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight text-[var(--ink)]">
-                {activePanel === "products"
-                  ? "Choose by purchasing category or exact product."
-                  : "Separate pages for process, quality, industries, and company proof."}
+                Hydraulic cylinders, honed tubes, chrome plated rods, and power units.
               </h2>
+              <p className="mt-3 text-sm leading-6 text-[var(--steel)]">
+                Choose a category or send drawings for technical review and quotation support.
+              </p>
               <Link
-                href={activePanel === "products" ? "/products" : "/process"}
+                href="/products"
                 onClick={closeAll}
                 className="mt-5 inline-flex h-10 items-center justify-center rounded-md bg-[var(--ink)] px-4 text-sm font-semibold text-white"
               >
-                Open section
+                View All Products
               </Link>
             </div>
-            {activePanel === "products" ? (
-              <div className="grid gap-6 md:grid-cols-2">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--steel)]">
-                    Product Categories
-                  </div>
-                  <div className="mt-3 grid gap-2">
-                    {productCategories.map((category) => (
-                      <Link
-                        key={category.slug}
-                        href={`/products/categories/${category.slug}`}
-                        onClick={closeAll}
-                        className="rounded-md border border-[var(--line)] px-4 py-3 transition hover:border-[var(--teal)] hover:bg-[var(--background)]"
-                      >
-                        <span className="block font-semibold text-[var(--ink)]">{category.name}</span>
-                        <span className="mt-1 block text-xs leading-5 text-[var(--steel)]">{category.description}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--steel)]">
-                    Product Detail Pages
-                  </div>
-                  <div className="mt-3 grid max-h-[28rem] gap-2 overflow-y-auto pr-2">
-                    {products.map((product) => (
-                      <Link
-                        key={product.slug}
-                        href={`/products/${product.slug}`}
-                        onClick={closeAll}
-                        className="rounded-md px-4 py-3 transition hover:bg-[var(--background)]"
-                      >
-                        <span className="block font-semibold text-[var(--ink)]">{product.name}</span>
-                        <span className="text-xs text-[var(--steel)]">{product.diameter}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="grid gap-3 md:grid-cols-2">
-                {processRoutes.map((item) => (
+            <div className="grid gap-5 md:grid-cols-2">
+              {megaMenuGroups.map((group) => (
+                <div key={group.label} className="rounded-md border border-[var(--line)] p-4">
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    href={group.href}
                     onClick={closeAll}
-                    className="rounded-md border border-[var(--line)] bg-white p-5 transition hover:border-[var(--teal)] hover:bg-[var(--background)]"
+                    className="font-semibold text-[var(--ink)] hover:text-[var(--teal)]"
                   >
-                    <span className="block text-lg font-semibold text-[var(--ink)]">{item.label}</span>
-                    <span className="mt-2 block text-sm leading-6 text-[var(--steel)]">{item.description}</span>
+                    {group.label}
                   </Link>
-                ))}
-              </div>
-            )}
+                  <div className="mt-3 grid gap-2 text-sm text-[var(--steel)]">
+                    {group.links.map((link) => (
+                      <Link key={link.href} href={link.href} onClick={closeAll} className="hover:text-[var(--teal)]">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
+
       {open && (
         <div className="container grid gap-3 pb-4 text-sm font-semibold text-[var(--steel)] lg:hidden">
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => setMobilePanel("products")}
-              className={`h-10 rounded-md border px-3 text-left ${
-                mobilePanel === "products" ? "border-[var(--teal)] bg-white text-[var(--teal)]" : "border-[var(--line)] bg-white"
-              }`}
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={closeAll}
+              className="rounded-md border border-[var(--line)] bg-white px-4 py-3 text-[var(--ink)]"
             >
-              Products
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobilePanel("capabilities")}
-              className={`h-10 rounded-md border px-3 text-left ${
-                mobilePanel === "capabilities" ? "border-[var(--teal)] bg-white text-[var(--teal)]" : "border-[var(--line)] bg-white"
-              }`}
-            >
-              Capabilities
-            </button>
-          </div>
-          {mobilePanel === "products" ? (
-            <div className="grid gap-2">
-              <Link href="/products" onClick={closeAll} className="rounded-md border border-[var(--line)] bg-white px-4 py-3 text-[var(--ink)]">
-                All Products
-              </Link>
-              {productCategories.map((category) => (
-                <Link
-                  key={category.slug}
-                  href={`/products/categories/${category.slug}`}
-                  onClick={closeAll}
-                  className="rounded-md border border-[var(--line)] bg-white px-4 py-3"
-                >
-                  {category.name}
+              {item.label}
+            </Link>
+          ))}
+          <div className="rounded-md border border-[var(--line)] bg-white p-4">
+            <div className="font-semibold text-[var(--ink)]">Product Categories</div>
+            <div className="mt-3 grid gap-3">
+              {megaMenuGroups.map((group) => (
+                <Link key={group.href} href={group.href} onClick={closeAll} className="text-[var(--steel)]">
+                  {group.label}
                 </Link>
               ))}
             </div>
-          ) : (
-            <div className="grid gap-2">
-              {processRoutes.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeAll}
-                  className="rounded-md border border-[var(--line)] bg-white px-4 py-3"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          )}
-          <div className="grid gap-2 border-t border-[var(--line)] pt-3">
-            <Link href="/company" onClick={closeAll} className="rounded-md border border-[var(--line)] bg-white px-4 py-3">
-              Company
-            </Link>
-            <Link href="/contact" onClick={closeAll} className="rounded-md border border-[var(--line)] bg-white px-4 py-3">
-              Contact
-            </Link>
           </div>
         </div>
       )}
