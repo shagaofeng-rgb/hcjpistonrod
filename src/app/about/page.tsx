@@ -38,12 +38,12 @@ export default function AboutPage() {
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "About XIJIU" }]} />
             <p className="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">About XIJIU</p>
             <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
-              Hydraulic Cylinder and Precision Hydraulic Component Manufacturer
+              Piston Rod and Chrome Plated Rod Manufacturer
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
-              {company.entityStatement} The website serves overseas B2B customers looking for hydraulic
-              cylinders, welded hydraulic cylinders, honed tubes, chrome plated rods, hydraulic power units,
-              and OEM hydraulic solutions with clear technical communication.
+              {company.entityStatement} The website serves overseas B2B customers looking for piston rods,
+              hard chrome plated rods, honed tubes, hydraulic cylinder parts, and drawing-based components
+              with clear technical communication.
             </p>
           </div>
         </section>

@@ -4,9 +4,9 @@ export const company = {
   legalName: "Nantong Huichenjin International Trade Co., Ltd",
   factoryName: "Nantong Huichenjin International Trade Co., Ltd",
   exportCompanyName: "Jiangsu Xijiu Intelligent Equipment Co., Ltd",
-  positioning: "Hydraulic Cylinder and Precision Hydraulic Component Manufacturer",
+  positioning: "Hydraulic Piston Rod and Hard Chrome Plated Rod Manufacturer",
   entityStatement:
-    "XIJIU Intelligent Equipment is a hydraulic cylinder and precision hydraulic component manufacturer based in Wuxi, China.",
+    "Nantong Huichenjin International Trade Co., Ltd is the factory and manufacturing base in Nantong, Jiangsu. Jiangsu Xijiu Intelligent Equipment Co., Ltd is the export company used for overseas trade, quotation, contracts, and shipment support.",
   domain: "https://www.hcjpistonrod.com",
   email: "ada@hcjpistonrod.com",
   phone: "+8613921298839",
@@ -16,10 +16,10 @@ export const company = {
   qq: "546770511",
   address:
     "No. 29, Donglian Road, Qutang Town, Haian City, Nantong City, Jiangsu Province, China",
-  cityLine: "Wuxi / Jiangsu manufacturing supply support, China",
-  since: "[PLACEHOLDER]",
-  customProjects: "[PLACEHOLDER]+",
-  machiningEquipment: "[PLACEHOLDER]+",
+  cityLine: "Nantong / Jiangsu manufacturing supply support, China",
+  since: "Factory direct supply",
+  customProjects: "Drawing-based",
+  machiningEquipment: "Factory inspection",
   workingHours: "Mon-Fri, 9:00-18:00 China Standard Time",
 };
 

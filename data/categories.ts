@@ -195,9 +195,9 @@ export const productCategories: ProductCategory[] = [
     ],
     sections: [
       {
-        heading: "How to Choose Chrome Plated Rods",
+        heading: "Quotation Factors for Chrome Plated Rods",
         body:
-          "Confirm material grade, rod diameter, tolerance, chrome thickness, surface roughness, straightness, hardness, salt spray requirement, and packing before quotation.",
+          "Before quotation, please confirm the material, hardness requirement, chrome plating requirement, and rod length. Diameter, tolerance, and end machining can be reviewed together when drawings are available.",
       },
       {
         heading: "Applications",
@@ -210,32 +210,6 @@ export const productCategories: ProductCategory[] = [
         question: "Can rod length be cut to order?",
         answer:
           "Cut-to-length supply and drawing-based end machining can be discussed according to quantity and production requirements.",
-      },
-    ],
-  },
-  {
-    slug: "hydraulic-power-unit",
-    name: "Hydraulic Power Unit",
-    title: "Hydraulic Power Unit Manufacturer",
-    description:
-      "Compact and customized hydraulic power units for machinery, automation, lifting systems, and project hydraulic control.",
-    intro:
-      "A hydraulic power unit combines motor, pump, tank, valves, and controls to provide hydraulic power for machinery or automation systems. XIJIU supports application-based configuration review.",
-    image: "/images/site/hydraulic-power-unit.jpg",
-    keywords: ["hydraulic power unit manufacturer", "custom hydraulic power unit"],
-    products: ["compact-hydraulic-power-pack", "custom-hydraulic-power-unit"],
-    sections: [
-      {
-        heading: "What to Consider",
-        body:
-          "Confirm flow, pressure, tank capacity, motor power, voltage, valve function, duty cycle, mounting space, environment, and control method before quotation.",
-      },
-    ],
-    faqs: [
-      {
-        question: "Can the power unit be configured for a specific machine?",
-        answer:
-          "Yes. Pump, motor, valve, tank, voltage, and control options can be reviewed around the machine's hydraulic requirement.",
       },
     ],
   },

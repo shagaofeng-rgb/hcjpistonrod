@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s | XIJIU Intelligent Equipment",
   },
   description:
-    "XIJIU Intelligent Equipment supplies hydraulic cylinders, custom hydraulic cylinders, honed tubes, chrome plated rods, and hydraulic power units.",
+    "XIJIU Intelligent Equipment supplies piston rods, hard chrome plated rods, honed tubes, and drawing-based precision hydraulic components.",
   keywords: [
     "hydraulic cylinder manufacturer",
     "custom hydraulic cylinders",
@@ -29,15 +29,16 @@ export const metadata: Metadata = {
     "XIJIU Intelligent Equipment",
     "honed tube",
     "chrome plated rod",
+    "hydraulic piston rod",
   ],
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
-    title: "XIJIU Intelligent Equipment | Hydraulic Cylinder Manufacturer",
+    title: "XIJIU Intelligent Equipment | Piston Rod and Chrome Plated Rod Manufacturer",
     description:
-      "Hydraulic cylinders, custom hydraulic components, honed tubes, chrome plated rods, and hydraulic power units for overseas B2B buyers.",
+      "Piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components for overseas B2B buyers.",
     url: "https://www.hcjpistonrod.com",
     siteName: "XIJIU Intelligent Equipment",
   },

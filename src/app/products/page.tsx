@@ -9,19 +9,19 @@ import { productCategories, products, site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Hydraulic cylinders and precision hydraulic components for industrial and mobile equipment.",
+    "Piston rods, hard chrome plated rods, honed tubes, and precision hydraulic components for industrial and mobile equipment.",
   keywords: [
     "hydraulic cylinder manufacturer",
     "custom hydraulic cylinder supplier",
     "honed tube manufacturer",
     "chrome plated rod supplier",
-    "hydraulic power unit manufacturer",
+    "hydraulic piston rod supplier",
   ],
   alternates: { canonical: "/products" },
   openGraph: {
     title: "Products | XIJIU Intelligent Equipment",
     description:
-      "Hydraulic cylinders, honed tubes, chrome plated rods, hydraulic power units, and custom hydraulic solutions.",
+      "Piston rods, hard chrome plated rods, honed tubes, hydraulic cylinder parts, and drawing-based hydraulic components.",
     url: "/products",
   },
 };
@@ -46,11 +46,11 @@ export default function ProductsPage() {
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Products" }]} />
             <p className="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">Products</p>
             <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
-              Hydraulic cylinders and precision hydraulic components for industrial and mobile equipment.
+              Piston rods and chrome plated rod supply for industrial and mobile equipment.
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
-              XIJIU Intelligent Equipment supplies hydraulic cylinders, welded hydraulic cylinders,
-              custom hydraulic cylinders, honed tubes, chrome plated rods, and hydraulic power units
+              XIJIU Intelligent Equipment supplies piston rods, hard chrome plated rods, honed tubes,
+              hydraulic cylinder parts, and drawing-based precision hydraulic components
               for OEM machinery, distributors, and engineering companies.
             </p>
           </div>
@@ -74,13 +74,13 @@ export default function ProductsPage() {
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">SEO Guide</p>
               <h2 className="mt-3 text-3xl font-semibold leading-tight text-[var(--ink)]">
-                Hydraulic Products for OEM Machinery and Industrial Applications
+                Rod Products for OEM Machinery and Industrial Applications
               </h2>
             </div>
             <div className="grid gap-5 text-base leading-7 text-[var(--steel)]">
               <p>
-                XIJIU provides hydraulic cylinders, honed tubes, chrome plated rods, and hydraulic power
-                units for construction machinery, agricultural equipment, industrial automation, mining,
+                XIJIU provides piston rods, hard chrome plated rods, honed tubes, and hydraulic cylinder
+                parts for construction machinery, agricultural equipment, industrial automation, mining,
                 and material handling applications.
               </p>
               <p>

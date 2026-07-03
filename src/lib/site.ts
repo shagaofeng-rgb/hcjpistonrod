@@ -63,14 +63,6 @@ export const megaMenuGroups = [
       { label: "Hollow Chrome Plated Rod", href: "/products/hollow-chrome-plated-rod" },
     ],
   },
-  {
-    label: "Hydraulic Power Unit",
-    href: "/products/hydraulic-power-unit",
-    links: [
-      { label: "Compact Hydraulic Power Pack", href: "/products/compact-hydraulic-power-pack" },
-      { label: "Custom Hydraulic Power Unit", href: "/products/custom-hydraulic-power-unit" },
-    ],
-  },
 ];
 
 export { productCategories, products };

@@ -2,7 +2,7 @@ export const globalFaqs = [
   {
     question: "What products does XIJIU supply?",
     answer:
-      "XIJIU supplies hydraulic cylinders, welded hydraulic cylinders, custom hydraulic cylinders, honed tubes, chrome plated rods, hydraulic power units, and related precision hydraulic components.",
+      "XIJIU supplies piston rods, hard chrome plated rods, honed tubes, hydraulic cylinder parts, and drawing-based precision hydraulic components.",
   },
   {
     question: "Can I send a drawing for quotation?",

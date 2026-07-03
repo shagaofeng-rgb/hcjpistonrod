@@ -10,20 +10,21 @@ export function Footer() {
     <footer className="border-t border-[var(--line)] bg-[#071428] pb-16 text-white md:pb-0">
       <div className="container grid gap-10 py-12 md:grid-cols-[1.2fr_0.8fr_0.8fr_1fr]">
         <div>
-          <div className="relative mb-4 h-14 w-24 overflow-hidden rounded-md bg-white">
+          <div className="relative mb-4 h-16 w-16 overflow-hidden rounded-md bg-white">
             <Image
-              src="/xijiu-logo.jpg"
+              src="/xijiu-logo.png"
               alt="XIJIU Intelligent Equipment logo"
               fill
-              className="object-contain p-1.5"
-              sizes="96px"
+              className="object-contain p-2"
+              sizes="64px"
             />
           </div>
           <div className="text-xl font-semibold">{site.brandName}</div>
           <div className="mt-2 text-sm text-white/58">Export title: {site.exportCompanyName}</div>
+          <div className="mt-1 text-sm text-white/58">Factory: {site.factoryName}</div>
           <p className="mt-4 max-w-xl text-sm leading-7 text-white/70">
-            Hydraulic cylinders, custom hydraulic components, honed tubes, chrome plated rods, and
-            hydraulic power units for OEM machinery and industrial hydraulic systems. Since {site.since}.
+            Piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components
+            for OEM machinery and industrial hydraulic systems.
           </p>
         </div>
 

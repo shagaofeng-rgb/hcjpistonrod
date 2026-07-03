@@ -9,7 +9,8 @@ const interestedProducts = [
   "Custom Hydraulic Cylinder",
   "Honed Tube",
   "Chrome Plated Rod",
-  "Hydraulic Power Unit",
+  "Hydraulic Piston Rod",
+  "Induction Hardened Chrome Rod",
 ];
 
 export function RfqForm() {
@@ -112,7 +113,7 @@ export function RfqForm() {
           required
           name="message"
           rows={5}
-          placeholder="Please share drawing details, bore size, rod diameter, stroke length, working pressure, mounting style, quantity, and application environment."
+          placeholder="Please share material, hardness requirement, chrome plating requirement, length, rod diameter, quantity, and drawing or sample details."
           className="resize-none rounded-md border border-[var(--line)] px-3 py-3 outline-none focus:border-[var(--teal)]"
         />
       </label>

@@ -25,9 +25,9 @@ import { company } from "../../data/company";
 import { newsArticles } from "../../data/news";
 
 export const metadata: Metadata = {
-  title: "Hydraulic Cylinder Manufacturer",
+  title: "Piston Rod and Chrome Plated Rod Manufacturer",
   description:
-    "XIJIU supplies custom hydraulic cylinders, honed tubes, chrome plated rods, hydraulic power units, and OEM hydraulic solutions.",
+    "XIJIU supplies piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components for overseas B2B buyers.",
   keywords: [
     "hydraulic cylinder manufacturer",
     "custom hydraulic cylinders",
@@ -45,15 +45,15 @@ export const metadata: Metadata = {
 };
 
 const categoryCards = productCategories.filter((category) =>
-  ["hydraulic-cylinder", "welded-hydraulic-cylinder", "custom-hydraulic-cylinder", "honed-tube", "chrome-plated-rod", "hydraulic-power-unit"].includes(category.slug),
+  ["hydraulic-cylinder", "welded-hydraulic-cylinder", "custom-hydraulic-cylinder", "honed-tube", "chrome-plated-rod"].includes(category.slug),
 );
 
 const advantages = [
   {
     icon: Settings2,
-    title: "Custom Engineering Support",
+    title: "Drawing-Based Rod Support",
     body:
-      "We support bore size, stroke length, mounting type, port position, rod material, seal system, and surface treatment customization according to your application.",
+      "We support material, hardness, chrome requirement, length, diameter, tolerance, and end machining review according to your drawing or sample.",
   },
   {
     icon: Wrench,
@@ -118,7 +118,7 @@ const capabilityImages = [
   { label: "CNC Machining", image: "/images/factory/cnc-machining-line.jpg" },
   { label: "Rod Polishing", image: "/images/factory/polishing-line.jpg" },
   { label: "Chrome Rod Stock", image: "/images/factory/chrome-rod-stock.jpg" },
-  { label: "Export Packing", image: "/images/factory/packing-area.jpg" },
+  { label: "Export Wooden Crate Packing", image: "/images/site/export-wooden-crate-packing.jpg" },
 ];
 
 const applicationImages: Record<string, string> = {
@@ -153,9 +153,9 @@ export default function Home() {
           <div className="container">
             <StatsCounter
               items={[
-                { icon: "factory", value: `Since ${site.since}`, label: "Hydraulic manufacturing supply support" },
-                { icon: "clipboard", value: company.customProjects, label: "Custom projects and drawing reviews" },
-                { icon: "gauge", value: company.machiningEquipment, label: "Machining and inspection equipment" },
+                { icon: "factory", value: "Factory Direct", label: "Nantong Huichenjin manufacturing base" },
+                { icon: "clipboard", value: company.customProjects, label: "Rod drawings and sample reviews" },
+                { icon: "gauge", value: company.machiningEquipment, label: "Machining, polishing, and inspection support" },
                 { icon: "globe", value: "Worldwide", label: "Export support for overseas B2B buyers" },
               ]}
             />
@@ -168,10 +168,10 @@ export default function Home() {
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">Products</p>
                 <h2 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[var(--ink)]">
-                  Hydraulic Products and Custom Manufacturing Solutions
+                  Piston Rods and Chrome Plated Rod Supply
                 </h2>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">
-                  Explore our main product categories for hydraulic cylinders, honed tubes, chrome plated rods, and hydraulic power units.
+                  Explore piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic component supply from XIJIU.
                 </p>
               </div>
               <Link href="/products" className="inline-flex items-center gap-2 font-semibold text-[var(--teal)]">
@@ -249,10 +249,10 @@ export default function Home() {
                 Built for Stable Hydraulic Component Manufacturing
               </h2>
               <p className="mt-5 text-base leading-7 text-[var(--steel)]">
-                XIJIU Intelligent Equipment focuses on hydraulic cylinders and precision hydraulic components. Our manufacturing process covers machining, welding, honing, polishing, assembly, pressure testing, surface treatment, and export packing. We help machinery manufacturers, distributors, and engineering companies source reliable hydraulic products with consistent quality.
+                XIJIU Intelligent Equipment focuses on piston rods, hard chrome plated rods, honed tubes, and precision hydraulic components. Our manufacturing process covers material preparation, machining, honing, polishing, surface treatment, inspection, and export wooden crate packing. We help machinery manufacturers, distributors, and engineering companies source reliable rod products with consistent quality.
               </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {["CNC Machining", "Rod Polishing", "Chrome Rod Stock", "Export Packing"].map((item) => (
+                {["CNC Machining", "Rod Polishing", "Chrome Rod Stock", "Export Wooden Crate Packing"].map((item) => (
                   <div key={item} className="rounded-md border border-[var(--line)] bg-[var(--background)] px-4 py-3 font-semibold text-[var(--ink)]">
                     {item}
                   </div>
@@ -281,7 +281,7 @@ export default function Home() {
                   <HardHat className="mt-5 text-[var(--amber)]" size={24} />
                   <h3 className="mt-4 text-xl font-semibold text-[var(--ink)]">{industry}</h3>
                   <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
-                    Hydraulic cylinders and components for demanding motion, lifting, pushing, and control applications.
+                    Piston rods, chrome plated rods, and related components for demanding motion, lifting, pushing, and hydraulic applications.
                   </p>
                 </Link>
               ))}

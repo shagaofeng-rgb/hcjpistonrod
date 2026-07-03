@@ -1,10 +1,10 @@
 export const imageCredits = [
   {
-    file: "/images/site/hydraulic-power-unit.jpg",
-    title: "Hydraulic power unit. Hydraulisches Lenkaggregat. Spielvogel.jpg",
-    sourceUrl: "https://commons.wikimedia.org/wiki/File:Hydraulic_power_unit._Hydraulisches_Lenkaggregat._Spielvogel.jpg",
-    license: "CC0",
-    artist: "Spielvogel",
+    file: "/images/site/export-wooden-crate-packing.jpg",
+    title: "Wooden box packaging work for long stainless steel pipes",
+    sourceUrl: "https://nissho-astec.com/business_top/import-export/packing/",
+    license: "Source website reference image",
+    artist: "NISSHO ASTEC CO., LTD.",
   },
   {
     file: "/images/site/construction-machinery.jpg",
@@ -54,12 +54,5 @@ export const imageCredits = [
     sourceUrl: "https://commons.wikimedia.org/wiki/File:Mobile_offshore_base.jpeg",
     license: "CC0",
     artist: "Kcida10",
-  },
-  {
-    file: "/images/site/hydraulic-press.jpg",
-    title: "Forging Press.jpg",
-    sourceUrl: "https://commons.wikimedia.org/wiki/File:Forging_Press.jpg",
-    license: "CC BY-SA 3.0",
-    artist: "Supersonic0714",
   },
 ];

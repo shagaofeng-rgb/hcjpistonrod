@@ -8,9 +8,9 @@ import { useEffect, useState } from "react";
 const slides = [
   {
     image: "/images/factory/workshop-overview.jpg",
-    title: "Reliable Hydraulic Components from a Real Factory Floor",
+    title: "Factory Direct Chrome Rods",
     subtitle:
-      "XIJIU Intelligent Equipment supplies custom hydraulic cylinders, chrome plated rods, honed tubes, and precision hydraulic components from an organized production workshop.",
+      "XIJIU Intelligent Equipment supplies piston rods, hard chrome plated rods, honed tubes, and precision hydraulic components from an organized production workshop.",
     primary: "Get A Quote",
     primaryHref: "/contact",
     secondary: "View Products",
@@ -18,9 +18,9 @@ const slides = [
   },
   {
     image: "/images/factory/chrome-rod-stock.jpg",
-    title: "Custom Hydraulic Solutions Built Around Your Application",
+    title: "Custom Rods Built Around Your Drawing",
     subtitle:
-      "From bore size and stroke length to mounting style, seal system, surface treatment, and testing requirements, our engineering team supports OEM and project-based hydraulic cylinder customization.",
+      "From material and length to hardness, chrome thickness, surface finish, and end machining, our team supports OEM and project-based piston rod requirements.",
     primary: "Send Your Drawing",
     primaryHref: "/contact",
     secondary: "Explore Custom Options",
@@ -63,11 +63,11 @@ export function HeroSlider() {
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,20,40,0.95)_0%,rgba(7,20,40,0.78)_42%,rgba(7,20,40,0.34)_100%)]" />
       <div className="container relative flex min-h-[720px] items-center py-20">
-        <div className="max-w-3xl">
+        <div className="max-w-5xl">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#ffb3b8]">
-            Hydraulic Cylinder and Precision Hydraulic Component Manufacturer
+            Piston Rod and Hard Chrome Plated Rod Manufacturer
           </p>
-          <h1 className="mt-5 text-5xl font-semibold leading-[1.04] md:text-7xl">{slide.title}</h1>
+          <h1 className="mt-5 max-w-5xl text-5xl font-semibold leading-[1.04] md:text-6xl xl:text-7xl">{slide.title}</h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-white/78">{slide.subtitle}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link

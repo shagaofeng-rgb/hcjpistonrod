@@ -67,8 +67,8 @@ export default function WhyXijiuPage() {
               Why Global Customers Choose XIJIU
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
-              {company.entityStatement} We provide hydraulic cylinders, honed tubes, chrome plated rods,
-              hydraulic power units, and OEM hydraulic solutions for overseas machinery customers who need
+              {company.entityStatement} We provide piston rods, hard chrome plated rods, honed tubes,
+              hydraulic cylinder parts, and drawing-based components for overseas machinery customers who need
               controlled quality, clear communication, and practical customization support.
             </p>
           </div>
@@ -81,7 +81,7 @@ export default function WhyXijiuPage() {
                 { src: "/images/factory/cnc-machining-line.jpg", label: "CNC Machining" },
                 { src: "/images/factory/polishing-line.jpg", label: "Rod Polishing" },
                 { src: "/images/factory/chrome-rod-stock.jpg", label: "Chrome Rod Stock" },
-                { src: "/images/factory/packing-area.jpg", label: "Export Packing" },
+                { src: "/images/site/export-wooden-crate-packing.jpg", label: "Export Wooden Crate Packing" },
               ].map((item) => (
                 <div key={item.label} className="relative aspect-square overflow-hidden rounded-md bg-[var(--muted)]">
                   <Image

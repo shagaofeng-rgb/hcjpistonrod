@@ -35,7 +35,7 @@ export function Header() {
       <div className="border-b border-[var(--line)] bg-[#071428] py-2 text-xs text-white/76">
         <div className="container flex items-center justify-between gap-4">
           <span className="hidden sm:inline">
-            {site.brandName} | Hydraulic Manufacturer Since {site.since}
+            {site.brandName} | Factory: {site.factoryName}
           </span>
           <span className="sm:hidden">{site.brandName}</span>
           <div className="flex items-center gap-3">
@@ -54,14 +54,14 @@ export function Header() {
 
       <div className="container flex min-h-18 items-center justify-between gap-4 py-3">
         <Link href="/" className="flex items-center gap-3" aria-label={`${site.brandName} home`} onClick={closeAll}>
-          <span className="relative h-12 w-16 overflow-hidden rounded-md border border-[var(--line)] bg-white">
+          <span className="relative h-14 w-14 overflow-hidden rounded-md border border-[var(--line)] bg-white">
             <Image
-              src="/xijiu-logo.jpg"
+              src="/xijiu-logo.png"
               alt="XIJIU Intelligent Equipment logo"
               fill
               priority
-              className="object-contain p-1"
-              sizes="64px"
+              className="object-contain p-1.5"
+              sizes="56px"
             />
           </span>
           <span className="leading-tight">
@@ -124,7 +124,7 @@ export function Header() {
             <div className="rounded-md bg-[var(--muted)] p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--amber)]">Product navigation</p>
               <h2 className="mt-3 text-2xl font-semibold leading-tight text-[var(--ink)]">
-                Hydraulic cylinders, honed tubes, chrome plated rods, and power units.
+                Piston rods, chrome plated rods, honed tubes, and drawing-based hydraulic components.
               </h2>
               <p className="mt-3 text-sm leading-6 text-[var(--steel)]">
                 Choose a category or send drawings for technical review and quotation support.
