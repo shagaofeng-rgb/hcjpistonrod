@@ -16,14 +16,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.hcjpistonrod.com"),
   title: {
-    default: "XIJIU Intelligent Equipment | Hydraulic Cylinder Manufacturer",
+    default: "XIJIU Intelligent Equipment | Piston Rod and Chrome Plated Rod Manufacturer",
     template: "%s | XIJIU Intelligent Equipment",
   },
   description:
     "XIJIU Intelligent Equipment supplies piston rods, hard chrome plated rods, honed tubes, and drawing-based precision hydraulic components.",
   keywords: [
     "hydraulic cylinder manufacturer",
-    "custom hydraulic cylinders",
+    "custom hydraulic cylinder parts",
     "hydraulic components supplier",
     "hydraulic cylinder factory in China",
     "XIJIU Intelligent Equipment",
