@@ -6,13 +6,16 @@ import { ProductCard } from "@/components/product-card";
 import { ProductSidebar } from "@/components/product-sidebar";
 import { productCategories, products, site } from "@/lib/site";
 
+const mainProductCategories = new Set(["chrome-plated-rod", "honed-tube"]);
+const mainProducts = products.filter((product) => mainProductCategories.has(product.category));
+
 export const metadata: Metadata = {
   title: "Products",
   description:
     "Piston rods, hard chrome plated rods, honed tubes, and precision hydraulic components for industrial and mobile equipment.",
   keywords: [
-    "hydraulic cylinder manufacturer",
-    "custom hydraulic cylinder supplier",
+    "piston rod manufacturer",
+    "hard chrome plated rod supplier",
     "honed tube manufacturer",
     "chrome plated rod supplier",
     "hydraulic piston rod supplier",
@@ -21,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Products | XIJIU Intelligent Equipment",
     description:
-      "Piston rods, hard chrome plated rods, honed tubes, hydraulic cylinder parts, and drawing-based hydraulic components.",
+      "Piston rods, hard chrome plated rods, honed tubes, hollow chrome plated rods, and drawing-based rod components.",
     url: "/products",
   },
 };
@@ -50,7 +53,7 @@ export default function ProductsPage() {
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
               XIJIU Intelligent Equipment supplies piston rods, hard chrome plated rods, honed tubes,
-              hydraulic cylinder parts, and drawing-based precision hydraulic components
+              hollow chrome plated rods, and drawing-based precision rod components
               for OEM machinery, distributors, and engineering companies.
             </p>
           </div>
@@ -61,7 +64,7 @@ export default function ProductsPage() {
             <ProductSidebar />
             <div>
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {products.map((product) => (
+                {mainProducts.map((product) => (
                   <ProductCard key={product.slug} item={product} href={`/products/${product.slug}`} compact />
                 ))}
               </div>
@@ -79,18 +82,18 @@ export default function ProductsPage() {
             </div>
             <div className="grid gap-5 text-base leading-7 text-[var(--steel)]">
               <p>
-                XIJIU provides piston rods, hard chrome plated rods, honed tubes, and hydraulic cylinder
-                parts for construction machinery, agricultural equipment, industrial automation, mining,
+                XIJIU provides piston rods, hard chrome plated rods, hollow chrome plated rods, and honed
+                tubes for construction machinery, agricultural equipment, industrial automation, mining,
                 and material handling applications.
               </p>
               <p>
-                Product supply can be reviewed around drawings, material selection, machining, inspection,
-                pressure testing, export packing, and technical communication. Category pages and product
+                Product supply can be reviewed around drawings, material selection, heat treatment, machining,
+                hardness requirements, chrome plating requirements, length, export packing, and technical communication. Category pages and product
                 detail pages are connected so buyers can move from application requirements to exact
                 specifications quickly.
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
-                {productCategories.map((category) => (
+                {productCategories.filter((category) => mainProductCategories.has(category.slug)).map((category) => (
                   <a key={category.slug} href={`/products/${category.slug}`} className="rounded-md border border-[var(--line)] bg-[var(--background)] p-4 font-semibold text-[var(--ink)]">
                     {category.name}
                   </a>

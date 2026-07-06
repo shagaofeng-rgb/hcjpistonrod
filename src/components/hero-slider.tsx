@@ -24,7 +24,7 @@ const slides = [
     primary: "Send Your Drawing",
     primaryHref: "/contact",
     secondary: "Explore Custom Options",
-    secondaryHref: "/products/custom-hydraulic-cylinder",
+    secondaryHref: "/products/chrome-plated-rod",
   },
   {
     image: "/images/factory/factory-exterior.jpg",

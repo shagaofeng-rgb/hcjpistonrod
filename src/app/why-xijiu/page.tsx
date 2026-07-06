@@ -11,28 +11,28 @@ import { company } from "../../../data/company";
 export const metadata: Metadata = {
   title: "Why Xijiu",
   description:
-    "Why global customers choose XIJIU for custom hydraulic cylinders, precision hydraulic components, quality control, and export support.",
+    "Why global customers choose XIJIU for piston rods, hard chrome plated rods, honed tubes, heat treatment, quality control, and export support.",
   alternates: { canonical: "/why-xijiu" },
 };
 
 const advantages = [
   {
     icon: Settings2,
-    title: "Custom Engineering Support",
+    title: "Rod Specification Support",
     body:
-      "Bore size, stroke length, mounting type, port position, rod material, seal system, and surface treatment can be reviewed according to your application.",
+      "Material, hardness requirement, chrome plating requirement, length, tolerance, and end machining can be reviewed according to your drawing or sample.",
   },
   {
     icon: Wrench,
-    title: "Precision Manufacturing",
+    title: "Heat Treatment and Precision Manufacturing",
     body:
-      "Machining, welding, honing, polishing, assembly, pressure testing, surface treatment, and packing are managed as connected production steps.",
+      "Heat treatment, CNC machining, honing, polishing, chrome surface preparation, inspection, and packing are managed as connected production steps.",
   },
   {
     icon: ShieldCheck,
     title: "Strict Inspection",
     body:
-      "Incoming material checks, dimensional inspection, surface inspection, pressure testing, leakage testing, and final inspection reduce sourcing risk.",
+      "Incoming material checks, hardness checks, dimensional inspection, surface inspection, chrome layer review, and final inspection reduce sourcing risk.",
   },
   {
     icon: FileCheck2,
@@ -68,7 +68,7 @@ export default function WhyXijiuPage() {
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
               {company.entityStatement} We provide piston rods, hard chrome plated rods, honed tubes,
-              hydraulic cylinder parts, and drawing-based components for overseas machinery customers who need
+              hollow chrome plated rods, and drawing-based rod components for overseas machinery customers who need
               controlled quality, clear communication, and practical customization support.
             </p>
           </div>
@@ -79,7 +79,7 @@ export default function WhyXijiuPage() {
             <div className="grid grid-cols-2 gap-4">
               {[
                 { src: "/images/factory/cnc-machining-line.jpg", label: "CNC Machining" },
-                { src: "/images/factory/polishing-line.jpg", label: "Rod Polishing" },
+                { src: "/images/factory/heat-treatment-line.jpg", label: "Heat Treatment Line" },
                 { src: "/images/factory/chrome-rod-stock.jpg", label: "Chrome Rod Stock" },
                 { src: "/images/site/export-wooden-crate-packing.jpg", label: "Export Wooden Crate Packing" },
               ].map((item) => (
@@ -113,7 +113,7 @@ export default function WhyXijiuPage() {
             <div className="grid gap-4 md:grid-cols-2">
               {[
                 "Requirement and drawing review before quotation",
-                "Material, seal, surface, and testing options discussed by application",
+                "Material, hardness, chrome plating, length, and end machining reviewed by drawing",
                 "Quality records available upon request",
                 "Export packing and documentation coordination",
               ].map((item) => (

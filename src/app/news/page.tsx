@@ -8,11 +8,11 @@ import { newsArticles } from "../../../data/news";
 export const metadata: Metadata = {
   title: "News and Insights",
   description:
-    "Practical hydraulic manufacturing knowledge for engineers, buyers, and equipment manufacturers.",
+    "Practical piston rod, hard chrome plated rod, honed tube, and export packing knowledge for industrial buyers.",
   alternates: { canonical: "/news" },
 };
 
-const filters = ["All", "Hydraulic Cylinder", "Honed Tube", "Chrome Plated Rod", "Manufacturing", "Quality Control", "Purchasing Guide"];
+const filters = ["All", "Piston Rod", "Chrome Plated Rod", "Honed Tube", "Manufacturing", "Quality Control", "Purchasing Guide"];
 
 export default function NewsPage() {
   return (
@@ -27,7 +27,7 @@ export default function NewsPage() {
               News and Insights
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
-              Practical hydraulic manufacturing knowledge for engineers, buyers, and equipment manufacturers.
+              Practical piston rod, hard chrome plated rod, honed tube, and export packing knowledge for engineers, buyers, and equipment manufacturers.
             </p>
           </div>
         </section>

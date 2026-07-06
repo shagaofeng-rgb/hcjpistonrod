@@ -60,6 +60,12 @@ export const factoryPhotos = [
     use: "Best for manufacturing capability and workshop scale sections.",
   },
   {
+    file: "/images/factory/heat-treatment-line.jpg",
+    title: "Heat Treatment Line",
+    description: "Heat treatment and hardening equipment used to support required rod hardness before finishing and inspection.",
+    use: "Best for induction hardened chrome rod, hardness capability, and quality control sections.",
+  },
+  {
     file: "/images/factory/workshop-overview.jpg",
     title: "Main Workshop Overview",
     description: "Wide view of the production hall, overhead cranes, processing equipment, and rod stock areas.",

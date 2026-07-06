@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Welded Hydraulic Cylinder Manufacturer",
   description: "Compact, durable, and customizable welded hydraulic cylinders for mobile and industrial hydraulic systems.",
   alternates: { canonical: "/products/welded-hydraulic-cylinder" },
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

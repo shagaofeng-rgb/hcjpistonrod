@@ -12,104 +12,104 @@ export type NewsArticle = {
 
 export const newsArticles: NewsArticle[] = [
   {
-    slug: "choose-welded-hydraulic-cylinder-mobile-machinery",
-    title: "How to Choose the Right Welded Hydraulic Cylinder for Mobile Machinery",
+    slug: "choose-hard-chrome-plated-rod-for-mobile-machinery",
+    title: "How to Choose Hard Chrome Plated Rods for Mobile Machinery",
     date: "2026-06-30",
-    category: "Hydraulic Cylinder",
+    category: "Chrome Plated Rod",
     excerpt:
-      "A practical purchasing guide for checking bore size, stroke, mounting, pressure, sealing, and testing before ordering welded hydraulic cylinders.",
-    image: "/images/factory/workshop-overview.jpg",
-    relatedProducts: ["welded-hydraulic-cylinder", "custom-hydraulic-cylinder"],
+      "A practical purchasing guide for checking material, hardness, chrome plating, diameter, length, and export packing before ordering piston rods.",
+    image: "/images/factory/chrome-rod-stock.jpg",
+    relatedProducts: ["ck45-chrome-plated-rod", "20mnv6-chrome-plated-rod", "induction-hardened-chrome-rod"],
     sections: [
       {
-        heading: "Start with the machine duty cycle",
+        heading: "Start with material and hardness",
         body:
-          "A welded hydraulic cylinder for mobile machinery should be selected around real load, stroke frequency, installation space, pressure peaks, side load risk, and environmental exposure.",
+          "Chrome plated rod selection should begin with material grade, hardness requirement, working load, corrosion exposure, and whether induction hardening is needed for the application.",
       },
       {
-        heading: "Check the drawing before discussing price",
+        heading: "Confirm chrome plating and length",
         body:
-          "The drawing should confirm bore size, rod diameter, stroke, mounting interface, port position, seal system, surface treatment, and testing requirements. Missing details often create sourcing risk later.",
+          "Before quotation, buyers should confirm chrome layer requirement, surface finish, rod diameter, tolerance, straightness, cutting length, and whether end machining is required.",
       },
       {
-        heading: "How to judge supplier capability",
+        heading: "Check packing before shipment",
         body:
-          "A capable supplier should ask technical questions, confirm tolerances, review material and seal choices, arrange pressure testing, and communicate packing and delivery expectations clearly.",
+          "Domestic rope bundling is not enough for export. For overseas shipment, rods should be protected with proper wrapping, separators, and customized wooden case packing when required.",
       },
     ],
     faqs: [
       {
-        question: "What should I send for a welded cylinder quotation?",
+        question: "What should I send for a chrome plated rod quotation?",
         answer:
-          "Send drawing, bore size, rod diameter, stroke, pressure, mounting style, quantity, application, and destination requirement.",
+          "Send material, hardness requirement, chrome plating requirement, diameter, length, quantity, end machining drawing if available, and destination requirement.",
       },
     ],
   },
   {
-    slug: "hydraulic-cylinder-leakage-seal-surface-risk",
-    title: "Why Hydraulic Cylinder Leakage Happens and How to Reduce the Risk",
+    slug: "piston-rod-surface-quality-and-sealing-risk",
+    title: "Why Piston Rod Surface Quality Matters for Sealing Performance",
     date: "2026-06-30",
     category: "Quality Control",
     excerpt:
-      "Leakage is often connected to seal selection, rod surface, bore finish, assembly quality, contamination, and pressure testing discipline.",
+      "Rod surface finish, chrome plating quality, straightness, and bore finish all influence sealing life and stable hydraulic performance.",
     image: "/images/factory/polishing-line.jpg",
-    relatedProducts: ["hydraulic-cylinder", "ck45-chrome-plated-rod", "st52-honed-tube"],
+    relatedProducts: ["ck45-chrome-plated-rod", "hollow-chrome-plated-rod", "st52-honed-tube"],
     sections: [
       {
-        heading: "Leakage is rarely caused by one factor",
+        heading: "Surface quality is not only appearance",
         body:
-          "Seal damage, poor rod surface, bore roughness, contamination, pressure spikes, and assembly misalignment can all contribute to leakage in hydraulic cylinders.",
+          "A piston rod must maintain stable diameter, surface finish, chrome adhesion, and straightness. Surface defects may shorten seal life and create avoidable service risk.",
       },
       {
-        heading: "Surface quality matters",
+        heading: "Chrome plating and polishing should match the use case",
         body:
-          "Chrome plated rod surface finish and honed tube bore condition influence sealing performance. Buyers should not only check dimensions, but also ask about surface inspection and testing.",
+          "Buyers should not only check dimensions. Chrome plating requirement, polishing quality, material hardness, and inspection discipline should be confirmed before mass production.",
       },
       {
-        heading: "Pressure testing before shipment",
+        heading: "Honed tube quality also matters",
         body:
-          "Pressure and leakage testing helps confirm assembly condition before the cylinder is packed and shipped. It cannot replace correct design, but it reduces delivery risk.",
+          "For cylinder barrel applications, honed tube bore condition affects movement and sealing performance. Rod and tube requirements should be reviewed together when drawings are available.",
       },
     ],
     faqs: [
       {
-        question: "Can better inspection reduce leakage risk?",
+        question: "Can better rod inspection reduce sealing risk?",
         answer:
-          "Yes. Dimensional checks, surface inspection, seal review, cleanliness control, assembly inspection, and pressure testing can reduce avoidable leakage risk.",
+          "Yes. Diameter checks, surface inspection, chrome layer review, straightness control, and packing inspection can reduce avoidable sourcing and assembly risk.",
       },
     ],
   },
   {
-    slug: "buyers-check-before-custom-hydraulic-cylinders",
-    title: "What Buyers Should Check Before Ordering Custom Hydraulic Cylinders",
+    slug: "buyers-check-before-custom-piston-rods",
+    title: "What Buyers Should Check Before Ordering Custom Piston Rods",
     date: "2026-06-30",
     category: "Purchasing Guide",
     excerpt:
-      "Before custom production, buyers should confirm drawing details, material, pressure, stroke, mounting, seals, testing, packing, and lead time assumptions.",
-    image: "/images/factory/cnc-machining-line.jpg",
-    relatedProducts: ["custom-hydraulic-cylinder", "welded-hydraulic-cylinder"],
+      "Before custom rod production, buyers should confirm material, hardness, chrome plating, length, diameter, end machining, packing, and lead time assumptions.",
+    image: "/images/factory/heat-treatment-line.jpg",
+    relatedProducts: ["hollow-chrome-plated-rod", "induction-hardened-chrome-rod", "skived-and-roller-burnished-tube"],
     sections: [
       {
         heading: "Confirm what is fixed and what can be adjusted",
         body:
-          "Custom cylinder projects often include both fixed dimensions and adjustable engineering choices. Clarify critical dimensions, allowed tolerances, and acceptable alternatives before production.",
+          "Custom piston rod projects often include fixed drawing dimensions and adjustable production choices. Clarify material, hardness, chrome plating, length, diameter, tolerance, and acceptable alternatives before production.",
       },
       {
-        heading: "Share the application environment",
+        heading: "Share end machining and assembly requirements",
         body:
-          "Pressure, temperature, corrosion exposure, dust, impact, side load, and operating frequency influence material, seal, rod surface, and testing choices.",
+          "Thread, groove, shoulder, hole, and chamfer requirements should be confirmed clearly. If only a sample is available, measured specifications should be reviewed before quotation.",
       },
       {
         heading: "Plan documents and packing early",
         body:
-          "If your project needs inspection records, pressure test reports, labeling, or special export packing, confirm these requirements before order confirmation.",
+          "If your project needs inspection records, labels, protective wrapping, or customized wooden case export packing, confirm these requirements before order confirmation.",
       },
     ],
     faqs: [
       {
         question: "Why is application information important?",
         answer:
-          "The same drawing may perform differently in different environments. Application information helps review material, seals, surface treatment, and testing.",
+          "The same rod size may perform differently in different environments. Application information helps review material, hardness, chrome plating, end machining, and packing.",
       },
     ],
   },

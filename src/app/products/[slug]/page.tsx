@@ -25,11 +25,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!product) return {};
 
+  const isPrimaryProduct = product.category === "chrome-plated-rod" || product.category === "honed-tube";
+
   return {
     title: product.name,
     description: product.shortDescription,
     keywords: [product.name, product.category, "XIJIU Intelligent Equipment", "hydraulic components supplier"],
     alternates: { canonical: `/products/${product.slug}` },
+    robots: isPrimaryProduct ? undefined : { index: false, follow: true },
     openGraph: {
       title: `${product.name} | XIJIU Intelligent Equipment`,
       description: product.shortDescription,

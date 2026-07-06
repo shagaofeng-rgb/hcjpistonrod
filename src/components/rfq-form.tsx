@@ -4,13 +4,12 @@ import { useState } from "react";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 
 const interestedProducts = [
-  "Hydraulic Cylinder",
-  "Welded Hydraulic Cylinder",
-  "Custom Hydraulic Cylinder",
-  "Honed Tube",
   "Chrome Plated Rod",
   "Hydraulic Piston Rod",
   "Induction Hardened Chrome Rod",
+  "Hollow Chrome Plated Rod",
+  "Honed Tube",
+  "Skived and Roller Burnished Tube",
 ];
 
 export function RfqForm() {

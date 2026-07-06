@@ -29,10 +29,10 @@ export const metadata: Metadata = {
   description:
     "XIJIU supplies piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components for overseas B2B buyers.",
   keywords: [
-    "hydraulic cylinder manufacturer",
-    "custom hydraulic cylinder parts",
+    "piston rod manufacturer",
+    "hard chrome plated rod supplier",
     "hydraulic components supplier",
-    "hydraulic cylinder factory in China",
+    "hydraulic piston rod factory in China",
     "XIJIU Intelligent Equipment",
   ],
   alternates: { canonical: "/" },
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 };
 
 const categoryCards = productCategories.filter((category) =>
-  ["hydraulic-cylinder", "welded-hydraulic-cylinder", "custom-hydraulic-cylinder", "honed-tube", "chrome-plated-rod"].includes(category.slug),
+  ["chrome-plated-rod", "honed-tube"].includes(category.slug),
 );
 
 const advantages = [
@@ -57,15 +57,15 @@ const advantages = [
   },
   {
     icon: Wrench,
-    title: "Precision Machining Capability",
+    title: "Heat Treatment and Precision Machining",
     body:
-      "CNC machining, honing, welding, polishing, assembly, and pressure testing processes help ensure stable performance and dimensional accuracy.",
+      "Heat treatment, CNC machining, honing, polishing, and inspection processes support stable hardness, surface finish, and dimensional accuracy.",
   },
   {
     icon: ShieldCheck,
     title: "Strict Quality Inspection",
     body:
-      "Incoming material inspection, process inspection, dimensional checks, surface inspection, pressure testing, and final inspection are implemented before shipment.",
+      "Incoming material inspection, hardness checks, dimensional checks, surface inspection, chrome layer review, and final inspection are implemented before shipment.",
   },
   {
     icon: FileCheck2,
@@ -116,7 +116,7 @@ const testimonials = [
 
 const capabilityImages = [
   { label: "CNC Machining", image: "/images/factory/cnc-machining-line.jpg" },
-  { label: "Rod Polishing", image: "/images/factory/polishing-line.jpg" },
+  { label: "Heat Treatment Line", image: "/images/factory/heat-treatment-line.jpg" },
   { label: "Chrome Rod Stock", image: "/images/factory/chrome-rod-stock.jpg" },
   { label: "Export Wooden Crate Packing", image: "/images/site/export-wooden-crate-packing.jpg" },
 ];
@@ -153,7 +153,7 @@ export default function Home() {
           <div className="container">
             <StatsCounter
               items={[
-                { icon: "factory", value: "Factory Direct", label: "Nantong Huichenjin manufacturing base" },
+                { icon: "factory", value: "Factory Direct", label: "Jiangsu Xijiu manufacturing base" },
                 { icon: "clipboard", value: company.customProjects, label: "Rod drawings and sample reviews" },
                 { icon: "gauge", value: company.machiningEquipment, label: "Machining, polishing, and inspection support" },
                 { icon: "globe", value: "Worldwide", label: "Export support for overseas B2B buyers" },
@@ -171,7 +171,7 @@ export default function Home() {
                   Piston Rods and Chrome Plated Rod Supply
                 </h2>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">
-                  Explore piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic component supply from XIJIU.
+                  Explore hard chrome plated rods, piston rods, hollow chrome plated rods, induction hardened rods, and honed tubes from XIJIU.
                 </p>
               </div>
               <Link href="/products" className="inline-flex items-center gap-2 font-semibold text-[var(--teal)]">
@@ -249,10 +249,10 @@ export default function Home() {
                 Built for Stable Hydraulic Component Manufacturing
               </h2>
               <p className="mt-5 text-base leading-7 text-[var(--steel)]">
-                XIJIU Intelligent Equipment focuses on piston rods, hard chrome plated rods, honed tubes, and precision hydraulic components. Our manufacturing process covers material preparation, machining, honing, polishing, surface treatment, inspection, and export wooden crate packing. We help machinery manufacturers, distributors, and engineering companies source reliable rod products with consistent quality.
+                XIJIU Intelligent Equipment focuses on piston rods, hard chrome plated rods, honed tubes, and precision rod-related hydraulic components. Our manufacturing process covers material preparation, heat treatment, machining, honing, polishing, surface treatment, inspection, and export wooden crate packing. We help machinery manufacturers, distributors, and engineering companies source reliable rod products with consistent quality.
               </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {["CNC Machining", "Rod Polishing", "Chrome Rod Stock", "Export Wooden Crate Packing"].map((item) => (
+                {["CNC Machining", "Heat Treatment", "Chrome Rod Stock", "Export Wooden Crate Packing"].map((item) => (
                   <div key={item} className="rounded-md border border-[var(--line)] bg-[var(--background)] px-4 py-3 font-semibold text-[var(--ink)]">
                     {item}
                   </div>

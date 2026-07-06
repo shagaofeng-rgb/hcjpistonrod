@@ -33,18 +33,6 @@ export const navItems = [
 
 export const megaMenuGroups = [
   {
-    label: "Hydraulic Cylinder",
-    href: "/products/hydraulic-cylinder",
-    links: [
-      { label: "Welded Hydraulic Cylinder", href: "/products/welded-hydraulic-cylinder" },
-      { label: "Custom Hydraulic Cylinder", href: "/products/custom-hydraulic-cylinder" },
-      { label: "Double Acting Hydraulic Cylinder", href: "/products/double-acting-hydraulic-cylinder" },
-      { label: "Single Acting Hydraulic Cylinder", href: "/products/single-acting-hydraulic-cylinder" },
-      { label: "Telescopic Hydraulic Cylinder", href: "/products/telescopic-hydraulic-cylinder" },
-      { label: "Flange Mounted Hydraulic Cylinder", href: "/products/flange-mounted-hydraulic-cylinder" },
-    ],
-  },
-  {
     label: "Honed Tube",
     href: "/products/honed-tube",
     links: [
@@ -78,9 +66,9 @@ export const industries = [
 
 export const capabilities = [
   "CNC machining",
-  "Welding and assembly",
+  "Heat treatment and hardening",
   "Honing and polishing",
-  "Pressure testing",
+  "Chrome plating support",
   "Surface treatment",
   "Export packing",
 ];

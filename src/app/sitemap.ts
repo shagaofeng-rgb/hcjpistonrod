@@ -13,6 +13,9 @@ const staticRoutes = [
   "/image-credits",
 ];
 
+const primaryCategorySlugs = new Set(["chrome-plated-rod", "honed-tube"]);
+const primaryProductCategories = new Set(["chrome-plated-rod", "honed-tube"]);
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const categorySlugs = new Set(productCategories.map((category) => category.slug));
@@ -24,13 +27,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: route === "" ? 1 : 0.8,
     })),
-    ...products.filter((product) => !categorySlugs.has(product.slug)).map((product) => ({
+    ...products.filter((product) => !categorySlugs.has(product.slug) && primaryProductCategories.has(product.category)).map((product) => ({
       url: `${site.domain}/products/${product.slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.9,
     })),
-    ...productCategories.map((category) => ({
+    ...productCategories.filter((category) => primaryCategorySlugs.has(category.slug)).map((category) => ({
       url: `${site.domain}/products/${category.slug}`,
       lastModified: now,
       changeFrequency: "monthly" as const,

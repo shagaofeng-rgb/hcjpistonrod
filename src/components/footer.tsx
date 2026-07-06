@@ -20,7 +20,7 @@ export function Footer() {
             />
           </div>
           <div className="text-xl font-semibold">{site.brandName}</div>
-          <div className="mt-2 text-sm text-white/58">Export title: {site.exportCompanyName}</div>
+          <div className="mt-2 text-sm text-white/58">Trading company: {site.exportCompanyName}</div>
           <div className="mt-1 text-sm text-white/58">Factory: {site.factoryName}</div>
           <p className="mt-4 max-w-xl text-sm leading-7 text-white/70">
             Piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components
@@ -74,7 +74,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10 py-5">
         <div className="container text-xs text-white/50">
-          © 2026 {site.brandName}. Factory: {site.factoryName}. Export title: {site.exportCompanyName}.
+          © 2026 {site.brandName}. Factory: {site.factoryName}. Trading company: {site.exportCompanyName}.
         </div>
       </div>
     </footer>

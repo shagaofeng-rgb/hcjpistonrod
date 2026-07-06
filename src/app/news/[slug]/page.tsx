@@ -139,7 +139,7 @@ export default async function NewsDetailPage({ params }: Props) {
               <section className="rounded-md border border-[var(--line)] bg-[#071428] p-6 text-white">
                 <h2 className="text-3xl font-semibold">Need technical support?</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-white/72">
-                  Send drawings, specifications, or purchasing questions. XIJIU will help review your hydraulic cylinder or component requirements.
+                  Send drawings, specifications, or purchasing questions. XIJIU will help review your piston rod, chrome plated rod, honed tube, or rod component requirements.
                 </p>
                 <Link href="/contact" className="mt-5 inline-flex h-11 items-center justify-center rounded-md bg-[var(--amber)] px-4 font-semibold text-white">
                   Send Inquiry

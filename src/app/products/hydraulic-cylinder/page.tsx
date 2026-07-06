@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Hydraulic Cylinder Manufacturer",
   description: "Custom hydraulic cylinders for construction, agriculture, mining, material handling, and industrial automation equipment.",
   alternates: { canonical: "/products/hydraulic-cylinder" },
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

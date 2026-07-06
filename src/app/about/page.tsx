@@ -12,7 +12,7 @@ import { factoryPhotos } from "../../../data/factory-photos";
 export const metadata: Metadata = {
   title: "About XIJIU",
   description:
-    "About XIJIU Intelligent Equipment, hydraulic cylinder and precision hydraulic component manufacturer and export support structure.",
+    "About XIJIU Intelligent Equipment, piston rod and hard chrome plated rod manufacturer, and Nantong Huichenjin trading support structure.",
   alternates: { canonical: "/about" },
 };
 
@@ -42,7 +42,7 @@ export default function AboutPage() {
             </h1>
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
               {company.entityStatement} The website serves overseas B2B customers looking for piston rods,
-              hard chrome plated rods, honed tubes, hydraulic cylinder parts, and drawing-based components
+              hard chrome plated rods, honed tubes, hollow chrome plated rods, and drawing-based rod components
               with clear technical communication.
             </p>
           </div>
@@ -57,7 +57,7 @@ export default function AboutPage() {
             </article>
             <article className="rounded-md border border-[var(--line)] bg-white p-6">
               <Building2 className="text-[var(--amber)]" size={24} />
-              <h2 className="mt-4 text-xl font-semibold text-[var(--ink)]">Export Company Title</h2>
+              <h2 className="mt-4 text-xl font-semibold text-[var(--ink)]">Trading Company</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{site.exportCompanyName}</p>
             </article>
             <article className="rounded-md border border-[var(--line)] bg-white p-6">
@@ -121,7 +121,7 @@ export default function AboutPage() {
           <div className="container rounded-md bg-[#071428] p-8 text-white">
             <h2 className="text-3xl font-semibold">Need technical support?</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/72">
-              Share drawings or application requirements for hydraulic cylinders and components. The team will review feasibility and quotation details.
+              Share drawings or requirements for material, hardness, chrome plating, length, diameter, and end machining. The team will review feasibility and quotation details.
             </p>
             <Link href="/contact" className="mt-5 inline-flex h-11 items-center justify-center rounded-md bg-[var(--amber)] px-4 font-semibold text-white">
               Send Inquiry

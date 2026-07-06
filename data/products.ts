@@ -503,7 +503,7 @@ export const products: Product[] = [
       "Induction hardened chrome rods for hydraulic applications requiring improved surface resistance.",
     definition:
       "An induction hardened chrome rod combines surface hardening with hard chrome plating for applications with demanding wear conditions.",
-    image: "/images/factory/machined-rod-ends-angle.jpg",
+    image: "/images/factory/heat-treatment-line.jpg",
     model: "Induction Hardened Rod",
     availability: "Inquire",
     customization: "Available",
@@ -543,7 +543,7 @@ export const products: Product[] = [
       "Hollow chrome plated rod options for weight-sensitive and special hydraulic cylinder applications.",
     definition:
       "A hollow chrome plated rod is a chrome plated piston rod with an internal bore for weight reduction or special cylinder design.",
-    image: "/images/factory/machined-rod-ends-front.jpg",
+    image: "/images/site/hollow-chrome-plated-rod.jpg",
     model: "Hollow Chrome Rod",
     availability: "Inquire",
     customization: "Available",

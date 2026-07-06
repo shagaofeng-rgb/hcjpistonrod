@@ -10,7 +10,7 @@ import { company } from "../../../data/company";
 export const metadata: Metadata = {
   title: "Contact XIJIU",
   description:
-    "Send your drawing, specification, or project requirements to XIJIU for hydraulic cylinder quotation and technical support.",
+    "Send material, hardness, chrome plating, length, diameter, and drawing requirements to XIJIU for piston rod and chrome plated rod quotation support.",
   alternates: { canonical: "/contact" },
 };
 
