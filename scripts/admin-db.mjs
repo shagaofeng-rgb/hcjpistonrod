@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { createHash, randomBytes, scryptSync } from "node:crypto";
 import { join } from "node:path";
 import process from "node:process";
@@ -45,21 +45,26 @@ async function migrate() {
       )
     `);
 
-    const migrationId = "001_admin_foundation";
-    const filePath = join(process.cwd(), "db/migrations/001_admin_foundation.sql");
-    const sql = await readFile(filePath, "utf8");
-    const checksum = tokenHash(sql);
-    const existing = await client.query("select checksum from admin_schema_migrations where id = $1", [migrationId]);
+    const migrationDir = join(process.cwd(), "db/migrations");
+    const migrationFiles = (await readdir(migrationDir)).filter((file) => file.endsWith(".sql")).sort();
 
-    if (existing.rows[0]) {
-      if (existing.rows[0].checksum !== checksum) {
-        throw new Error(`Migration ${migrationId} was changed after being applied.`);
+    for (const file of migrationFiles) {
+      const migrationId = file.replace(/\.sql$/, "");
+      const filePath = join(migrationDir, file);
+      const sql = await readFile(filePath, "utf8");
+      const checksum = tokenHash(sql);
+      const existing = await client.query("select checksum from admin_schema_migrations where id = $1", [migrationId]);
+
+      if (existing.rows[0]) {
+        if (existing.rows[0].checksum !== checksum) {
+          throw new Error(`Migration ${migrationId} was changed after being applied.`);
+        }
+        console.log(`Migration ${migrationId} already applied.`);
+      } else {
+        await client.query(sql);
+        await client.query("insert into admin_schema_migrations (id, checksum) values ($1, $2)", [migrationId, checksum]);
+        console.log(`Applied migration ${migrationId}.`);
       }
-      console.log(`Migration ${migrationId} already applied.`);
-    } else {
-      await client.query(sql);
-      await client.query("insert into admin_schema_migrations (id, checksum) values ($1, $2)", [migrationId, checksum]);
-      console.log(`Applied migration ${migrationId}.`);
     }
 
     await client.query("commit");

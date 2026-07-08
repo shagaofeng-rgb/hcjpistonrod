@@ -8,6 +8,7 @@ const staticRoutes = [
   "/why-xijiu",
   "/about",
   "/news",
+  "/blog",
   "/contact",
   "/privacy-policy",
   "/image-credits",
@@ -41,9 +42,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     ...newsArticles.map((article) => ({
       url: `${site.domain}/news/${article.slug}`,
-      lastModified: now,
+      lastModified: new Date(article.updatedAt),
       changeFrequency: "monthly" as const,
       priority: 0.75,
+    })),
+    ...newsArticles.map((article) => ({
+      url: `${site.domain}/blog/${article.slug}`,
+      lastModified: new Date(article.updatedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.65,
     })),
   ];
 }

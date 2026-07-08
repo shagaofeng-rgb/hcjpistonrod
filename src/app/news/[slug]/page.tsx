@@ -27,11 +27,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: article.title,
     description: article.excerpt,
+    keywords: [article.category, ...article.relatedProducts, "hydraulic piston rod news", "chrome plated rod supplier"],
     alternates: { canonical: `/news/${article.slug}` },
     openGraph: {
       title: article.title,
       description: article.excerpt,
       url: `/news/${article.slug}`,
+      images: [{ url: article.image, alt: article.imageAlt }],
+      type: "article",
     },
   };
 }
@@ -48,13 +51,41 @@ export default async function NewsDetailPage({ params }: Props) {
 
   const articleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "NewsArticle",
     headline: article.title,
     description: article.excerpt,
-    datePublished: article.date,
-    author: { "@type": "Organization", name: site.brandName },
-    publisher: { "@type": "Organization", name: site.brandName },
+    image: `${site.domain}${article.image}`,
+    datePublished: article.source.publishedAt,
+    dateModified: `${article.updatedAt}T08:00:00+08:00`,
+    author: { "@type": "Organization", name: article.author },
+    publisher: {
+      "@type": "Organization",
+      name: site.brandName,
+      logo: { "@type": "ImageObject", url: `${site.domain}/xijiu-logo.png` },
+    },
+    mainEntityOfPage: articleUrl,
+    articleSection: article.category,
+    keywords: [article.category, ...article.relatedProducts].join(", "),
+    about: relatedProducts.map((product) => ({ "@type": "Product", name: product.name, url: `${site.domain}/products/${product.slug}` })),
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: site.domain },
+      { "@type": "ListItem", position: 2, name: "News", item: `${site.domain}/news` },
+      { "@type": "ListItem", position: 3, name: article.title, item: articleUrl },
+    ],
+  };
+
+  const webPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: article.title,
     url: articleUrl,
+    description: article.geoSummary,
+    isPartOf: { "@type": "WebSite", name: site.brandName, url: site.domain },
   };
 
   const faqJsonLd = {
@@ -72,6 +103,8 @@ export default async function NewsDetailPage({ params }: Props) {
       <Header />
       <main>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
         <section className="bg-white py-14">
           <div className="container">
@@ -80,7 +113,9 @@ export default async function NewsDetailPage({ params }: Props) {
             <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
               {article.title}
             </h1>
-            <p className="mt-4 text-sm font-semibold text-[var(--steel)]">By XIJIU Technical Team | {article.date}</p>
+            <p className="mt-4 text-sm font-semibold text-[var(--steel)]">
+              By {article.author} | Published {article.date} | Updated {article.updatedAt}
+            </p>
           </div>
         </section>
 
@@ -89,7 +124,7 @@ export default async function NewsDetailPage({ params }: Props) {
             <div className="relative aspect-[16/7] overflow-hidden rounded-md bg-[var(--muted)]">
               <Image
                 src={article.image}
-                alt={`${article.title} by XIJIU Intelligent Equipment`}
+                alt={article.imageAlt}
                 fill
                 priority
                 className="object-cover"
@@ -104,15 +139,32 @@ export default async function NewsDetailPage({ params }: Props) {
             <aside className="rounded-md border border-[var(--line)] bg-white p-5 lg:sticky lg:top-28 lg:self-start">
               <h2 className="text-lg font-semibold text-[var(--ink)]">Table of Contents</h2>
               <div className="mt-4 grid gap-2 text-sm text-[var(--steel)]">
+                <a href="#summary" className="hover:text-[var(--teal)]">AI search summary</a>
+                <a href="#key-takeaways" className="hover:text-[var(--teal)]">Key takeaways</a>
                 {article.sections.map((section) => (
                   <a key={section.heading} href={`#${section.heading.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} className="hover:text-[var(--teal)]">
                     {section.heading}
                   </a>
                 ))}
+                <a href="#source" className="hover:text-[var(--teal)]">Source information</a>
                 <a href="#faq" className="hover:text-[var(--teal)]">FAQ</a>
               </div>
             </aside>
             <article className="grid gap-8">
+              <section id="summary" className="rounded-md border border-[var(--line)] bg-white p-6">
+                <h2 className="text-3xl font-semibold text-[var(--ink)]">AI Search Summary</h2>
+                <p className="mt-4 text-base leading-8 text-[var(--steel)]">{article.geoSummary}</p>
+              </section>
+
+              <section id="key-takeaways" className="rounded-md border border-[var(--line)] bg-white p-6">
+                <h2 className="text-3xl font-semibold text-[var(--ink)]">Key Takeaways</h2>
+                <ul className="mt-4 grid gap-3 text-base leading-7 text-[var(--steel)]">
+                  {article.keyTakeaways.map((item) => (
+                    <li key={item}>- {item}</li>
+                  ))}
+                </ul>
+              </section>
+
               {article.sections.map((section) => (
                 <section key={section.heading} id={section.heading.toLowerCase().replace(/[^a-z0-9]+/g, "-")} className="rounded-md border border-[var(--line)] bg-white p-6">
                   <h2 className="text-3xl font-semibold text-[var(--ink)]">{section.heading}</h2>
@@ -134,6 +186,31 @@ export default async function NewsDetailPage({ params }: Props) {
                     </Link>
                   ))}
                 </div>
+              </section>
+
+              <section id="source" className="rounded-md border border-[var(--line)] bg-white p-6">
+                <h2 className="text-3xl font-semibold text-[var(--ink)]">Source Information</h2>
+                <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
+                  <div className="rounded-md bg-[var(--muted)] p-4">
+                    <dt className="font-semibold text-[var(--ink)]">Source title</dt>
+                    <dd className="mt-1 text-[var(--steel)]">{article.source.title}</dd>
+                  </div>
+                  <div className="rounded-md bg-[var(--muted)] p-4">
+                    <dt className="font-semibold text-[var(--ink)]">Publisher</dt>
+                    <dd className="mt-1 text-[var(--steel)]">{article.source.publisher}</dd>
+                  </div>
+                  <div className="rounded-md bg-[var(--muted)] p-4">
+                    <dt className="font-semibold text-[var(--ink)]">Author</dt>
+                    <dd className="mt-1 text-[var(--steel)]">{article.source.author}</dd>
+                  </div>
+                  <div className="rounded-md bg-[var(--muted)] p-4">
+                    <dt className="font-semibold text-[var(--ink)]">Published / fetched</dt>
+                    <dd className="mt-1 text-[var(--steel)]">{article.source.publishedAt} / {article.source.fetchedAt}</dd>
+                  </div>
+                </dl>
+                <a href={article.source.url} className="mt-5 inline-flex font-semibold text-[var(--teal)]" target="_blank" rel="noreferrer">
+                  View source
+                </a>
               </section>
 
               <section className="rounded-md border border-[var(--line)] bg-[#071428] p-6 text-white">

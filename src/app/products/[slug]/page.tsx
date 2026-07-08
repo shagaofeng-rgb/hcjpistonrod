@@ -9,6 +9,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ProductSidebar } from "@/components/product-sidebar";
 import { productCategories, products, site } from "@/lib/site";
+import { newsArticles } from "../../../../data/news";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -50,6 +51,7 @@ export default async function ProductDetailPage({ params }: Props) {
   const specs = Object.entries(product.specs);
   const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
   const pageUrl = `${site.domain}/products/${product.slug}`;
+  const relatedNews = newsArticles.filter((article) => article.relatedProducts.includes(product.slug)).slice(0, 3);
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -212,6 +214,21 @@ export default async function ProductDetailPage({ params }: Props) {
                   <FAQAccordion items={product.faqs} />
                 </div>
               </section>
+
+              {relatedNews.length > 0 && (
+                <section className="rounded-md border border-[var(--line)] bg-white p-6">
+                  <h2 className="text-3xl font-semibold text-[var(--ink)]">Related News and Technical Articles</h2>
+                  <div className="mt-5 grid gap-4">
+                    {relatedNews.map((article) => (
+                      <Link key={article.slug} href={`/news/${article.slug}`} className="rounded-md border border-[var(--line)] p-4 transition hover:border-[var(--teal)]">
+                        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--amber)]">{article.category}</span>
+                        <h3 className="mt-2 text-xl font-semibold text-[var(--ink)]">{article.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{article.excerpt}</p>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               <section className="rounded-md border border-[var(--line)] bg-[#071428] p-6 text-white">
                 <h2 className="text-3xl font-semibold">Need technical support?</h2>

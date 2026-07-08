@@ -7,6 +7,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
+    "test:news": "node scripts/news-automation-tests.mjs",
+    "self-check": "node scripts/site-self-check.mjs",
     "admin:migrate": "node scripts/admin-db.mjs migrate",
     "admin:create-user": "node scripts/admin-db.mjs create-user",
     "db:backup": "bash scripts/backup-postgres.sh",

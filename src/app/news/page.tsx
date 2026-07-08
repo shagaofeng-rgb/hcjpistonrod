@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -29,6 +30,14 @@ export default function NewsPage() {
             <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--steel)]">
               Practical piston rod, hard chrome plated rod, honed tube, and export packing knowledge for engineers, buyers, and equipment manufacturers.
             </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/news/rss.xml" className="rounded-md border border-[var(--line)] px-4 py-2 text-sm font-semibold text-[var(--teal)]">
+                RSS Feed
+              </Link>
+              <Link href="/blog" className="rounded-md border border-[var(--line)] px-4 py-2 text-sm font-semibold text-[var(--ink)]">
+                Technical Blog
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -46,10 +55,8 @@ export default function NewsPage() {
                 <NewsCard key={article.slug} article={article} />
               ))}
             </div>
-            <div className="mt-8 flex gap-2">
-              <span className="grid h-10 w-10 place-items-center rounded-md bg-[var(--teal)] text-sm font-semibold text-white">1</span>
-              <span className="grid h-10 w-10 place-items-center rounded-md border border-[var(--line)] bg-white text-sm font-semibold text-[var(--steel)]">2</span>
-              <span className="inline-flex h-10 items-center rounded-md border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--steel)]">Next</span>
+            <div className="mt-8 flex gap-2 text-sm font-semibold text-[var(--steel)]">
+              <span>{newsArticles.length} published article(s)</span>
             </div>
           </div>
         </section>

@@ -28,6 +28,8 @@ export const navItems = [
   { label: "Why Xijiu", href: "/why-xijiu" },
   { label: "About Xijiu", href: "/about" },
   { label: "News", href: "/news" },
+  { label: "Blog", href: "/blog" },
+  { label: "Search", href: "/search" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -77,5 +79,6 @@ export const processRoutes = [
   { label: "Why Xijiu", href: "/why-xijiu", description: "Engineering support, quality control, delivery, and export service." },
   { label: "About Xijiu", href: "/about", description: "Factory identity, export title, capabilities, and company structure." },
   { label: "News and Insights", href: "/news", description: "Hydraulic manufacturing knowledge for buyers and engineers." },
+  { label: "Technical Blog", href: "/blog", description: "Practical sourcing and engineering notes for hydraulic component buyers." },
   { label: "Contact XIJIU", href: "/contact", description: "Send drawings, specifications, or project requirements." },
 ];
