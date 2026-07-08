@@ -24,7 +24,7 @@ export function hasObjectStorageConfig() {
 
 export function getPool() {
   if (!process.env.DATABASE_URL) {
-    throw new AdminConfigError("后台数据库尚未配置，请先设置 DATABASE_URL。");
+    throw new AdminConfigError("后台数据库未连接。");
   }
 
   if (!pool) {
@@ -49,7 +49,7 @@ export async function databaseHealth() {
     return {
       configured: false,
       ok: false,
-      message: "未配置 DATABASE_URL，后台数据功能暂不可用。",
+      message: "后台数据库未连接。",
     };
   }
 
@@ -64,7 +64,7 @@ export async function databaseHealth() {
     return {
       configured: true,
       ok: false,
-      message: "数据库连接失败，请检查 DATABASE_URL、网络和 SSL 设置。",
+      message: "数据库连接失败。",
     };
   }
 }

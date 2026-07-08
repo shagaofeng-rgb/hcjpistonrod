@@ -10,7 +10,7 @@ export async function GET() {
     database: db,
     objectStorage: {
       configured: hasObjectStorageConfig(),
-      message: hasObjectStorageConfig() ? "对象存储已配置。" : "对象存储尚未配置。",
+      message: hasObjectStorageConfig() ? "对象存储已连接。" : "对象存储未连接。",
     },
     externalSources: {
       seo: Boolean(process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY),

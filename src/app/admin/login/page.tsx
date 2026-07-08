@@ -25,9 +25,6 @@ export default function AdminLoginPage() {
           <AdminLoginForm />
         </div>
 
-        <p className="mt-5 rounded-md bg-slate-50 p-3 text-xs leading-5 text-slate-500">
-          首次使用前请先配置 `DATABASE_URL`，执行迁移并通过 `pnpm admin:create-user` 创建初始管理员。
-        </p>
       </section>
     </main>
   );
