@@ -1,0 +1,111 @@
+import {
+  BarChart3,
+  DatabaseZap,
+  FileText,
+  FolderTree,
+  Image,
+  LayoutDashboard,
+  LockKeyhole,
+  Newspaper,
+  SearchCheck,
+  Settings,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
+
+export const adminModules = [
+  { key: "dashboard", label: "数据概览", href: "/admin", icon: LayoutDashboard, permission: "dashboard.view" },
+  { key: "products", label: "产品管理", href: "/admin/products", icon: FileText, permission: "products.view" },
+  { key: "categories", label: "产品分类", href: "/admin/categories", icon: FolderTree, permission: "categories.manage" },
+  { key: "news", label: "新闻管理", href: "/admin/news", icon: Newspaper, permission: "news.manage" },
+  { key: "leads", label: "客户表单", href: "/admin/leads", icon: Users, permission: "leads.manage" },
+  { key: "analytics", label: "访问分析", href: "/admin/analytics", icon: BarChart3, permission: "analytics.view" },
+  { key: "seo", label: "SEO数据", href: "/admin/seo", icon: SearchCheck, permission: "seo.manage" },
+  { key: "media", label: "媒体库", href: "/admin/media", icon: Image, permission: "media.manage" },
+  { key: "users", label: "用户与权限", href: "/admin/users", icon: ShieldCheck, permission: "users.manage" },
+  { key: "audit-logs", label: "操作日志", href: "/admin/audit-logs", icon: LockKeyhole, permission: "audit.view" },
+  { key: "settings", label: "系统设置", href: "/admin/settings", icon: Settings, permission: "settings.manage" },
+  { key: "sync", label: "数据同步", href: "/admin/sync", icon: DatabaseZap, permission: "sync.manage" },
+];
+
+export const moduleContent = {
+  products: {
+    title: "产品管理",
+    description: "管理产品草稿、发布、定时发布、上下架、SEO和多语言内容。",
+    apiModule: "products",
+    columns: ["产品名称", "SKU", "Slug", "状态", "发布时间", "更新时间"],
+    actions: ["新增产品", "批量发布", "批量下架", "导入", "导出"],
+  },
+  categories: {
+    title: "产品分类",
+    description: "管理分类层级、排序、导航显示、SEO和启停状态。",
+    apiModule: "categories",
+    columns: ["分类名称", "英文名称", "Slug", "层级", "启用", "排序"],
+    actions: ["新增分类", "批量启用", "批量停用", "导入", "导出"],
+  },
+  news: {
+    title: "新闻管理",
+    description: "管理新闻、博客、案例、草稿、发布、定时发布和SEO字段。",
+    apiModule: "news",
+    columns: ["标题", "分类", "作者", "状态", "发布时间", "浏览量"],
+    actions: ["新增新闻", "批量发布", "批量下架", "导入", "导出"],
+  },
+  leads: {
+    title: "客户表单",
+    description: "查看询盘、分配负责人、分类跟进、添加备注和导出客户数据。",
+    apiModule: "leads",
+    columns: ["编号", "姓名", "公司", "邮箱", "国家", "状态", "提交时间"],
+    actions: ["批量分配", "批量分类", "标记垃圾", "导出"],
+  },
+  analytics: {
+    title: "访问分析",
+    description: "查看访问趋势、来源、国家、设备、热门产品和转化表现。",
+    apiModule: "analytics",
+    columns: ["日期", "维度", "维度值", "PV", "UV", "转化"],
+    actions: ["同步数据", "导出报表"],
+  },
+  seo: {
+    title: "SEO数据",
+    description: "管理站内SEO、外部表现数据、收录状态和SEO问题中心。",
+    apiModule: "seo",
+    columns: ["问题类型", "严重程度", "页面", "状态", "检测时间", "负责人"],
+    actions: ["扫描站点", "同步GSC", "导出问题"],
+  },
+  media: {
+    title: "媒体库",
+    description: "统一管理图片、PDF、视频和附件，记录替代文字与使用关系。",
+    apiModule: "media",
+    columns: ["文件名", "类型", "大小", "分类", "上传人", "上传时间"],
+    actions: ["上传文件", "批量删除", "导出清单"],
+  },
+  users: {
+    title: "用户与权限",
+    description: "管理后台用户、角色、权限、登录状态和会话。",
+    apiModule: "users",
+    columns: ["姓名", "邮箱", "角色", "状态", "最后登录", "创建时间"],
+    actions: ["新增用户", "分配角色", "停用用户"],
+  },
+  "audit-logs": {
+    title: "操作日志",
+    description: "记录登录、内容发布、导出、同步和系统配置变更。",
+    apiModule: "audit-logs",
+    columns: ["用户", "模块", "操作", "对象", "结果", "时间"],
+    actions: ["导出日志"],
+  },
+  settings: {
+    title: "系统设置",
+    description: "配置时区、分页、上传限制、通知、SEO默认值、同步频率和安全策略。",
+    apiModule: "settings",
+    columns: ["配置项", "值", "敏感", "更新时间"],
+    actions: ["保存设置", "测试邮件", "测试存储"],
+  },
+  sync: {
+    title: "数据同步",
+    description: "管理表单、访问分析、SEO表现、URL检查和外部接口同步任务。",
+    apiModule: "sync",
+    columns: ["数据源", "配置状态", "连接状态", "同步状态", "最后同步", "最近错误"],
+    actions: ["手动同步", "查看日志"],
+  },
+} as const;
+
+export type AdminModuleKey = keyof typeof moduleContent;

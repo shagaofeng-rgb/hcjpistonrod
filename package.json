@@ -6,12 +6,17 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "admin:migrate": "node scripts/admin-db.mjs migrate",
+    "admin:create-user": "node scripts/admin-db.mjs create-user",
+    "db:backup": "bash scripts/backup-postgres.sh",
+    "db:restore": "bash scripts/restore-postgres.sh"
   },
   "dependencies": {
     "lucide-react": "^1.21.0",
     "next": "16.2.9",
     "nodemailer": "^9.0.1",
+    "pg": "^8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -19,6 +24,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.1",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
