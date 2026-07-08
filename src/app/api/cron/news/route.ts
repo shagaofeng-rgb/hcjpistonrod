@@ -6,15 +6,17 @@ export const runtime = "nodejs";
 function isAuthorized(request: Request) {
   const secret = process.env.CRON_SECRET;
   const authorization = request.headers.get("authorization");
-  const vercelCron = request.headers.get("x-vercel-cron");
 
   if (secret && authorization === `Bearer ${secret}`) return true;
-  if (!secret && vercelCron) return true;
   if (process.env.NODE_ENV !== "production") return true;
   return false;
 }
 
 export async function GET(request: Request) {
+  if (process.env.NODE_ENV === "production" && !process.env.CRON_SECRET) {
+    return NextResponse.json({ ok: false, error: "CRON_SECRET is required in production" }, { status: 503 });
+  }
+
   if (!isAuthorized(request)) {
     return NextResponse.json({ ok: false, error: "Unauthorized cron request" }, { status: 401 });
   }
