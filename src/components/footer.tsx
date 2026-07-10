@@ -66,9 +66,6 @@ export function Footer() {
             <span className="flex items-start gap-3">
               <MapPin className="mt-1 shrink-0" size={16} /> {site.address}
             </span>
-            <div className="grid h-20 w-20 place-items-center rounded-md border border-white/16 text-center text-xs text-white/44">
-              QR Code
-            </div>
           </div>
         </div>
       </div>

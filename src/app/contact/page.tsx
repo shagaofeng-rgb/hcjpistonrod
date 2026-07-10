@@ -74,9 +74,6 @@ export default function ContactPage() {
               <div className="rounded-md border border-[var(--line)] bg-white p-6">
                 <h2 className="text-xl font-semibold text-[var(--ink)]">Working Hours</h2>
                 <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{company.workingHours}</p>
-                <div className="mt-5 grid h-24 w-24 place-items-center rounded-md border border-[var(--line)] text-center text-xs text-[var(--steel)]">
-                  QR Code
-                </div>
               </div>
             </div>
           </div>

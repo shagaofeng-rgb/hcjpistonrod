@@ -16,6 +16,8 @@ Open [http://localhost:3000](http://localhost:3000).
 ```bash
 pnpm lint
 pnpm build
+pnpm test:sitemap
+pnpm sitemap:generate -- --dry-run --verbose
 pnpm admin:migrate
 pnpm admin:create-user
 ```
@@ -35,6 +37,8 @@ pnpm admin:create-user
 - `/admin/login`
 - `/admin`
 - `/sitemap.xml`
+- `/sitemap-products.xml`
+- `/sitemap-posts.xml`
 - `/robots.txt`
 
 ## Chinese Admin Backend
@@ -82,6 +86,7 @@ pnpm db:restore backups/file.dump
 API documentation:
 
 - `docs/admin-api.md`
+- `docs/sitemap.md`
 
 ## Deployment
 
@@ -99,3 +104,18 @@ The `/api/rfq` route sends form submissions through SMTP. Configure these enviro
 - `SMTP_FROM_EMAIL`
 - `SMTP_FROM_NAME`
 - `RFQ_TO_EMAIL`
+
+## News and Blog Automation
+
+The News/Blog frontend reads published PostgreSQL articles when `DATABASE_URL` is configured and safely falls back to the repository articles when the database is unavailable. The protected Vercel cron collects recent RSS or configured News API candidates, enforces source age, relevance, image, language, and duplicate checks, generates original attributed editorial content through a configured AI provider, and stores either drafts or published articles according to `NEWS_AUTO_PUBLISH`.
+
+Required production activation variables:
+
+- `DATABASE_URL`
+- `NEWS_FEED_URLS` or `NEWS_API_KEY` plus `NEWS_API_ENDPOINT`
+- `AI_PROVIDER_API_KEY` or `OPENAI_API_KEY`
+- `AI_PROVIDER_MODEL`
+- `NEWS_AUTO_PUBLISH` (`false` for editorial review, `true` for automatic publication)
+- `CRON_SECRET`
+
+Run `pnpm admin:migrate` before activation. External article images are served through a published-record-only image proxy with URL, DNS, MIME type, timeout, and size checks. No external article is published without an attributed source URL and eligible cover image.

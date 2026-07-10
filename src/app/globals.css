@@ -65,3 +65,21 @@ html {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.prose-news h2,
+.prose-news h3 {
+  margin-top: 1.75rem;
+  color: var(--ink);
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.prose-news h2 { font-size: 1.75rem; }
+.prose-news h3 { font-size: 1.3rem; }
+.prose-news p,
+.prose-news li { margin-top: 0.9rem; color: var(--steel); line-height: 1.9; }
+.prose-news ul,
+.prose-news ol { margin-top: 1rem; padding-left: 1.35rem; }
+.prose-news ul { list-style: disc; }
+.prose-news ol { list-style: decimal; }
+.prose-news a { color: var(--teal); text-decoration: underline; }

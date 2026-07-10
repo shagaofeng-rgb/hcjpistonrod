@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { MessageCircle, Send } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { site } from "@/lib/site";
 
 export function FloatingCTA() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/admin")) return null;
   const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
 
   return (

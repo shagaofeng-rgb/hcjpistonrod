@@ -1,5 +1,5 @@
-import { newsArticles } from "../../../../data/news";
 import { site } from "@/lib/site";
+import { getPublishedNewsArticles } from "@/lib/news-content";
 
 export const revalidate = 1800;
 
@@ -12,7 +12,8 @@ function escapeXml(value: string) {
     .replace(/'/g, "&apos;");
 }
 
-export function GET() {
+export async function GET() {
+  const newsArticles = await getPublishedNewsArticles();
   const items = newsArticles
     .map((article) => {
       const url = `${site.domain}/news/${article.slug}`;

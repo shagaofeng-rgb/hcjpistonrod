@@ -45,9 +45,9 @@ export function Header() {
             <a href={whatsappHref} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-white">
               <MessageCircle size={14} /> <span className="hidden md:inline">WhatsApp</span>
             </a>
-            <button type="button" className="hidden items-center gap-1.5 hover:text-white sm:inline-flex" title="Language selector">
-              <Globe2 size={14} /> EN
-            </button>
+            <span className="hidden items-center gap-1.5 sm:inline-flex" aria-label="Website language: English">
+              <Globe2 size={14} /> English
+            </span>
           </div>
         </div>
       </div>

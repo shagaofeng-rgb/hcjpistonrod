@@ -7,7 +7,9 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test:news": "node scripts/news-automation-tests.mjs",
+    "test:news": "tsx --test tests/news-automation.test.ts",
+    "test:sitemap": "tsx --test tests/sitemap.test.ts",
+    "sitemap:generate": "tsx scripts/sitemap-generate.ts",
     "self-check": "node scripts/site-self-check.mjs",
     "admin:migrate": "node scripts/admin-db.mjs migrate",
     "admin:create-user": "node scripts/admin-db.mjs create-user",
@@ -15,6 +17,7 @@
     "db:restore": "bash scripts/restore-postgres.sh"
   },
   "dependencies": {
+    "fast-xml-parser": "^5.3.6",
     "lucide-react": "^1.21.0",
     "next": "16.2.9",
     "nodemailer": "^9.0.1",
@@ -32,6 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

@@ -5,7 +5,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { productCategories, products } from "@/lib/site";
-import { newsArticles } from "../../../data/news";
+import { getPublishedNewsArticles } from "@/lib/news-content";
 
 export const metadata: Metadata = {
   title: "Search",
@@ -25,6 +25,7 @@ function matchScore(value: string, query: string) {
 
 export default async function SearchPage({ searchParams }: Props) {
   const { q } = await searchParams;
+  const newsArticles = await getPublishedNewsArticles();
   const query = (q || "").trim().toLowerCase();
   const productsResults = query
     ? products

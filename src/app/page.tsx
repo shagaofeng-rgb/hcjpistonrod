@@ -22,7 +22,9 @@ import { ProductCard } from "@/components/product-card";
 import { StatsCounter } from "@/components/stats-counter";
 import { industries, productCategories, site } from "@/lib/site";
 import { company } from "../../data/company";
-import { newsArticles } from "../../data/news";
+import { getPublishedNewsArticles } from "@/lib/news-content";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Piston Rod and Chrome Plated Rod Manufacturer",
@@ -96,24 +98,6 @@ const processSteps = [
   "Packing and Shipment",
 ];
 
-const testimonials = [
-  {
-    role: "Purchasing Manager, Construction Machinery Manufacturer",
-    quote:
-      "XIJIU helped us review cylinder drawings, confirm key dimensions, and arrange production with clear communication. The cylinders arrived well packed and passed our internal inspection.",
-  },
-  {
-    role: "Hydraulic System Engineer, Industrial Equipment Company",
-    quote:
-      "The technical discussion focused on application conditions, pressure, sealing, and surface treatment, which helped us reduce uncertainty before purchasing.",
-  },
-  {
-    role: "Distributor, Hydraulic Components Market",
-    quote:
-      "Clear packing, product labeling, and responsive quotation support are valuable when we handle repeat orders for different local customers.",
-  },
-];
-
 const capabilityImages = [
   { label: "CNC Machining", image: "/images/factory/cnc-machining-line.jpg" },
   { label: "Heat Treatment Line", image: "/images/factory/heat-treatment-line.jpg" },
@@ -130,7 +114,8 @@ const applicationImages: Record<string, string> = {
   "Marine and offshore equipment": "/images/site/marine-offshore.jpg",
 };
 
-export default function Home() {
+export default async function Home() {
+  const newsArticles = await getPublishedNewsArticles();
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -284,21 +269,6 @@ export default function Home() {
                     Piston rods, chrome plated rods, and related components for demanding motion, lifting, pushing, and hydraulic applications.
                   </p>
                 </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="section bg-white">
-          <div className="container">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">Testimonials</p>
-            <h2 className="mt-3 text-4xl font-semibold text-[var(--ink)]">What Our Customers Value</h2>
-            <div className="mt-8 grid gap-5 lg:grid-cols-3">
-              {testimonials.map((item) => (
-                <article key={item.role} className="rounded-md border border-[var(--line)] bg-[var(--background)] p-6">
-                  <p className="text-base leading-7 text-[var(--ink)]">“{item.quote}”</p>
-                  <div className="mt-5 text-sm font-semibold text-[var(--steel)]">{item.role}</div>
-                </article>
               ))}
             </div>
           </div>

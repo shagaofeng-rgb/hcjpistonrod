@@ -3,7 +3,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { NewsCard } from "@/components/news-card";
-import { newsArticles } from "../../../data/news";
+import { getPublishedNewsArticles } from "@/lib/news-content";
 
 export const metadata: Metadata = {
   title: "Technical Blog",
@@ -12,7 +12,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-export default function BlogPage() {
+export const revalidate = 300;
+
+export default async function BlogPage() {
+  const newsArticles = await getPublishedNewsArticles();
   return (
     <>
       <Header />

@@ -13,6 +13,7 @@
 # testing
 /coverage
 /output/
+/.sitemap-cache/
 
 # next.js
 /.next/

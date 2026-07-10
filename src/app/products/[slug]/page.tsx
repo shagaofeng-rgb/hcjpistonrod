@@ -9,11 +9,13 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ProductSidebar } from "@/components/product-sidebar";
 import { productCategories, products, site } from "@/lib/site";
-import { newsArticles } from "../../../../data/news";
+import { getPublishedNewsArticles } from "@/lib/news-content";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+export const revalidate = 300;
 
 export function generateStaticParams() {
   const categorySlugs = new Set(productCategories.map((category) => category.slug));
@@ -51,6 +53,7 @@ export default async function ProductDetailPage({ params }: Props) {
   const specs = Object.entries(product.specs);
   const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
   const pageUrl = `${site.domain}/products/${product.slug}`;
+  const newsArticles = await getPublishedNewsArticles();
   const relatedNews = newsArticles.filter((article) => article.relatedProducts.includes(product.slug)).slice(0, 3);
 
   const productJsonLd = {

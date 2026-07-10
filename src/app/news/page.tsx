@@ -4,7 +4,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { NewsCard } from "@/components/news-card";
-import { newsArticles } from "../../../data/news";
+import { getPublishedNewsArticles } from "@/lib/news-content";
 
 export const metadata: Metadata = {
   title: "News and Insights",
@@ -15,7 +15,13 @@ export const metadata: Metadata = {
 
 const filters = ["All", "Piston Rod", "Chrome Plated Rod", "Honed Tube", "Manufacturing", "Quality Control", "Purchasing Guide"];
 
-export default function NewsPage() {
+export const revalidate = 300;
+
+export default async function NewsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const newsArticles = await getPublishedNewsArticles();
+  const { category } = await searchParams;
+  const activeCategory = category || "All";
+  const visibleArticles = activeCategory === "All" ? newsArticles : newsArticles.filter((article) => article.category === activeCategory);
   return (
     <>
       <Header />
@@ -45,18 +51,18 @@ export default function NewsPage() {
           <div className="container">
             <div className="flex flex-wrap gap-2">
               {filters.map((filter) => (
-                <span key={filter} className="rounded-md border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--steel)]">
+                <Link key={filter} href={filter === "All" ? "/news" : `/news?category=${encodeURIComponent(filter)}`} className={`rounded-md border px-4 py-2 text-sm font-semibold ${activeCategory === filter ? "border-[var(--teal)] bg-[var(--teal)] text-white" : "border-[var(--line)] bg-white text-[var(--steel)]"}`}>
                   {filter}
-                </span>
+                </Link>
               ))}
             </div>
             <div className="mt-8 grid gap-5 lg:grid-cols-3">
-              {newsArticles.map((article) => (
+              {visibleArticles.map((article) => (
                 <NewsCard key={article.slug} article={article} />
               ))}
             </div>
             <div className="mt-8 flex gap-2 text-sm font-semibold text-[var(--steel)]">
-              <span>{newsArticles.length} published article(s)</span>
+              <span>{visibleArticles.length} published article(s)</span>
             </div>
           </div>
         </section>

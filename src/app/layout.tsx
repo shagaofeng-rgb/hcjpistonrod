@@ -31,9 +31,6 @@ export const metadata: Metadata = {
     "chrome plated rod",
     "hydraulic piston rod",
   ],
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     title: "XIJIU Intelligent Equipment | Piston Rod and Chrome Plated Rod Manufacturer",

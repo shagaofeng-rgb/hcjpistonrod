@@ -25,6 +25,7 @@ export type NewsArticle = {
   relatedProducts: string[];
   sections: { heading: string; body: string }[];
   faqs: { question: string; answer: string }[];
+  bodyHtml?: string;
 };
 
 export const newsArticles: NewsArticle[] = [

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { newsArticles } from "../../../../data/news";
+import { getPublishedNewsArticles } from "@/lib/news-content";
 
 export const revalidate = 1800;
 
-export function GET(request: Request) {
+export async function GET(request: Request) {
+  const newsArticles = await getPublishedNewsArticles();
   const { searchParams } = new URL(request.url);
   const page = Math.max(1, Number(searchParams.get("page") || 1));
   const pageSize = Math.min(24, Math.max(1, Number(searchParams.get("pageSize") || 12)));

@@ -1,5 +1,5 @@
-import { newsArticles } from "../../../data/news";
 import { site } from "@/lib/site";
+import { getPublishedNewsArticles } from "@/lib/news-content";
 
 export const revalidate = 1800;
 
@@ -7,8 +7,11 @@ function escapeXml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-export function GET() {
+export async function GET() {
+  const newsArticles = await getPublishedNewsArticles();
+  const recentCutoff = Date.now() - 48 * 60 * 60 * 1000;
   const urls = newsArticles
+    .filter((article) => new Date(article.source.publishedAt).getTime() >= recentCutoff)
     .map((article) => {
       const url = `${site.domain}/news/${article.slug}`;
       return `
@@ -22,7 +25,7 @@ export function GET() {
               <news:name>${escapeXml(site.brandName)}</news:name>
               <news:language>en</news:language>
             </news:publication>
-            <news:publication_date>${article.date}</news:publication_date>
+            <news:publication_date>${escapeXml(article.source.publishedAt)}</news:publication_date>
             <news:title>${escapeXml(article.title)}</news:title>
           </news:news>
         </url>`;

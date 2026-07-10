@@ -9,10 +9,13 @@ import { Header } from "@/components/header";
 import { NewsCard } from "@/components/news-card";
 import { products, site } from "@/lib/site";
 import { newsArticles } from "../../../../data/news";
+import { getPublishedNewsArticle, getPublishedNewsArticles } from "@/lib/news-content";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+export const revalidate = 300;
 
 export function generateStaticParams() {
   return newsArticles.map((article) => ({ slug: article.slug }));
@@ -20,7 +23,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const article = newsArticles.find((item) => item.slug === slug);
+  const article = await getPublishedNewsArticle(slug);
 
   if (!article) return {};
 
@@ -41,12 +44,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params;
-  const article = newsArticles.find((item) => item.slug === slug);
+  const article = await getPublishedNewsArticle(slug);
 
   if (!article) notFound();
 
   const relatedProducts = products.filter((product) => article.relatedProducts.includes(product.slug));
-  const relatedArticles = newsArticles.filter((item) => item.slug !== article.slug).slice(0, 2);
+  const allArticles = await getPublishedNewsArticles();
+  const relatedArticles = allArticles.filter((item) => item.slug !== article.slug).slice(0, 2);
   const articleUrl = `${site.domain}/blog/${article.slug}`;
   const articleJsonLd = {
     "@context": "https://schema.org",
@@ -106,14 +110,18 @@ export default async function BlogDetailPage({ params }: Props) {
                 <p className="mt-4 text-base leading-8 text-[var(--steel)]">{article.geoSummary}</p>
               </section>
 
-              {article.sections.map((section) => (
+              {article.bodyHtml ? (
+                <section className="rounded-md border border-[var(--line)] bg-white p-6">
+                  <div className="prose-news" dangerouslySetInnerHTML={{ __html: article.bodyHtml }} />
+                </section>
+              ) : article.sections.map((section) => (
                 <section key={section.heading} className="rounded-md border border-[var(--line)] bg-white p-6">
                   <h2 className="text-3xl font-semibold text-[var(--ink)]">{section.heading}</h2>
                   <p className="mt-4 text-base leading-8 text-[var(--steel)]">{section.body}</p>
                 </section>
               ))}
 
-              <section className="rounded-md border border-[var(--line)] bg-white p-6">
+              {article.faqs.length > 0 && <section className="rounded-md border border-[var(--line)] bg-white p-6">
                 <h2 className="text-3xl font-semibold text-[var(--ink)]">Related Products</h2>
                 <div className="mt-4 flex flex-wrap gap-3">
                   {relatedProducts.map((product) => (
@@ -122,7 +130,7 @@ export default async function BlogDetailPage({ params }: Props) {
                     </Link>
                   ))}
                 </div>
-              </section>
+              </section>}
 
               <section className="rounded-md border border-[var(--line)] bg-white p-6">
                 <h2 className="text-3xl font-semibold text-[var(--ink)]">FAQ</h2>
