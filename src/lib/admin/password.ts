@@ -23,3 +23,11 @@ export function verifyPassword(password: string, storedHash: string) {
 
   return timingSafeEqual(derivedKey, storedKey);
 }
+
+export function validateAdminPassword(password: string) {
+  if (password.length < 12 || password.length > 128) return "密码长度必须为12至128个字符。";
+  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+    return "密码必须同时包含大写字母、小写字母、数字和符号。";
+  }
+  return null;
+}

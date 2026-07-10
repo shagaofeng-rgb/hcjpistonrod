@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:news": "tsx --test tests/news-automation.test.ts",
+    "test:admin": "tsx --test tests/admin-password.test.ts",
     "test:sitemap": "tsx --test tests/sitemap.test.ts",
     "sitemap:generate": "tsx scripts/sitemap-generate.ts",
     "content:sync": "tsx scripts/sync-repository-content.ts",

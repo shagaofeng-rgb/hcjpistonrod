@@ -7,7 +7,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminLoginPage() {
+export default async function AdminLoginPage({ searchParams }: { searchParams: Promise<{ initialized?: string }> }) {
+  const { initialized } = await searchParams;
   return (
     <main className="grid min-h-screen place-items-center bg-[#f4f6f9] px-4 py-10">
       <section className="w-full max-w-md rounded-md border border-slate-200 bg-white p-6 shadow-sm">
@@ -22,6 +23,7 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="mt-6">
+          {initialized === "1" ? <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">管理员已创建，请使用新密码登录。</div> : null}
           <AdminLoginForm />
         </div>
 
