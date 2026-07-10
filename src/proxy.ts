@@ -14,7 +14,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(canonicalUrl, 308);
   }
 
-  if (!pathname.startsWith("/admin") || pathname === "/admin/login") return NextResponse.next();
+  if (!pathname.startsWith("/admin") || pathname === "/admin/login" || pathname === "/admin/setup") return NextResponse.next();
 
   const session = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
   if (!session) {
