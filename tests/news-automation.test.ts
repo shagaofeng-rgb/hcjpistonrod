@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { calculateProductRelevance, canonicalizeSourceUrl, createEventFingerprint, createSourceFingerprint, isSafeExternalUrl, isWithinLookback, normalizeTitle, parseNewsFeed, sanitizeArticleHtml } from "../src/lib/news-automation";
+import { calculateProductRelevance, canonicalizeSourceUrl, createEventFingerprint, createSourceFingerprint, isAllowedNewsLanguage, isSafeExternalUrl, isWithinLookback, normalizeTitle, parseNewsFeed, sanitizeArticleHtml, selectOwnedNewsImage } from "../src/lib/news-automation";
 
 test("normalizes source URLs and titles for stable deduplication", () => {
   assert.equal(canonicalizeSourceUrl("https://Example.com/item/?utm_source=x&id=1#top"), "https://example.com/item?id=1");
@@ -42,4 +42,14 @@ test("sanitizes generated HTML to the editorial allowlist", () => {
 
 test("scores hydraulic product relevance", () => {
   assert.ok(calculateProductRelevance("Hydraulic piston rod chrome plated rod surface finish for machinery seals") >= 0.4);
+});
+
+test("uses owned factory images for generated articles", () => {
+  assert.equal(selectOwnedNewsImage("hard chrome piston rod market"), "/images/factory/chrome-rod-stock.jpg");
+  assert.equal(selectOwnedNewsImage("honed cylinder tube demand"), "/images/factory/raw-material-stock.jpg");
+});
+
+test("accepts regional variants of configured news languages", () => {
+  assert.equal(isAllowedNewsLanguage("en-US", ["en"]), true);
+  assert.equal(isAllowedNewsLanguage("de-DE", ["en"]), false);
 });

@@ -214,7 +214,7 @@ export async function getAdminModuleRows(moduleKey: string): Promise<AdminTableR
     }
     if (moduleKey === "leads") {
       const result = await query<{ id: string; form_number: string; name: string | null; company_name: string | null; email: string | null; country: string | null; status: string; submitted_at: Date }>(
-        "select id, form_number, name, company_name, email, country, status, submitted_at from form_submissions where deleted_at is null order by submitted_at desc limit 200",
+        "select id, form_number, name, company_name, email, country, status, submitted_at from form_submissions where archived_at is null order by submitted_at desc limit 200",
       );
       return result.rows.map((row) => ({ id: row.id, cells: [row.form_number, row.name || "-", row.company_name || "-", row.email || "-", row.country || "-", row.status, dateCell(row.submitted_at)] }));
     }

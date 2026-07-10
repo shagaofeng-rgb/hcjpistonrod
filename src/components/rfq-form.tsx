@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Loader2, Send } from "lucide-react";
+import { CheckCircle2, FileUp, Loader2, Send } from "lucide-react";
 
 const interestedProducts = [
   "Chrome Plated Rod",
@@ -15,47 +15,33 @@ const interestedProducts = [
 export function RfqForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [feedback, setFeedback] = useState("");
+  const [drawingName, setDrawingName] = useState("Choose PDF, Word, image, DWG, or DXF");
 
   async function submit(formData: FormData) {
     setStatus("sending");
     setFeedback("");
-
-    const profile = formData.get("profile");
-    const country = formData.get("country");
-    const company = formData.get("company");
-    const phone = formData.get("phone");
-    const message = formData.get("message");
-    formData.set(
-      "message",
-      [
-        `Company: ${company || "-"}`,
-        `Country: ${country || "-"}`,
-        `WhatsApp / Phone: ${phone || "-"}`,
-        `Buyer profile: ${profile || "-"}`,
-        "",
-        String(message || ""),
-      ].join("\n"),
-    );
-
-    const response = await fetch("/api/rfq", {
-      method: "POST",
-      body: formData,
-    });
-
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok || !result?.ok) {
+    try {
+      const response = await fetch("/api/rfq", { method: "POST", body: formData });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok) {
+        setStatus("error");
+        setFeedback(result?.error ?? "Inquiry could not be submitted. Please email ada@hcjpistonrod.com directly.");
+        return;
+      }
+      setStatus("sent");
+      setFeedback(`Thank you. Your inquiry has been recorded and emailed to our sales team. Reference: ${result.reference}`);
+    } catch {
       setStatus("error");
-      setFeedback(result?.error ?? "Inquiry email could not be sent. Please email ada@hcjpistonrod.com directly.");
-      return;
+      setFeedback("The inquiry service is temporarily unavailable. Please email ada@hcjpistonrod.com directly.");
     }
-
-    setStatus("sent");
-    setFeedback("Thank you. Your inquiry has been emailed to ada@hcjpistonrod.com.");
   }
 
   return (
     <form action={submit} className="grid gap-4 rounded-md border border-[var(--line)] bg-white p-5">
+      <label className="hidden" aria-hidden="true">
+        Website
+        <input name="website" tabIndex={-1} autoComplete="off" />
+      </label>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
           Name
@@ -101,9 +87,19 @@ export function RfqForm() {
             ))}
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
+        <label className="grid min-w-0 gap-2 text-sm font-medium text-[var(--ink)]">
           Drawing Upload
-          <input type="file" name="drawing" className="h-11 rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[var(--muted)] file:px-3 file:py-1.5" />
+          <span className="flex h-11 min-w-0 cursor-pointer items-center gap-2 rounded-md border border-[var(--line)] bg-white px-3 text-sm font-normal text-[var(--steel)]">
+            <FileUp size={17} className="shrink-0 text-[var(--teal)]" />
+            <span className="truncate">{drawingName}</span>
+          </span>
+          <input
+            type="file"
+            name="drawing"
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.dwg,.dxf"
+            className="sr-only"
+            onChange={(event) => setDrawingName(event.target.files?.[0]?.name || "Choose PDF, Word, image, DWG, or DXF")}
+          />
         </label>
       </div>
       <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
@@ -115,6 +111,13 @@ export function RfqForm() {
           placeholder="Please share material, hardness requirement, chrome plating requirement, length, rod diameter, quantity, and drawing or sample details."
           className="resize-none rounded-md border border-[var(--line)] px-3 py-3 outline-none focus:border-[var(--teal)]"
         />
+      </label>
+      <label className="flex items-start gap-3 text-sm leading-6 text-[var(--steel)]">
+        <input required type="checkbox" name="privacy" className="mt-1 h-4 w-4 shrink-0 accent-[var(--teal)]" />
+        <span>
+          I agree that XIJIU may use these details and uploaded drawings to respond to this inquiry under the{" "}
+          <a href="/privacy-policy" className="font-semibold text-[var(--teal)] underline">Privacy Policy</a>.
+        </span>
       </label>
       <button
         type="submit"

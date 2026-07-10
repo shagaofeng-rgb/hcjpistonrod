@@ -95,7 +95,7 @@ export async function GET(request: Request, context: { params: Promise<{ module:
     }
 
     const { page, pageSize, keyword, offset } = pageParams(request.url);
-    const where: string[] = ["deleted_at is null"];
+    const where: string[] = config.table === "form_submissions" ? ["archived_at is null"] : ["deleted_at is null"];
     const values: unknown[] = [];
 
     if (config.table === "analytics_daily_summary" || config.table === "audit_logs" || config.table === "system_settings" || config.table === "sync_sources") {
