@@ -1,30 +1,43 @@
 import { NextResponse } from "next/server";
+import { adminApiError, adminError } from "@/lib/admin/api";
+import { getCurrentAdminUser, hasPermission } from "@/lib/admin/auth";
 import { getNewsAutomationReadiness, runNewsAutomation } from "@/lib/news-automation";
 
 export const runtime = "nodejs";
 
-function isAdminAutomationRequest(request: Request) {
-  const secret = process.env.ADMIN_SESSION_SECRET;
-  const authorization = request.headers.get("authorization");
+async function requireNewsManager() {
+  const user = await getCurrentAdminUser();
 
-  if (secret && authorization === `Bearer ${secret}`) return true;
-  if (process.env.NODE_ENV !== "production") return true;
-  return false;
-}
-
-export function GET(request: Request) {
-  if (!isAdminAutomationRequest(request)) {
-    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!user) {
+    return adminError("请先登录后台。", 401, "ADMIN_UNAUTHORIZED");
   }
 
-  return NextResponse.json({ ok: true, readiness: getNewsAutomationReadiness() });
-}
-
-export async function POST(request: Request) {
-  if (!isAdminAutomationRequest(request)) {
-    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!hasPermission(user, "news.manage")) {
+    return adminError("当前账号无权管理新闻自动化。", 403, "ADMIN_FORBIDDEN");
   }
 
-  const result = await runNewsAutomation();
-  return NextResponse.json({ ok: result.status !== "failed", ...result });
+  return null;
+}
+
+export async function GET() {
+  try {
+    const denied = await requireNewsManager();
+    if (denied) return denied;
+
+    return NextResponse.json({ ok: true, readiness: getNewsAutomationReadiness() });
+  } catch (error) {
+    return adminApiError(error);
+  }
+}
+
+export async function POST() {
+  try {
+    const denied = await requireNewsManager();
+    if (denied) return denied;
+
+    const result = await runNewsAutomation();
+    return NextResponse.json({ ok: result.status !== "failed", ...result });
+  } catch (error) {
+    return adminApiError(error);
+  }
 }

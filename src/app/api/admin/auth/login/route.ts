@@ -13,6 +13,21 @@ function getClientMeta(request: Request) {
   return { ip, userAgent };
 }
 
+async function hasTooManyRecentFailures(account: string, ip: string) {
+  const result = await query<{ count: string }>(
+    `
+    select count(*)::text as count
+    from admin_login_attempts
+    where success = false
+      and created_at > now() - interval '15 minutes'
+      and (account = $1 or ($2 <> '' and ip_address = $2))
+    `,
+    [account, ip],
+  );
+
+  return Number(result.rows[0]?.count ?? 0) >= 10;
+}
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -23,6 +38,10 @@ export async function POST(request: Request) {
 
     if (!account || !password) {
       return adminError("请输入账号和密码。", 400, "ADMIN_LOGIN_REQUIRED");
+    }
+
+    if (await hasTooManyRecentFailures(account, ip)) {
+      return adminError("登录尝试过于频繁，请 15 分钟后再试。", 429, "ADMIN_LOGIN_RATE_LIMITED");
     }
 
     const verified = await verifyAdminCredentials(account, password);
