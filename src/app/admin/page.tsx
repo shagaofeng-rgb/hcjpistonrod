@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { CheckCircle2, Clock, FileText, FolderTree, Newspaper, SearchCheck } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { AdminTimeRangeFilter } from "@/components/admin/admin-time-range-filter";
 import { getCurrentAdminUser } from "@/lib/admin/auth";
+import { resolveAdminDateRange, type AdminSearchParams } from "@/lib/admin/date-range";
 import { getAdminOverview } from "@/lib/admin/site-data";
 
 export const metadata: Metadata = {
@@ -9,8 +11,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminDashboardPage() {
-  const [overview, user] = await Promise.all([getAdminOverview(), getCurrentAdminUser().catch(() => null)]);
+export default async function AdminDashboardPage({ searchParams }: { searchParams: Promise<AdminSearchParams> }) {
+  const range = resolveAdminDateRange(await searchParams);
+  const [overview, user] = await Promise.all([getAdminOverview(range), getCurrentAdminUser().catch(() => null)]);
   const icons = [FileText, FolderTree, Newspaper, SearchCheck];
 
   return (
@@ -23,6 +26,10 @@ export default async function AdminDashboardPage() {
             当前后台展示网站已发布内容、SEO检查、客户表单和数据源连接状态。
           </p>
         </div>
+
+        <section className="rounded-md border border-slate-200 bg-white p-4">
+          <AdminTimeRangeFilter range={range} />
+        </section>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {overview.cards.map((card, index) => {

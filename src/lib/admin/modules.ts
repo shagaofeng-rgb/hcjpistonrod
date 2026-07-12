@@ -61,21 +61,21 @@ export const moduleContent = {
     title: "访问分析",
     description: "查看当前网站内容规模和访问数据源状态。",
     apiModule: "analytics",
-    columns: ["范围", "产品数量", "产品值", "新闻数量", "新闻值", "备注"],
+    columns: ["范围", "访问量", "访客数", "维度值", "转化", "日期"],
     actions: ["检索", "导出", "刷新"],
   },
   seo: {
     title: "SEO数据",
     description: "查看站内SEO基础检查、页面状态和需要处理的问题。",
     apiModule: "seo",
-    columns: ["问题类型", "严重程度", "页面", "状态", "建议", "负责人"],
+    columns: ["问题类型", "严重程度", "页面", "状态", "建议", "检测时间"],
     actions: ["检索", "导出", "刷新"],
   },
   media: {
     title: "媒体库",
     description: "查看当前网站使用的产品图片、工厂图片、行业图片和来源信息。",
     apiModule: "media",
-    columns: ["文件名", "类型", "路径", "来源", "分类", "使用位置"],
+    columns: ["文件名", "类型", "路径", "来源", "分类", "替代文本", "上传时间"],
     actions: ["检索", "导出", "刷新"],
   },
   users: {
@@ -89,7 +89,7 @@ export const moduleContent = {
     title: "操作日志",
     description: "记录登录、内容发布、导出、同步和系统配置变更。",
     apiModule: "audit-logs",
-    columns: ["用户", "模块", "操作", "对象", "结果", "时间"],
+    columns: ["操作", "模块", "对象类型", "对象 ID", "结果", "时间"],
     actions: ["检索", "导出", "刷新"],
   },
   settings: {
@@ -103,7 +103,7 @@ export const moduleContent = {
     title: "数据同步",
     description: "查看网站内容、客户表单和外部SEO数据源的连接状态。",
     apiModule: "sync",
-    columns: ["数据源", "配置状态", "连接状态", "同步状态", "最后同步", "最近错误"],
+    columns: ["数据源", "类型", "配置状态", "连接状态", "最后同步", "下次运行"],
     actions: ["检索", "导出", "刷新"],
   },
 } as const;

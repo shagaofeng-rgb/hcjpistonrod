@@ -2,9 +2,11 @@
 
 import { Download, RefreshCw, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import type { AdminDateRange } from "@/lib/admin/date-range";
 import type { AdminTableRow } from "@/lib/admin/site-data";
+import { AdminTimeRangeFilter } from "./admin-time-range-filter";
 
-export function AdminDataTable({ title, columns, rows }: { title: string; columns: readonly string[]; rows: AdminTableRow[] }) {
+export function AdminDataTable({ title, columns, rows, range }: { title: string; columns: readonly string[]; rows: AdminTableRow[]; range: AdminDateRange }) {
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 20;
@@ -29,8 +31,10 @@ export function AdminDataTable({ title, columns, rows }: { title: string; column
 
   return (
     <section className="rounded-md border border-slate-200 bg-white">
-      <div className="grid gap-3 border-b border-slate-200 p-4 lg:grid-cols-[1fr_auto_auto]">
-        <label className="relative block">
+      <div className="grid gap-3 border-b border-slate-200 p-4">
+        <AdminTimeRangeFilter range={range} />
+        <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]">
+          <label className="relative block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
           <input
             className="h-10 w-full rounded-md border border-slate-200 pl-10 pr-3 text-sm outline-none ring-[#174a8b]/20 focus:ring-4"
@@ -38,13 +42,14 @@ export function AdminDataTable({ title, columns, rows }: { title: string; column
             value={keyword}
             onChange={(event) => { setKeyword(event.target.value); setPage(1); }}
           />
-        </label>
-        <button type="button" onClick={exportCsv} className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 px-4 text-sm font-semibold text-slate-700">
-          <Download size={16} /> 导出 CSV
-        </button>
-        <button type="button" onClick={() => window.location.reload()} className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 px-4 text-sm font-semibold text-slate-700">
-          <RefreshCw size={16} /> 刷新
-        </button>
+          </label>
+          <button type="button" onClick={exportCsv} className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 px-4 text-sm font-semibold text-slate-700">
+            <Download size={16} /> 导出 CSV
+          </button>
+          <button type="button" onClick={() => window.location.reload()} className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 px-4 text-sm font-semibold text-slate-700">
+            <RefreshCw size={16} /> 刷新
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -63,7 +68,7 @@ export function AdminDataTable({ title, columns, rows }: { title: string; column
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 p-4 text-sm text-slate-600">
-        <span>共 {filtered.length} 条真实记录，每页 {pageSize} 条</span>
+        <span>{range.label}：共 {filtered.length} 条真实记录，每页 {pageSize} 条</span>
         <div className="flex items-center gap-2">
           <button type="button" disabled={currentPage <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} className="h-9 rounded-md border border-slate-200 px-3 disabled:opacity-40">上一页</button>
           <span className="grid h-9 min-w-9 place-items-center rounded-md bg-[#174a8b] px-2 text-white">{currentPage}/{totalPages}</span>
