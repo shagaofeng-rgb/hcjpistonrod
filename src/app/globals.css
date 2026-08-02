@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f7fa;
-  --foreground: #111827;
-  --muted: #eef2f7;
-  --line: #d6dde8;
-  --ink: #0b1833;
-  --steel: #526071;
-  --teal: #174a8b;
-  --teal-dark: #0b2f5f;
-  --amber: #c8202f;
+  --background: #f2f6f8;
+  --foreground: #132b42;
+  --muted: #e8f0f4;
+  --line: #d3e0e7;
+  --ink: #061a2f;
+  --steel: #526a7c;
+  --teal: #0068ae;
+  --teal-dark: #004f85;
+  --amber: #0068ae;
+  --cyan: #19a9e5;
 }
 
 @theme inline {
@@ -23,6 +24,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
 }
 
 html {
@@ -30,11 +32,16 @@ html {
 }
 
 ::selection {
-  background: rgba(23, 74, 139, 0.2);
+  background: rgba(25, 169, 229, 0.24);
+}
+
+:focus-visible {
+  outline: 3px solid rgba(25, 169, 229, 0.52);
+  outline-offset: 3px;
 }
 
 .container {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1280px, calc(100% - 40px));
   margin-inline: auto;
 }
 
@@ -43,12 +50,16 @@ html {
 }
 
 .section {
-  padding-block: 72px;
+  padding-block: 84px;
 }
 
 @media (max-width: 700px) {
+  .container {
+    width: min(100% - 32px, 1280px);
+  }
+
   .section {
-    padding-block: 48px;
+    padding-block: 56px;
   }
 }
 

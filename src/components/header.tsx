@@ -28,7 +28,7 @@ export function Header() {
   return (
     <header
       className={`sticky top-0 z-50 border-b border-[var(--line)] transition ${
-        scrolled ? "bg-white shadow-[0_12px_30px_rgba(11,24,51,0.08)]" : "bg-white/94 backdrop-blur"
+        scrolled ? "bg-white shadow-[0_12px_30px_rgba(6,26,47,0.08)]" : "bg-white/96 backdrop-blur"
       }`}
       onMouseLeave={() => setMegaOpen(false)}
     >
@@ -52,22 +52,22 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container flex min-h-18 items-center justify-between gap-4 py-3">
-        <Link href="/" className="flex items-center gap-3" aria-label={`${site.brandName} home`} onClick={closeAll}>
-          <span className="relative h-14 w-14 overflow-hidden rounded-md border border-[var(--line)] bg-white">
+      <div className="container flex min-h-18 items-center justify-between gap-2 py-3 sm:gap-4">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3" aria-label={`${site.brandName} home`} onClick={closeAll}>
+          <span className="relative h-12 w-12 overflow-hidden rounded-md border border-[var(--line)] bg-white">
             <Image
               src="/xijiu-logo.png"
               alt="XIJIU Intelligent Equipment logo"
               fill
               priority
               className="object-contain p-1.5"
-              sizes="56px"
+              sizes="48px"
             />
           </span>
-          <span className="leading-tight">
-            <span className="block text-base font-semibold tracking-[0.04em] text-[var(--ink)]">XIJIU</span>
+          <span className="min-w-0 leading-tight">
+            <span className="block text-[15px] font-semibold tracking-[0.04em] text-[var(--ink)] sm:text-base">NANTONG HCJ</span>
             <span className="block text-xs uppercase tracking-[0.16em] text-[var(--steel)]">
-              Intelligent Equipment
+              XIJIU Intelligent Equipment
             </span>
           </span>
         </Link>
@@ -97,19 +97,20 @@ export function Header() {
           )}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Link
             href="/contact"
             onClick={closeAll}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--amber)] px-4 text-sm font-semibold text-white transition hover:bg-[#a81825]"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--amber)] px-3 text-sm font-semibold text-white transition hover:bg-[var(--teal-dark)] active:translate-y-px sm:px-4"
           >
             <Send size={17} />
-            Quote Now
+            <span className="sm:hidden">Quote</span>
+            <span className="hidden sm:inline">Quote Now</span>
           </Link>
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
-            className="flex h-10 w-10 items-center justify-center rounded-md border border-[var(--line)] bg-white text-[var(--steel)] lg:hidden"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[var(--line)] bg-white text-[var(--steel)] lg:hidden"
             aria-label={open ? "Close navigation" : "Open navigation"}
             title="Navigation"
           >

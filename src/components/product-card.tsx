@@ -32,14 +32,14 @@ export function ProductCard({
   compact?: boolean;
 }) {
   return (
-    <article className="group overflow-hidden rounded-md border border-[var(--line)] bg-white transition hover:-translate-y-1 hover:border-[var(--teal)] hover:shadow-[0_18px_45px_rgba(11,24,51,0.12)]">
+    <article className="group overflow-hidden rounded-md border border-[var(--line)] bg-white transition duration-300 hover:-translate-y-1 hover:border-[var(--teal)] hover:shadow-[0_18px_45px_rgba(6,26,47,0.11)]">
       <Link href={href} className="block">
         <div className="relative aspect-[16/10] overflow-hidden bg-[var(--muted)]">
           <Image
             src={item.image}
             alt={`${item.name} by XIJIU Intelligent Equipment`}
             fill
-            className="object-cover transition duration-500 group-hover:scale-105"
+          className="object-cover transition duration-500 group-hover:scale-[1.035]"
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           />
         </div>
@@ -50,13 +50,13 @@ export function ProductCard({
         <div className="mt-5 flex flex-wrap gap-2">
           <Link
             href={href}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--teal-dark)]"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--teal-dark)] active:translate-y-px"
           >
             More <ArrowRight size={16} />
           </Link>
           <Link
             href="/contact"
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[var(--line)] px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--amber)] hover:text-[var(--amber)]"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[var(--line)] px-4 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--teal)] hover:text-[var(--teal)] active:translate-y-px"
           >
             <Send size={16} /> Inquire
           </Link>

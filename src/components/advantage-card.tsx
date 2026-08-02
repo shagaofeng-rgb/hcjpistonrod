@@ -10,8 +10,8 @@ export function AdvantageCard({
   body: string;
 }) {
   return (
-    <article className="rounded-md border border-[var(--line)] bg-white p-6 transition hover:-translate-y-1 hover:border-[var(--teal)] hover:shadow-[0_18px_40px_rgba(11,24,51,0.1)]">
-      <span className="grid h-12 w-12 place-items-center rounded-md bg-[var(--muted)] text-[var(--teal)]">
+    <article className="border-t-2 border-[var(--line)] bg-white p-6 transition duration-300 hover:-translate-y-1 hover:border-t-[var(--cyan)] hover:shadow-[0_18px_40px_rgba(6,26,47,0.09)]">
+      <span className="grid h-11 w-11 place-items-center rounded-md bg-[var(--muted)] text-[var(--teal)]">
         <Icon size={22} />
       </span>
       <h3 className="mt-5 text-xl font-semibold text-[var(--ink)]">{title}</h3>

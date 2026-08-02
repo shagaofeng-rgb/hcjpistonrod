@@ -52,47 +52,54 @@ export function HeroSlider() {
   const slide = slides[active];
 
   return (
-    <section className="relative min-h-[720px] overflow-hidden bg-[#071428] text-white">
-      <Image
-        src={slide.image}
-        alt={`${slide.title} - XIJIU hydraulic manufacturing visual`}
-        fill
-        priority
-        className="object-cover opacity-55 motion-safe:animate-[pulse_8s_ease-in-out_infinite]"
-        sizes="100vw"
-      />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,20,40,0.95)_0%,rgba(7,20,40,0.78)_42%,rgba(7,20,40,0.34)_100%)]" />
-      <div className="container relative flex min-h-[720px] items-center py-20">
-        <div className="max-w-5xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#ffb3b8]">
-            Piston Rod and Hard Chrome Plated Rod Manufacturer
-          </p>
-          <h1 className="mt-5 max-w-5xl text-5xl font-semibold leading-[1.04] md:text-6xl xl:text-7xl">{slide.title}</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-white/78">{slide.subtitle}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href={slide.primaryHref}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[var(--amber)] px-5 font-semibold text-white transition hover:bg-[#a81825]"
-            >
-              {slide.primary} <ArrowRight size={18} />
-            </Link>
-            <Link
-              href={slide.secondaryHref}
-              className="inline-flex h-12 items-center justify-center rounded-md border border-white/30 px-5 font-semibold text-white transition hover:bg-white/10"
-            >
-              {slide.secondary}
-            </Link>
+    <section className="overflow-hidden border-b border-[#0d385c] bg-[#061a2f] text-white">
+      <div className="grid min-h-[620px] lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="flex items-center px-5 py-16 sm:px-10 lg:px-[max(52px,calc((100vw-1280px)/2))] lg:pr-16">
+          <div className="max-w-xl">
+            <div className="mb-8 h-px w-16 bg-[var(--cyan)]" />
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#81d2f3]">
+              Piston Rod and Hard Chrome Plated Rod Manufacturer
+            </p>
+            <h1 className="mt-5 text-4xl font-semibold leading-[1.08] sm:text-5xl xl:text-6xl">{slide.title}</h1>
+            <p className="mt-6 max-w-lg text-base leading-7 text-white/76 sm:text-lg sm:leading-8">{slide.subtitle}</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={slide.primaryHref}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-5 font-semibold text-white transition hover:bg-[var(--teal-dark)] active:translate-y-px"
+              >
+                {slide.primary} <ArrowRight size={18} />
+              </Link>
+              <Link
+                href={slide.secondaryHref}
+                className="inline-flex h-12 items-center justify-center rounded-md border border-white/28 px-5 font-semibold text-white transition hover:border-white/60 hover:bg-white/8 active:translate-y-px"
+              >
+                {slide.secondary}
+              </Link>
+            </div>
+            <div className="mt-10 flex items-center gap-2" aria-label="Hero slide controls">
+              {slides.map((item, index) => (
+                <button
+                  key={item.title}
+                  type="button"
+                  onClick={() => setActive(index)}
+                  className={`h-2 rounded-full transition ${active === index ? "w-10 bg-[var(--cyan)]" : "w-2 bg-white/35 hover:bg-white/70"}`}
+                  aria-label={`Show slide ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
-          <div className="mt-10 flex gap-2">
-            {slides.map((item, index) => (
-              <button
-                key={item.title}
-                type="button"
-                onClick={() => setActive(index)}
-                className={`h-2.5 rounded-full transition ${active === index ? "w-10 bg-white" : "w-2.5 bg-white/40"}`}
-                aria-label={`Show slide ${index + 1}`}
-              />
-            ))}
+        </div>
+        <div className="relative min-h-[330px] overflow-hidden border-t border-white/10 lg:border-l lg:border-t-0">
+          <Image
+            src={slide.image}
+            alt={`${slide.title} - XIJIU hydraulic manufacturing visual`}
+            fill
+            priority
+            className="object-cover"
+            sizes="(min-width: 1024px) 58vw, 100vw"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-[linear-gradient(90deg,rgba(6,26,47,0.92),rgba(6,26,47,0.12))] px-6 py-5 text-xs font-semibold uppercase tracking-[0.16em] text-white/85">
+            Jiangsu Xijiu Intelligent Equipment | Haian, China
           </div>
         </div>
       </div>

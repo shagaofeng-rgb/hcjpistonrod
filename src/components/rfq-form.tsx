@@ -37,7 +37,7 @@ export function RfqForm() {
   }
 
   return (
-    <form action={submit} className="grid gap-4 rounded-md border border-[var(--line)] bg-white p-5">
+    <form action={submit} className="grid gap-5 rounded-md border border-[var(--line)] bg-white p-5 sm:p-6">
       <label className="hidden" aria-hidden="true">
         Website
         <input name="website" tabIndex={-1} autoComplete="off" />
@@ -45,31 +45,31 @@ export function RfqForm() {
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
           Name
-          <input required name="name" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none focus:border-[var(--teal)]" />
+          <input required name="name" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
         </label>
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
           Email
-          <input required type="email" name="email" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none focus:border-[var(--teal)]" />
+          <input required type="email" name="email" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
         </label>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
           WhatsApp / Phone
-          <input name="phone" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none focus:border-[var(--teal)]" />
+          <input name="phone" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
         </label>
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
           Company
-          <input name="company" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none focus:border-[var(--teal)]" />
+          <input name="company" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
         </label>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
           Country
-          <input name="country" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none focus:border-[var(--teal)]" />
+          <input name="country" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
         </label>
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
           Describe Yourself
-          <select name="profile" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none focus:border-[var(--teal)]">
+          <select name="profile" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15">
             <option>Distributor</option>
             <option>Manufacturer</option>
             <option>Wholesaler</option>
@@ -81,7 +81,7 @@ export function RfqForm() {
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
           Interested Product
-          <select name="product" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none focus:border-[var(--teal)]">
+          <select name="product" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15">
             {interestedProducts.map((product) => (
               <option key={product}>{product}</option>
             ))}
@@ -109,7 +109,7 @@ export function RfqForm() {
           name="message"
           rows={5}
           placeholder="Please share material, hardness requirement, chrome plating requirement, length, rod diameter, quantity, and drawing or sample details."
-          className="resize-none rounded-md border border-[var(--line)] px-3 py-3 outline-none focus:border-[var(--teal)]"
+          className="resize-none rounded-md border border-[var(--line)] px-3 py-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15"
         />
       </label>
       <label className="flex items-start gap-3 text-sm leading-6 text-[var(--steel)]">
@@ -122,7 +122,7 @@ export function RfqForm() {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[var(--amber)] px-5 font-semibold text-white transition hover:bg-[#a81825] disabled:cursor-wait disabled:opacity-70"
+        className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[var(--amber)] px-5 font-semibold text-white transition hover:bg-[var(--teal-dark)] active:translate-y-px disabled:cursor-wait disabled:opacity-70"
       >
         {status === "sending" ? <Loader2 className="animate-spin" size={18} /> : status === "sent" ? <CheckCircle2 size={18} /> : <Send size={18} />}
         {status === "sent" ? "Inquiry Sent" : "Submit Inquiry"}

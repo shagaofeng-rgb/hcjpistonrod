@@ -322,7 +322,7 @@ export default async function Home() {
           />
           <div className="container relative">
             <div className="max-w-3xl">
-              <Boxes className="text-[#ffb3b8]" size={30} />
+              <Boxes className="text-[#81d2f3]" size={30} />
               <h2 className="mt-5 text-4xl font-semibold leading-tight md:text-5xl">Ready to Start Your Hydraulic Project?</h2>
               <p className="mt-5 text-lg leading-8 text-white/76">
                 Send us your drawing, specification, or application requirements. Our team will help review the technical details and provide a practical quotation.
