@@ -5,7 +5,15 @@ import { newsArticles } from "../../../data/news";
 import { products } from "../../../data/products";
 import { site } from "@/lib/site";
 import { appendDateOnlyRangeCondition, appendDateRangeCondition, type AdminDateRange } from "./date-range";
-import { databaseHealth, hasDatabaseConfig, hasObjectStorageConfig, query } from "./db";
+import {
+  databaseHealth,
+  getObjectStorageMessage,
+  hasDatabaseConfig,
+  hasGoogleSearchConsoleConfig,
+  hasObjectStorageConfig,
+  hasVercelAnalyticsConfig,
+  query,
+} from "./db";
 
 const primaryProductCategories = new Set(["chrome-plated-rod", "honed-tube"]);
 const publicProductSlugs = new Set(products.filter((item) => primaryProductCategories.has(item.category)).map((item) => item.slug));
@@ -123,14 +131,22 @@ export async function getAdminOverview(range: AdminDateRange) {
     status: [
       { label: "内容数据", ok: true, message: "已读取当前网站发布内容。" },
       { label: "客户表单数据库", ok: db.ok, message: db.ok ? "数据库连接正常。" : "未连接数据库。" },
-      { label: "对象存储", ok: hasObjectStorageConfig(), message: hasObjectStorageConfig() ? "对象存储已连接。" : "未连接对象存储。" },
-      { label: "外部SEO/分析", ok: hasExternalMetrics(), message: hasExternalMetrics() ? "外部数据源已连接。" : "未连接外部数据源。" },
+      { label: "对象存储", ok: hasObjectStorageConfig(), message: getObjectStorageMessage() },
+      {
+        label: "外部SEO/分析",
+        ok: hasExternalMetrics(),
+        message: hasVercelAnalyticsConfig()
+          ? hasGoogleSearchConsoleConfig()
+            ? "Vercel 分析与 Google Search Console 已连接。"
+            : "Vercel Web Analytics 已连接；Google Search Console 待授权。"
+          : "未连接外部数据源。",
+      },
     ],
   };
 }
 
 export function hasExternalMetrics() {
-  return Boolean((process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY) || (process.env.ANALYTICS_PROVIDER && process.env.ANALYTICS_API_KEY));
+  return hasVercelAnalyticsConfig() || hasGoogleSearchConsoleConfig() || Boolean(process.env.ANALYTICS_PROVIDER && process.env.ANALYTICS_API_KEY);
 }
 
 export function getModuleRows(moduleKey: string): AdminTableRow[] {
@@ -165,8 +181,8 @@ export function getModuleRows(moduleKey: string): AdminTableRow[] {
   if (moduleKey === "analytics") {
     return [
       {
-        id: "internal-content",
-        cells: ["当前内容", "已发布产品", String(getPublishedProducts().length), "已发布新闻", String(getPublishedNews().length), "内容概览"],
+        id: "vercel-web-analytics",
+        cells: ["Vercel Web Analytics", "-", "-", "官方数据源", hasVercelAnalyticsConfig() ? "实时采集已启用" : "未启用", "发布后积累真实访问数据"],
       },
     ];
   }
@@ -187,8 +203,10 @@ export function getModuleRows(moduleKey: string): AdminTableRow[] {
   if (moduleKey === "sync") {
     return [
       { id: "website-content", cells: ["网站内容", "已连接", "正常", "实时读取", "当前版本", "无"] },
-      { id: "lead-database", cells: ["客户表单", "未连接", "未连接", "暂停", "无", "数据库未连接"] },
-      { id: "external-seo", cells: ["外部SEO", "未连接", "未连接", "暂停", "无", "外部数据源未连接"] },
+      { id: "lead-database", cells: ["客户表单数据库", "PostgreSQL", hasDatabaseConfig() ? "已配置" : "未配置", hasDatabaseConfig() ? "已连接" : "未连接", "实时写入", "无"] },
+      { id: "object-storage", cells: ["询盘附件", "Vercel Blob", hasObjectStorageConfig() ? "已配置" : "未配置", hasObjectStorageConfig() ? "已连接" : "未连接", hasObjectStorageConfig() ? "提交时上传" : "-", "无"] },
+      { id: "vercel-analytics", cells: ["访问分析", "Vercel Web Analytics", hasVercelAnalyticsConfig() ? "已配置" : "未配置", hasVercelAnalyticsConfig() ? "已连接" : "未连接", hasVercelAnalyticsConfig() ? "页面访问实时采集" : "-", "Vercel 托管"] },
+      { id: "google-search-console", cells: ["Google Search Console", "SEO 数据", hasGoogleSearchConsoleConfig() ? "已配置" : "待授权", hasGoogleSearchConsoleConfig() ? "已连接" : "未连接", hasGoogleSearchConsoleConfig() ? "授权后同步" : "需 Google 属性授权", "无"] },
     ];
   }
 
@@ -249,7 +267,9 @@ export async function getAdminModuleRows(moduleKey: string, range: AdminDateRang
       const result = await query<{ id: string; summary_date: string; dimension: string; dimension_value: string; page_views: string; unique_visitors: string; conversions: string }>(
         `select id, summary_date::text, dimension, dimension_value, page_views::text, unique_visitors::text, conversions::text from analytics_daily_summary ${where.length ? `where ${where.join(" and ")}` : ""} order by summary_date desc limit 200`, values,
       );
-      return result.rows.map((row) => ({ id: row.id, cells: [row.dimension, row.page_views, row.unique_visitors, row.dimension_value, row.conversions, row.summary_date] }));
+      return result.rows.length > 0
+        ? result.rows.map((row) => ({ id: row.id, cells: [row.dimension, row.page_views, row.unique_visitors, row.dimension_value, row.conversions, row.summary_date] }))
+        : getModuleRows(moduleKey);
     }
     if (moduleKey === "seo") {
       const where = ["deleted_at is null"];
@@ -299,13 +319,7 @@ export async function getAdminModuleRows(moduleKey: string, range: AdminDateRang
       return result.rows.map((row) => ({ id: row.id, cells: [row.action, row.module, row.object_type || "-", row.object_id || "-", row.result, dateCell(row.created_at)] }));
     }
     if (moduleKey === "sync") {
-      const where: string[] = [];
-      const values: unknown[] = [];
-      appendDateRangeCondition(where, values, "coalesce(last_success_at, updated_at)", range);
-      const result = await query<{ id: string; name: string; source_type: string; config_status: string; connection_status: string; last_success_at: Date | null; next_run_at: Date | null }>(
-        `select id, name, source_type, config_status, connection_status, last_success_at, next_run_at from sync_sources ${where.length ? `where ${where.join(" and ")}` : ""} order by updated_at desc limit 200`, values,
-      );
-      return result.rows.map((row) => ({ id: row.id, cells: [row.name, row.source_type, row.config_status, row.connection_status, dateCell(row.last_success_at), dateCell(row.next_run_at)] }));
+      return getModuleRows(moduleKey);
     }
     return getModuleRows(moduleKey);
   } catch (error) {

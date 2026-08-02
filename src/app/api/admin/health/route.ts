@@ -1,6 +1,6 @@
 import { adminError, adminOk } from "@/lib/admin/api";
 import { getCurrentAdminUser, hasPermission } from "@/lib/admin/auth";
-import { databaseHealth, hasObjectStorageConfig } from "@/lib/admin/db";
+import { databaseHealth, getObjectStorageMessage, hasGoogleSearchConsoleConfig, hasObjectStorageConfig, hasVercelAnalyticsConfig } from "@/lib/admin/db";
 
 export const runtime = "nodejs";
 
@@ -13,11 +13,11 @@ export async function GET() {
     database: db,
     objectStorage: {
       configured: hasObjectStorageConfig(),
-      message: hasObjectStorageConfig() ? "对象存储已连接。" : "未连接对象存储。",
+      message: getObjectStorageMessage(),
     },
     externalSources: {
-      seo: Boolean(process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY),
-      analytics: Boolean(process.env.ANALYTICS_PROVIDER && process.env.ANALYTICS_API_KEY),
+      seo: hasGoogleSearchConsoleConfig(),
+      analytics: hasVercelAnalyticsConfig() || Boolean(process.env.ANALYTICS_PROVIDER && process.env.ANALYTICS_API_KEY),
       news: Boolean(process.env.NEWS_FEED_URLS && (process.env.AI_PROVIDER_API_KEY || process.env.OPENAI_API_KEY || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN)),
     },
   });

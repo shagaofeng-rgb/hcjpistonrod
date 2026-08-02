@@ -19,6 +19,8 @@
     "db:restore": "bash scripts/restore-postgres.sh"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "^2.6.1",
     "fast-xml-parser": "^5.3.6",
     "lucide-react": "^1.21.0",
     "next": "16.2.9",

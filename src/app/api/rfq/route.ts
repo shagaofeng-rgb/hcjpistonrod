@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
+import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
 import { emailConfig, getEmailTransporter } from "@/lib/email";
@@ -75,6 +76,10 @@ function formNumber(receivedAt: Date) {
   return `RFQ-${date}-${randomBytes(4).toString("hex").toUpperCase()}`;
 }
 
+function safeFilename(name: string) {
+  return name.replaceAll(/[^a-zA-Z0-9._-]+/g, "-").replaceAll(/^-+|-+$/g, "") || "attachment";
+}
+
 export async function POST(request: Request) {
   const formData = await request.formData();
   const name = getString(formData, "name");
@@ -99,7 +104,7 @@ export async function POST(request: Request) {
   }
 
   const attachments: Array<{ filename: string; content: Buffer; contentType?: string }> = [];
-  const attachmentMetadata: Array<{ filename: string; size: number; contentType: string }> = [];
+  const attachmentMetadata: Array<{ filename: string; size: number; contentType: string; storage?: { provider: string; pathname: string; url: string } }> = [];
   if (drawing instanceof File && drawing.size > 0) {
     const extension = drawing.name.split(".").pop()?.toLowerCase() || "";
     if (drawing.size > MAX_ATTACHMENT_SIZE) {
@@ -114,6 +119,20 @@ export async function POST(request: Request) {
 
   const receivedAt = new Date();
   const number = formNumber(receivedAt);
+  if (attachments.length > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const attachment = attachments[0];
+      const stored = await put(
+        `rfq/${receivedAt.toISOString().slice(0, 10)}/${number}/${safeFilename(attachment.filename)}`,
+        attachment.content,
+        { access: "private", contentType: attachment.contentType },
+      );
+      attachmentMetadata[0].storage = { provider: "vercel-blob", pathname: stored.pathname, url: stored.url };
+    } catch (error) {
+      console.error("[rfq] object storage upload failed", { message: error instanceof Error ? error.message : "unknown error" });
+      return NextResponse.json({ ok: false, error: "We could not securely store the attachment. Please try again or email it directly." }, { status: 503 });
+    }
+  }
   const { ipHash, userAgent, device } = clientMeta(request);
   const source = sourceMeta(request);
   let submissionId: string | null = null;

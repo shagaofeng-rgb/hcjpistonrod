@@ -14,12 +14,35 @@ export function hasDatabaseConfig() {
 }
 
 export function hasObjectStorageConfig() {
-  return Boolean(
-    process.env.S3_BUCKET &&
+  return getObjectStorageProvider() !== null;
+}
+
+export function getObjectStorageProvider() {
+  if (process.env.BLOB_READ_WRITE_TOKEN) return "vercel-blob" as const;
+  if (
+      process.env.S3_BUCKET &&
       process.env.S3_ACCESS_KEY_ID &&
       process.env.S3_SECRET_ACCESS_KEY &&
-      (process.env.S3_ENDPOINT || process.env.S3_REGION),
-  );
+      (process.env.S3_ENDPOINT || process.env.S3_REGION)
+  ) {
+    return "s3" as const;
+  }
+  return null;
+}
+
+export function getObjectStorageMessage() {
+  const provider = getObjectStorageProvider();
+  if (provider === "vercel-blob") return "Vercel Blob 私有文件库已连接。";
+  if (provider === "s3") return "S3 兼容对象存储已连接。";
+  return "未连接对象存储。";
+}
+
+export function hasVercelAnalyticsConfig() {
+  return process.env.VERCEL_ANALYTICS_ENABLED === "true";
+}
+
+export function hasGoogleSearchConsoleConfig() {
+  return Boolean(process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY);
 }
 
 export function getPool() {
