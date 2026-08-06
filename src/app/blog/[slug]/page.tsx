@@ -9,7 +9,7 @@ import { Header } from "@/components/header";
 import { NewsCard } from "@/components/news-card";
 import { products, site } from "@/lib/site";
 import { newsArticles } from "../../../../data/news";
-import { getPublishedNewsArticle, getPublishedNewsArticles } from "@/lib/news-content";
+import { getPublishedBlogArticle, getPublishedBlogArticles } from "@/lib/news-content";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -23,7 +23,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getPublishedNewsArticle(slug);
+  const article = await getPublishedBlogArticle(slug);
 
   if (!article) return {};
 
@@ -44,12 +44,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params;
-  const article = await getPublishedNewsArticle(slug);
+  const article = await getPublishedBlogArticle(slug);
 
   if (!article) notFound();
 
   const relatedProducts = products.filter((product) => article.relatedProducts.includes(product.slug));
-  const allArticles = await getPublishedNewsArticles();
+  const allArticles = await getPublishedBlogArticles();
   const relatedArticles = allArticles.filter((item) => item.slug !== article.slug).slice(0, 2);
   const articleUrl = `${site.domain}/blog/${article.slug}`;
   const articleJsonLd = {

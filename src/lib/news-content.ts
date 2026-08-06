@@ -88,13 +88,34 @@ async function getDatabaseNews(slug?: string) {
   return result.rows.map(toArticle);
 }
 
+async function getDatabaseBlog(slug?: string) {
+  const values: unknown[] = [];
+  const slugSql = slug ? "and na.slug = $1" : "";
+  if (slug) values.push(slug);
+  const result = await query<NewsRow>(
+    `select na.id, na.slug, coalesce(na.english_title, na.title) as title, na.excerpt, na.body_html, na.author,
+      coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt,
+      coalesce(nc.english_name, nc.name, 'Industry News') as category, na.tags, na.related_products,
+      na.published_at, na.updated_at, na.source_title, na.source_publisher, na.source_author, na.source_url,
+      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways
+     from news_articles na
+     left join news_categories nc on nc.id = na.category_id
+     left join media_assets ma on ma.id = na.cover_image_id
+     where na.deleted_at is null and na.status = 'published' and na.published_at is not null and na.published_at <= now()
+       and na.robots not ilike '%noindex%' and na.body_html is not null and na.excerpt is not null
+       and coalesce(na.cover_image_url, ma.url) is not null
+       and coalesce(na.automation_notes, '') not ilike 'Automatically generated%' ${slugSql}
+     order by na.published_at desc`,
+    values,
+  );
+  return result.rows.map(toArticle);
+}
+
 export async function getPublishedNewsArticles() {
   if (!hasDatabaseConfig()) return newsArticles;
   try {
     const databaseArticles = await getDatabaseNews();
-    const merged = new Map(newsArticles.map((article) => [article.slug, article]));
-    databaseArticles.forEach((article) => merged.set(article.slug, article));
-    return [...merged.values()].sort((a, b) => b.source.publishedAt.localeCompare(a.source.publishedAt));
+    return databaseArticles.length > 0 ? databaseArticles : newsArticles;
   } catch (error) {
     console.error("[news] database read failed; using repository content", { message: error instanceof Error ? error.message : "unknown error" });
     return newsArticles;
@@ -108,6 +129,31 @@ export async function getPublishedNewsArticle(slug: string) {
       if (rows[0]) return rows[0];
     } catch (error) {
       console.error("[news] article read failed; using repository content", { slug, message: error instanceof Error ? error.message : "unknown error" });
+    }
+  }
+  return newsArticles.find((article) => article.slug === slug);
+}
+
+export async function getPublishedBlogArticles() {
+  if (!hasDatabaseConfig()) return newsArticles;
+  try {
+    const databaseArticles = await getDatabaseBlog();
+    const merged = new Map(newsArticles.map((article) => [article.slug, article]));
+    databaseArticles.forEach((article) => merged.set(article.slug, article));
+    return [...merged.values()].sort((a, b) => b.source.publishedAt.localeCompare(a.source.publishedAt));
+  } catch (error) {
+    console.error("[blog] database read failed; using repository content", { message: error instanceof Error ? error.message : "unknown error" });
+    return newsArticles;
+  }
+}
+
+export async function getPublishedBlogArticle(slug: string) {
+  if (hasDatabaseConfig()) {
+    try {
+      const rows = await getDatabaseBlog(slug);
+      if (rows[0]) return rows[0];
+    } catch (error) {
+      console.error("[blog] article read failed; using repository content", { slug, message: error instanceof Error ? error.message : "unknown error" });
     }
   }
   return newsArticles.find((article) => article.slug === slug);

@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/sitemap",
-      "schedule": "20 2 * * *"
+      "schedule": "20 2 */3 * *"
     }
   ]
 }

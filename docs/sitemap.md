@@ -22,7 +22,7 @@ When a type exceeds one file, the index switches to `/sitemaps/{type}-{part}.xml
 
 ## Automatic Updates
 
-PostgreSQL triggers mark the sitemap dirty after product, category, or news insert, update, or delete operations. Public XML routes read current published data and revalidate every five minutes. Vercel runs `/api/cron/sitemap` daily at `02:20 UTC` to verify and log the current manifest and optionally submit changed sitemaps to Search Console.
+PostgreSQL triggers mark the sitemap dirty after product, category, or news insert, update, or delete operations. Public XML routes read current published data and revalidate every five minutes. Vercel runs `/api/cron/sitemap` at `02:20 UTC` every three calendar days to verify and log the current manifest. Search Console submission is additionally guarded by a 72-hour minimum interval, including month boundaries.
 
 Run migrations after configuring the production database:
 

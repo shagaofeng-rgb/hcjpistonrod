@@ -68,6 +68,26 @@ export type SitemapMaintenanceOptions = {
   verbose?: boolean;
 };
 
+const configuredSearchConsoleInterval = Number(process.env.GOOGLE_SITEMAP_SUBMIT_INTERVAL_HOURS || 72);
+const SEARCH_CONSOLE_MIN_INTERVAL_HOURS = Number.isFinite(configuredSearchConsoleInterval)
+  ? Math.max(72, configuredSearchConsoleInterval)
+  : 72;
+
+async function searchConsoleSubmissionAllowed(client: PoolClient | null, options: SitemapMaintenanceOptions) {
+  if (!options.submit) return { allowed: false, message: "Submission not requested" };
+  if (!client) return { allowed: false, message: "A persistent database snapshot is required for Search Console submission" };
+  if (options.force && options.trigger === "manual") return { allowed: true, message: "Manual forced submission" };
+
+  const latest = await client.query<{ finished_at: Date }>(
+    "select finished_at from sitemap_runs where search_console_attempted = true and finished_at is not null order by finished_at desc limit 1",
+  );
+  const lastAttempt = latest.rows[0]?.finished_at;
+  if (!lastAttempt) return { allowed: true, message: "No previous Search Console submission" };
+  const elapsedHours = (Date.now() - new Date(lastAttempt).getTime()) / 3_600_000;
+  if (elapsedHours >= SEARCH_CONSOLE_MIN_INTERVAL_HOURS) return { allowed: true, message: "Submission interval elapsed" };
+  return { allowed: false, message: `Search Console submission is rate-limited for ${SEARCH_CONSOLE_MIN_INTERVAL_HOURS} hours` };
+}
+
 export async function runSitemapMaintenance(options: SitemapMaintenanceOptions) {
   const startedAt = new Date();
   if (!tryAcquireInMemorySitemapLock()) {
@@ -98,10 +118,11 @@ export async function runSitemapMaintenance(options: SitemapMaintenanceOptions) 
 
     const changes = diffSitemapEntries(previousEntries, bundle.entries);
     const changed = options.force || manifestHash !== previousHash;
-    const shouldSubmit = Boolean(options.submit && !options.dryRun && changed && (client || options.force));
+    const submissionEligibility = await searchConsoleSubmissionAllowed(client, options);
+    const shouldSubmit = Boolean(!options.dryRun && changed && submissionEligibility.allowed);
     const searchConsole = shouldSubmit
       ? await submitSitemapToSearchConsole({ sitemapUrl: process.env.GOOGLE_SEARCH_CONSOLE_SITEMAP_URL || `${site.domain}/sitemap.xml` })
-      : { attempted: false, success: false, message: options.submit ? (changed && !client && !options.force ? "A persistent database snapshot is required for automatic unchanged detection" : "No sitemap changes to submit") : "Submission not requested" };
+      : { attempted: false, success: false, message: !options.submit ? "Submission not requested" : !changed ? "No sitemap changes to submit" : submissionEligibility.message };
     const finishedAt = new Date();
     const result = {
       ok: true,
