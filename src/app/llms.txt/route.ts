@@ -1,0 +1,8 @@
+import { site } from "@/lib/site";
+
+export const revalidate = 86_400;
+
+export async function GET() {
+  const body = `# XIJIU Intelligent Equipment\n\nXIJIU Intelligent Equipment is the public brand for hydraulic component manufacturing by Jiangsu Xijiu Intelligent Equipment Co., Ltd. Nantong Huichenjin International Trade Co., Ltd. (Nantong HCJ) provides export-company support.\n\n## Core products\n- [Honed Tube](${site.domain}/products/honed-tube)\n- [ST52 Honed Tube](${site.domain}/products/st52-honed-tube)\n- [CK45 Honed Tube](${site.domain}/products/ck45-honed-tube)\n- [Skived and Roller Burnished Tube](${site.domain}/products/skived-and-roller-burnished-tube)\n- [Hard Chrome Plated Rod](${site.domain}/products/chrome-plated-rod)\n- [CK45 Chrome Plated Rod](${site.domain}/products/ck45-chrome-plated-rod)\n- [20MnV6 Chrome Plated Rod](${site.domain}/products/20mnv6-chrome-plated-rod)\n- [Induction Hardened Chrome Rod](${site.domain}/products/induction-hardened-chrome-rod)\n- [Hollow Chrome Plated Rod](${site.domain}/products/hollow-chrome-plated-rod)\n- [Finished Piston Rod](${site.domain}/products/piston-rod)\n\n## Typical applications\nHydraulic cylinder assembly, mobile machinery, industrial hydraulic equipment, material handling and repair/replacement cylinder work.\n\n## Technical resources\n- [Technical Blog](${site.domain}/blog)\n- [Contact and drawing review](${site.domain}/contact)\n\nContact: ${site.email} | ${site.telLabel}\nLast updated: 2026-08-08\n`;
+  return new Response(body, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=86400, s-maxage=86400" } });
+}

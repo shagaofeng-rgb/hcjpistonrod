@@ -48,7 +48,7 @@ export function RfqForm() {
           <input required name="name" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
         </label>
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
-          Email
+          Business Email
           <input required type="email" name="email" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
         </label>
       </div>
@@ -64,11 +64,11 @@ export function RfqForm() {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
-          Country
+          Country / Region
           <input name="country" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
         </label>
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
-          Describe Yourself
+          Business Type
           <select name="profile" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15">
             <option>Distributor</option>
             <option>Manufacturer</option>
@@ -80,7 +80,7 @@ export function RfqForm() {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
-          Interested Product
+          Product
           <select name="product" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15">
             {interestedProducts.map((product) => (
               <option key={product}>{product}</option>
@@ -103,12 +103,16 @@ export function RfqForm() {
         </label>
       </div>
       <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
-        Message
+        Quantity / Annual Volume
+        <input name="volume" placeholder="Example: trial quantity or estimated annual demand" className="h-11 rounded-md border border-[var(--line)] px-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15" />
+      </label>
+      <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">
+        Requirement
         <textarea
           required
           name="message"
           rows={5}
-          placeholder="Please share material, hardness requirement, chrome plating requirement, length, rod diameter, quantity, and drawing or sample details."
+          placeholder="Please share material, dimensions, tolerance, surface requirement, end machining, target application, and drawing or sample details."
           className="resize-none rounded-md border border-[var(--line)] px-3 py-3 outline-none transition focus:border-[var(--teal)] focus:ring-4 focus:ring-[#19a9e5]/15"
         />
       </label>

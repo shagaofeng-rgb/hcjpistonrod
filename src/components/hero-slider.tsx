@@ -57,10 +57,10 @@ export function HeroSlider() {
         <div className="flex items-center px-5 py-16 sm:px-10 lg:px-[max(52px,calc((100vw-1280px)/2))] lg:pr-16">
           <div className="max-w-xl">
             <div className="mb-8 h-px w-16 bg-[var(--cyan)]" />
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#81d2f3]">
-              Piston Rod and Hard Chrome Plated Rod Manufacturer
-            </p>
-            <h1 className="mt-5 text-4xl font-semibold leading-[1.08] sm:text-5xl xl:text-6xl">{slide.title}</h1>
+            <h1 className="text-xs font-semibold uppercase tracking-[0.22em] text-[#81d2f3]">
+              Piston Rod, Chrome Plated Rod &amp; Honed Tube Manufacturer
+            </h1>
+            <p className="mt-5 text-4xl font-semibold leading-[1.08] sm:text-5xl xl:text-6xl">{slide.title}</p>
             <p className="mt-6 max-w-lg text-base leading-7 text-white/76 sm:text-lg sm:leading-8">{slide.subtitle}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link

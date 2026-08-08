@@ -296,6 +296,37 @@ export const products: Product[] = [
     ],
   },
   {
+    slug: "honed-tube",
+    name: "Honed Tube",
+    category: "honed-tube",
+    shortDescription:
+      "Hydraulic cylinder tube options with a finished internal bore, reviewed against the required material, dimensions and bore condition.",
+    definition:
+      "A honed tube is a steel tube processed to provide an internal bore suitable for hydraulic cylinder barrel manufacture and related precision applications.",
+    image: "/images/factory/raw-material-stock.jpg",
+    model: "Honed Tube Range",
+    availability: "Technical review",
+    customization: "Drawing-based",
+    applications: ["Hydraulic Cylinder Barrels", "Industrial Actuators", "Hydraulic Presses"],
+    specs: {
+      Material: "ST52, CK45 or reviewed against the requirement",
+      "Bore and outside diameter": "By drawing or order requirement",
+      Length: "Cut length reviewed with packing requirement",
+      "Bore condition": "Finished bore requirement reviewed before production",
+      Inspection: "Dimensional, bore condition and packing checks",
+      Packing: "Protected export packing",
+    },
+    advantages: ["Bore requirement reviewed before production", "Material options for cylinder barrel manufacture", "Drawing and export support"],
+    process: ["Requirement review", "Tube preparation", "Bore finishing", "Inspection", "Protected packing"],
+    quality: ["Incoming material check", "Bore and dimensional inspection", "Final packing check"],
+    faqs: [
+      {
+        question: "What is needed for a honed tube quotation?",
+        answer: "Send the material grade, ID, OD, length, bore requirement, tolerance, quantity, destination and any drawing or sample information.",
+      },
+    ],
+  },
+  {
     slug: "st52-honed-tube",
     name: "ST52 Honed Tube",
     category: "honed-tube",
@@ -412,6 +443,37 @@ export const products: Product[] = [
       {
         question: "Is SRB tube different from honed tube?",
         answer: "Both are used for cylinder barrels. The suitable process depends on size, tolerance, surface finish, and production requirements.",
+      },
+    ],
+  },
+  {
+    slug: "chrome-plated-rod",
+    name: "Chrome Plated Rod",
+    category: "chrome-plated-rod",
+    shortDescription:
+      "Hard chrome plated rod options for hydraulic piston rod and related motion-component applications, reviewed to the drawing and service requirement.",
+    definition:
+      "A chrome plated rod is a steel rod with a finished hard chrome surface for hydraulic cylinder piston rod and related engineered component applications.",
+    image: "/images/factory/chrome-rod-stock.jpg",
+    model: "Chrome Plated Rod Range",
+    availability: "Technical review",
+    customization: "Drawing-based",
+    applications: ["Hydraulic Cylinder Piston Rods", "Mobile Machinery", "Industrial Equipment"],
+    specs: {
+      Material: "CK45, 20MnV6 or reviewed against the requirement",
+      "Diameter and length": "By drawing or order requirement",
+      "Surface condition": "Hard chrome surface requirement reviewed before production",
+      "End machining": "Drawing-based where required",
+      Inspection: "Dimensional, surface and straightness checks",
+      Packing: "Protected export packing",
+    },
+    advantages: ["Drawing-based rod and end-feature review", "Material options for hydraulic applications", "Export support through Nantong HCJ"],
+    process: ["Material review", "Grinding and surface finishing", "Inspection", "Protected packing"],
+    quality: ["Material identification review", "Dimensional and surface inspection", "Final packing check"],
+    faqs: [
+      {
+        question: "What should I provide for a chrome plated rod quotation?",
+        answer: "Send the material, diameter, length, tolerance, surface requirement, end machining, quantity, application and drawing or sample information.",
       },
     ],
   },
@@ -572,6 +634,36 @@ export const products: Product[] = [
       {
         question: "What dimensions are needed for hollow rod quotation?",
         answer: "Please provide OD, ID, length, material, tolerance, chrome requirement, end machining, and quantity.",
+      },
+    ],
+  },
+  {
+    slug: "piston-rod",
+    name: "Finished Piston Rod",
+    category: "chrome-plated-rod",
+    shortDescription:
+      "Drawing-based finished piston rods with reviewed material, surface, length and end-machining requirements for hydraulic cylinder assembly.",
+    definition:
+      "A finished piston rod is supplied with the agreed machining features needed for hydraulic cylinder assembly, rather than as an unmachined rod blank.",
+    image: "/images/factory/machined-rod-ends-angle.jpg",
+    model: "Finished Piston Rod",
+    availability: "Technical review",
+    customization: "Drawing-based",
+    applications: ["Hydraulic Cylinders", "Mobile Machinery", "Industrial Equipment"],
+    specs: {
+      Material: "Reviewed against the approved drawing",
+      "Surface condition": "Reviewed against the approved drawing",
+      "End machining": "Drawing-based",
+      Inspection: "Dimensional and surface checks",
+      Packing: "Protected export packing",
+    },
+    advantages: ["Machining requirements reviewed before production", "One component path for cylinder assembly", "Export support through Nantong HCJ"],
+    process: ["Drawing review", "Material preparation", "Machining and finishing", "Inspection", "Protected packing"],
+    quality: ["Drawing-to-part dimensional review", "Surface inspection", "Final packing check"],
+    faqs: [
+      {
+        question: "What should I provide for a finished piston rod review?",
+        answer: "Send the drawing or sample details, material requirement, diameter, finished length, tolerance, surface requirement, end features, quantity and application information.",
       },
     ],
   },

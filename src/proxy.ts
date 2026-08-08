@@ -2,9 +2,20 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const ADMIN_SESSION_COOKIE = "hcj_admin_session";
 
+const newsToBlogRedirects: Record<string, string> = {
+  "/news/choose-hard-chrome-plated-rod-for-mobile-machinery": "/blog/choose-hard-chrome-plated-rod-for-mobile-machinery",
+  "/news/piston-rod-surface-quality-and-sealing-risk": "/blog/piston-rod-surface-quality-and-sealing-risk",
+  "/news/buyers-check-before-custom-piston-rods": "/blog/buyers-check-before-custom-piston-rods",
+};
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hostname = request.headers.get("host")?.split(":")[0].toLowerCase();
+
+  const newsRedirectTarget = newsToBlogRedirects[pathname];
+  if (newsRedirectTarget) {
+    return NextResponse.redirect(new URL(newsRedirectTarget, request.url), 301);
+  }
 
   if (hostname === "hcjpistonrod.com") {
     const canonicalUrl = request.nextUrl.clone();

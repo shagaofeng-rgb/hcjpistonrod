@@ -22,14 +22,14 @@ import { ProductCard } from "@/components/product-card";
 import { StatsCounter } from "@/components/stats-counter";
 import { industries, productCategories, site } from "@/lib/site";
 import { company } from "../../data/company";
-import { getPublishedNewsArticles } from "@/lib/news-content";
+import { getPublishedBlogArticles } from "@/lib/news-content";
 
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Piston Rod and Chrome Plated Rod Manufacturer",
+  title: "Piston Rod, Hard Chrome Plated Rod & Honed Tube Manufacturer | XIJIU",
   description:
-    "XIJIU supplies piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components for overseas B2B buyers.",
+    "XIJIU manufactures CK45 and 20MnV6 chrome plated rods, piston rods, honed tubes and SRB tubes with drawing-based machining for hydraulic cylinder OEMs worldwide.",
   keywords: [
     "piston rod manufacturer",
     "hard chrome plated rod supplier",
@@ -39,10 +39,11 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/" },
   openGraph: {
-    title: "XIJIU Intelligent Equipment | Piston Rod and Chrome Plated Rod Manufacturer",
+    title: "Piston Rod, Hard Chrome Plated Rod & Honed Tube Manufacturer | XIJIU",
     description:
-      "Piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components for overseas B2B buyers.",
+      "XIJIU manufactures chrome plated rods, piston rods, honed tubes and SRB tubes for hydraulic cylinder OEM requirements.",
     url: "/",
+    images: [{ url: "/images/og/home.jpg", width: 1200, height: 630, alt: "XIJIU Intelligent Equipment factory" }],
   },
 };
 
@@ -115,7 +116,7 @@ const applicationImages: Record<string, string> = {
 };
 
 export default async function Home() {
-  const newsArticles = await getPublishedNewsArticles();
+  const newsArticles = await getPublishedBlogArticles();
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -125,6 +126,11 @@ export default async function Home() {
     telephone: site.telLabel,
     url: site.domain,
     address: site.address,
+    department: {
+      "@type": "Organization",
+      name: site.factoryName,
+      description: "Manufacturing base for XIJIU hydraulic components.",
+    },
   };
 
   return (
@@ -281,13 +287,13 @@ export default async function Home() {
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">Insights</p>
                 <h2 className="mt-3 text-4xl font-semibold text-[var(--ink)]">Hydraulic Manufacturing Insights</h2>
               </div>
-              <Link href="/news" className="inline-flex items-center gap-2 font-semibold text-[var(--teal)]">
-                Read news <ArrowRight size={18} />
+              <Link href="/blog" className="inline-flex items-center gap-2 font-semibold text-[var(--teal)]">
+                View technical resources <ArrowRight size={18} />
               </Link>
             </div>
             <div className="mt-8 grid gap-5 lg:grid-cols-3">
               {newsArticles.slice(0, 3).map((article) => (
-                <NewsCard key={article.slug} article={article} />
+                <NewsCard key={article.slug} article={article} hrefBase="/blog" />
               ))}
             </div>
           </div>

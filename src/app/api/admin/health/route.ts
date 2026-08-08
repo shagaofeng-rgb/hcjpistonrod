@@ -18,7 +18,7 @@ export async function GET() {
     externalSources: {
       seo: hasGoogleSearchConsoleConfig(),
       analytics: hasVercelAnalyticsConfig() || Boolean(process.env.ANALYTICS_PROVIDER && process.env.ANALYTICS_API_KEY),
-      news: Boolean(process.env.NEWS_FEED_URLS && (process.env.AI_PROVIDER_API_KEY || process.env.OPENAI_API_KEY || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN)),
+      news: true,
     },
   });
 }

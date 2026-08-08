@@ -7,7 +7,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test:news": "tsx --test tests/news-automation.test.ts",
+    "test:content": "tsx --test tests/content-workflow.test.ts",
     "test:admin": "tsx --test tests/admin-password.test.ts",
     "test:sitemap": "tsx --test tests/sitemap.test.ts",
     "sitemap:generate": "tsx scripts/sitemap-generate.ts",

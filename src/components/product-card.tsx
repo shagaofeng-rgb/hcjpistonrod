@@ -52,7 +52,7 @@ export function ProductCard({
             href={href}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--teal-dark)] active:translate-y-px"
           >
-            More <ArrowRight size={16} />
+            View {item.name} <ArrowRight size={16} />
           </Link>
           <Link
             href="/contact"

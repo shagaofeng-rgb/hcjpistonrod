@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Image Credits",
   description: "Image source and license credits for XIJIU Intelligent Equipment website visuals.",
   alternates: { canonical: "/image-credits" },
+  robots: { index: false, follow: true },
 };
 
 export default function ImageCreditsPage() {

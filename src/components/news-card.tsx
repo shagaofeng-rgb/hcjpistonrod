@@ -28,7 +28,7 @@ export function NewsCard({ article, hrefBase = "/news" }: { article: NewsArticle
         <h3 className="mt-3 text-xl font-semibold leading-tight text-[var(--ink)]">{article.title}</h3>
         <p className="mt-3 line-clamp-3 text-sm leading-6 text-[var(--steel)]">{article.excerpt}</p>
         <Link href={href} className="mt-5 inline-flex items-center gap-2 font-semibold text-[var(--teal)]">
-          Read More <ArrowRight size={17} />
+          View article <ArrowRight size={17} />
         </Link>
       </div>
     </article>

@@ -1,7 +1,8 @@
 import { newsArticles, type NewsArticle } from "../../data/news";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
 import { site } from "@/lib/site";
-import { sanitizeArticleHtml } from "@/lib/news-automation";
+import { sanitizeArticleHtml } from "@/lib/content-html";
+import { historicalNoindexNewsSlugs, newsToBlogRedirects } from "@/lib/news-rules";
 
 type NewsRow = {
   id: string;
@@ -66,9 +67,10 @@ function toArticle(row: NewsRow): NewsArticle {
   };
 }
 
-async function getDatabaseNews(slug?: string) {
+async function getDatabaseNews(slug?: string, includeNoindex = false) {
   const values: unknown[] = [];
   const slugSql = slug ? "and na.slug = $1" : "";
+  const indexSql = includeNoindex ? "" : "and na.robots not ilike '%noindex%'";
   if (slug) values.push(slug);
   const result = await query<NewsRow>(
     `select na.id, na.slug, coalesce(na.english_title, na.title) as title, na.excerpt, na.body_html, na.author,
@@ -80,7 +82,7 @@ async function getDatabaseNews(slug?: string) {
      left join news_categories nc on nc.id = na.category_id
      left join media_assets ma on ma.id = na.cover_image_id
      where na.deleted_at is null and na.status = 'published' and na.published_at is not null and na.published_at <= now()
-       and na.robots not ilike '%noindex%' and na.body_html is not null and na.excerpt is not null
+       ${indexSql} and na.body_html is not null and na.excerpt is not null
        and coalesce(na.cover_image_url, ma.url) is not null ${slugSql}
      order by na.published_at desc`,
     values,
@@ -112,26 +114,26 @@ async function getDatabaseBlog(slug?: string) {
 }
 
 export async function getPublishedNewsArticles() {
-  if (!hasDatabaseConfig()) return newsArticles;
+  if (!hasDatabaseConfig()) return [];
   try {
     const databaseArticles = await getDatabaseNews();
-    return databaseArticles.length > 0 ? databaseArticles : newsArticles;
+    return databaseArticles.filter((article) => !newsToBlogRedirects[article.slug] && !historicalNoindexNewsSlugs.has(article.slug));
   } catch (error) {
     console.error("[news] database read failed; using repository content", { message: error instanceof Error ? error.message : "unknown error" });
-    return newsArticles;
+    return [];
   }
 }
 
 export async function getPublishedNewsArticle(slug: string) {
   if (hasDatabaseConfig()) {
     try {
-      const rows = await getDatabaseNews(slug);
+      const rows = await getDatabaseNews(slug, historicalNoindexNewsSlugs.has(slug));
       if (rows[0]) return rows[0];
     } catch (error) {
       console.error("[news] article read failed; using repository content", { slug, message: error instanceof Error ? error.message : "unknown error" });
     }
   }
-  return newsArticles.find((article) => article.slug === slug);
+  return undefined;
 }
 
 export async function getPublishedBlogArticles() {

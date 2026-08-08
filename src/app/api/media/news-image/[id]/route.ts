@@ -1,7 +1,6 @@
 import { isIP } from "node:net";
 import { lookup } from "node:dns/promises";
 import { query } from "@/lib/admin/db";
-import { isSafeExternalUrl } from "@/lib/news-automation";
 
 export const runtime = "nodejs";
 export const revalidate = 86_400;
@@ -11,6 +10,15 @@ function isPrivateAddress(address: string) {
   if (address.startsWith("127.") || address.startsWith("10.") || address.startsWith("192.168.") || address.startsWith("169.254.")) return true;
   const match = /^172\.(\d+)\./.exec(address);
   return Boolean(match && Number(match[1]) >= 16 && Number(match[1]) <= 31);
+}
+
+function isSafeExternalUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && Boolean(url.hostname);
+  } catch {
+    return false;
+  }
 }
 
 async function assertPublicHost(url: URL) {

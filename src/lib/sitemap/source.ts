@@ -3,6 +3,7 @@ import { newsArticles } from "../../../data/news";
 import { products } from "../../../data/products";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
 import { site } from "@/lib/site";
+import { isIndexableNewsSlug } from "@/lib/news-rules";
 import { normalizeCanonicalUrl, normalizeLastmod, shouldIncludeCmsPage, type SitemapEntry } from "./core";
 
 const STATIC_PAGE_LASTMOD = "2026-07-08T13:13:04.000Z";
@@ -19,7 +20,6 @@ const indexablePages = [
   "/blog",
   "/contact",
   "/privacy-policy",
-  "/image-credits",
 ];
 
 const primaryCategorySlugs = new Set(["chrome-plated-rod", "honed-tube"]);
@@ -39,10 +39,7 @@ function staticEntries(): SitemapEntry[] {
     ...products
       .filter((product) => !categorySlugs.has(product.slug) && primaryProductCategories.has(product.category))
       .map((product) => ({ loc: absolute(`/products/${product.slug}`), lastmod: STATIC_PRODUCT_LASTMOD, kind: "products" as const })),
-    ...newsArticles.flatMap((article) => [
-      { loc: absolute(`/news/${article.slug}`), lastmod: normalizeLastmod(article.updatedAt), kind: "posts" as const },
-      { loc: absolute(`/blog/${article.slug}`), lastmod: normalizeLastmod(article.updatedAt), kind: "posts" as const },
-    ]),
+    ...newsArticles.map((article) => ({ loc: absolute(`/blog/${article.slug}`), lastmod: normalizeLastmod(article.updatedAt), kind: "posts" as const })),
   ];
 }
 
@@ -70,6 +67,7 @@ async function databaseEntries() {
     if (row.is_enabled && canonical === expectedUrl) entries.push({ loc: expectedUrl, lastmod: normalizeLastmod(row.updated_at), kind: "categories" });
   }
   for (const row of articleResult.rows) {
+    if (!isIndexableNewsSlug(row.slug)) continue;
     const expectedUrl = absolute(`/news/${encodeURIComponent(row.slug)}`);
     if (shouldIncludeCmsPage({ status: row.status, robots: row.robots, canonicalUrl: row.canonical_url, expectedUrl, sitemapEnabled: true })) {
       entries.push({ loc: expectedUrl, lastmod: normalizeLastmod(row.updated_at || row.published_at || STATIC_PAGE_LASTMOD), kind: "posts" });

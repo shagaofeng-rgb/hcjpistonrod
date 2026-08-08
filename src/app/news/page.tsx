@@ -6,12 +6,20 @@ import { Header } from "@/components/header";
 import { NewsCard } from "@/components/news-card";
 import { getPublishedNewsArticles } from "@/lib/news-content";
 
-export const metadata: Metadata = {
-  title: "News and Insights",
-  description:
-    "Practical piston rod, hard chrome plated rod, honed tube, and export packing knowledge for industrial buyers.",
-  alternates: { canonical: "/news" },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}): Promise<Metadata> {
+  const { category } = await searchParams;
+  return {
+    title: "News and Insights",
+    description:
+      "Practical piston rod, hard chrome plated rod, honed tube, and export packing knowledge for industrial buyers.",
+    alternates: { canonical: "/news" },
+    robots: category ? { index: false, follow: true } : undefined,
+  };
+}
 
 const filters = ["All", "Piston Rod", "Chrome Plated Rod", "Honed Tube", "Manufacturing", "Quality Control", "Purchasing Guide"];
 

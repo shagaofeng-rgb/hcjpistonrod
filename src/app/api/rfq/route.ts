@@ -89,7 +89,9 @@ export async function POST(request: Request) {
   const country = getString(formData, "country");
   const profile = getString(formData, "profile");
   const product = getString(formData, "product");
+  const volume = getString(formData, "volume");
   const message = getString(formData, "message");
+  const requirement = volume ? `${message}\n\nQuantity / Annual Volume: ${volume}` : message;
   const drawing = formData.get("drawing");
   const privacyConsent = formData.get("privacy") === "on";
 
@@ -156,7 +158,7 @@ export async function POST(request: Request) {
            privacy_consent, status, email_status, attachment_metadata, submitted_at)
          values ($1,'rfq',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,'en',true,'new','pending',$22::jsonb,$23)
          returning id`,
-        [number, name, company || null, email, phone || null, country || null, profile || null, message,
+        [number, name, company || null, email, phone || null, country || null, profile || null, requirement,
           product || null, source.sourcePage, source.pageUrl, source.sourceChannel, source.utmSource,
           source.utmMedium, source.utmCampaign, source.utmContent, source.utmTerm, source.referrer,
           ipHash, userAgent, device, JSON.stringify(attachmentMetadata), receivedAt],
@@ -167,7 +169,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const fields = { name, email, phone: phone || "Not specified", company: company || "Not specified", country: country || "Not specified", profile: profile || "Not specified", product: product || "Not specified" };
+  const fields = { name, email, phone: phone || "Not specified", company: company || "Not specified", country: country || "Not specified", profile: profile || "Not specified", product: product || "Not specified", volume: volume || "Not specified" };
   const subject = `New RFQ ${number} from ${name} - ${product || "Website inquiry"}`;
   try {
     await getEmailTransporter().sendMail({
@@ -179,9 +181,9 @@ export async function POST(request: Request) {
         `New RFQ ${number} from hcjpistonrod.com`, "", `Name: ${fields.name}`, `Email: ${fields.email}`,
         `Phone: ${fields.phone}`, `Company: ${fields.company}`, `Country: ${fields.country}`,
         `Buyer profile: ${fields.profile}`, `Product: ${fields.product}`, `Received at: ${receivedAt.toISOString()}`,
-        "", "Specification:", message,
+        "", "Specification:", requirement,
       ].join("\n"),
-      html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111411"><h2>New RFQ ${escapeHtml(number)}</h2><table cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:1px solid #d9ded6">${Object.entries(fields).map(([label, value]) => `<tr><th align="left" style="background:#eef1ec;border:1px solid #d9ded6">${escapeHtml(label)}</th><td style="border:1px solid #d9ded6">${escapeHtml(value)}</td></tr>`).join("")}<tr><th align="left" style="background:#eef1ec;border:1px solid #d9ded6">Received</th><td style="border:1px solid #d9ded6">${receivedAt.toISOString()}</td></tr></table><h3>Specification</h3><p>${escapeHtml(message).replaceAll("\n", "<br />")}</p></div>`,
+      html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111411"><h2>New RFQ ${escapeHtml(number)}</h2><table cellpadding="8" cellspacing="0" style="border-collapse:collapse;border:1px solid #d9ded6">${Object.entries(fields).map(([label, value]) => `<tr><th align="left" style="background:#eef1ec;border:1px solid #d9ded6">${escapeHtml(label)}</th><td style="border:1px solid #d9ded6">${escapeHtml(value)}</td></tr>`).join("")}<tr><th align="left" style="background:#eef1ec;border:1px solid #d9ded6">Received</th><td style="border:1px solid #d9ded6">${receivedAt.toISOString()}</td></tr></table><h3>Specification</h3><p>${escapeHtml(requirement).replaceAll("\n", "<br />")}</p></div>`,
       attachments,
     });
   } catch (error) {

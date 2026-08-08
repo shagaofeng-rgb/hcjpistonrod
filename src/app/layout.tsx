@@ -17,11 +17,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.hcjpistonrod.com"),
   title: {
-    default: "XIJIU Intelligent Equipment | Piston Rod and Chrome Plated Rod Manufacturer",
+    default: "Piston Rod, Hard Chrome Plated Rod & Honed Tube Manufacturer | XIJIU",
     template: "%s | XIJIU Intelligent Equipment",
   },
   description:
-    "XIJIU Intelligent Equipment supplies piston rods, hard chrome plated rods, honed tubes, and drawing-based precision hydraulic components.",
+    "XIJIU manufactures CK45 and 20MnV6 chrome plated rods, piston rods, honed tubes and SRB tubes with drawing-based machining for hydraulic cylinder OEMs worldwide.",
   keywords: [
     "piston rod manufacturer",
     "hard chrome plated rod supplier",
@@ -34,11 +34,12 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    title: "XIJIU Intelligent Equipment | Piston Rod and Chrome Plated Rod Manufacturer",
+    title: "Piston Rod, Hard Chrome Plated Rod & Honed Tube Manufacturer | XIJIU",
     description:
-      "Piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components for overseas B2B buyers.",
+      "XIJIU manufactures chrome plated rods, piston rods, honed tubes and SRB tubes for hydraulic cylinder OEM requirements.",
     url: "https://www.hcjpistonrod.com",
     siteName: "XIJIU Intelligent Equipment",
+    images: [{ url: "/images/og/home.jpg", width: 1200, height: 630, alt: "XIJIU Intelligent Equipment factory" }],
   },
   icons: {
     icon: [

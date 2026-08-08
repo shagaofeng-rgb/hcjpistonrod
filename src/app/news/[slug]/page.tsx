@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { FAQAccordion } from "@/components/faq-accordion";
 import { Footer } from "@/components/footer";
@@ -10,6 +10,7 @@ import { NewsCard } from "@/components/news-card";
 import { products, site } from "@/lib/site";
 import { newsArticles } from "../../../../data/news";
 import { getPublishedNewsArticle, getPublishedNewsArticles } from "@/lib/news-content";
+import { historicalNoindexNewsSlugs, newsToBlogRedirects } from "@/lib/news-rules";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -23,6 +24,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  if (newsToBlogRedirects[slug]) return { robots: { index: false, follow: true } };
   const article = await getPublishedNewsArticle(slug);
 
   if (!article) return {};
@@ -32,6 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: article.excerpt,
     keywords: [article.category, ...article.relatedProducts, "hydraulic piston rod news", "chrome plated rod supplier"],
     alternates: { canonical: `/news/${article.slug}` },
+    robots: historicalNoindexNewsSlugs.has(article.slug) ? { index: false, follow: true } : undefined,
     openGraph: {
       title: article.title,
       description: article.excerpt,
@@ -44,6 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NewsDetailPage({ params }: Props) {
   const { slug } = await params;
+  if (newsToBlogRedirects[slug]) permanentRedirect(newsToBlogRedirects[slug]);
   const article = await getPublishedNewsArticle(slug);
 
   if (!article) notFound();
@@ -70,7 +74,7 @@ export default async function NewsDetailPage({ params }: Props) {
     mainEntityOfPage: articleUrl,
     articleSection: article.category,
     keywords: [article.category, ...article.relatedProducts].join(", "),
-    about: relatedProducts.map((product) => ({ "@type": "Product", name: product.name, url: `${site.domain}/products/${product.slug}` })),
+    about: relatedProducts.map((product) => ({ "@type": "Thing", name: product.name, url: `${site.domain}/products/${product.slug}` })),
   };
 
   const breadcrumbJsonLd = {
@@ -106,7 +110,7 @@ export default async function NewsDetailPage({ params }: Props) {
     <>
       <Header />
       <main>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+        {!historicalNoindexNewsSlugs.has(article.slug) && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />

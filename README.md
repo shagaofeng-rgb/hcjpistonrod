@@ -105,19 +105,6 @@ The `/api/rfq` route sends form submissions through SMTP. Configure these enviro
 - `SMTP_FROM_NAME`
 - `RFQ_TO_EMAIL`
 
-## News and Blog Automation
+## Manual News and Blog Workflow
 
-The News/Blog frontend reads published PostgreSQL articles when `DATABASE_URL` is configured and safely falls back to the repository articles when the database is unavailable. The protected Vercel cron collects recent RSS or configured News API candidates, enforces source age, relevance, language, and duplicate checks, generates original attributed editorial content through a configured AI provider, and stores either drafts or published articles according to `NEWS_AUTO_PUBLISH`.
-
-Required production activation variables:
-
-- `DATABASE_URL`
-- `NEWS_FEED_URLS` or `NEWS_API_KEY` plus `NEWS_API_ENDPOINT`
-- `AI_PROVIDER_API_KEY`, `OPENAI_API_KEY`, or Vercel's automatically provided `VERCEL_OIDC_TOKEN`
-- `AI_PROVIDER_MODEL`
-- `NEWS_AUTO_PUBLISH` (`false` for editorial review, `true` for automatic publication)
-- `CRON_SECRET`
-
-Run `pnpm admin:migrate` before activation. Every generated article retains its attributed source URL and uses a XIJIU-owned factory image. The published-record-only image proxy remains available for explicitly approved external media and enforces URL, DNS, MIME type, timeout, and size checks.
-
-Repository content can be synchronized idempotently into PostgreSQL with `pnpm content:sync`. Generated articles use XIJIU-owned factory photography for their published cover image; third-party RSS images are not republished.
+News and Blog content is managed manually in the Chinese admin backend. A draft must complete technical and marketing review before an authorized administrator publishes it. The website does not collect external news feeds, generate articles, or schedule automatic publication. See `docs/hcj-content-operations.md` for the required review record and publication checks.
