@@ -114,14 +114,14 @@ export default async function NewsDetailPage({ params }: Props) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
-        <section className="bg-white py-14">
+        <section className="bg-white py-10 md:py-14">
           <div className="container">
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "News", href: "/news" }, { label: article.title }]} />
             <p className="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">{article.category}</p>
-            <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">
+            <h1 className="mt-3 max-w-4xl break-words text-3xl font-semibold leading-tight text-[var(--ink)] [overflow-wrap:anywhere] sm:text-4xl md:text-5xl">
               {article.title}
             </h1>
-            <p className="mt-4 text-sm font-semibold text-[var(--steel)]">
+            <p className="mt-4 flex flex-wrap gap-x-2 gap-y-1 text-sm font-semibold leading-6 text-[var(--steel)]">
               By {article.author} | Published {article.date} | Updated {article.updatedAt}
             </p>
           </div>
@@ -129,21 +129,21 @@ export default async function NewsDetailPage({ params }: Props) {
 
         <section className="section pt-0">
           <div className="container">
-            <div className="relative aspect-[16/7] overflow-hidden rounded-md bg-[var(--muted)]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-[var(--muted)] sm:aspect-[16/7]">
               <Image
                 src={article.image}
                 alt={article.imageAlt}
                 fill
                 priority
                 className="object-cover"
-                sizes="100vw"
+                sizes="(max-width: 640px) 100vw, 1280px"
               />
             </div>
           </div>
         </section>
 
         <section className="section">
-          <div className="container grid gap-10 lg:grid-cols-[0.32fr_1fr]">
+          <div className="container grid gap-8 lg:grid-cols-[0.32fr_1fr] lg:gap-10">
             <aside className="rounded-md border border-[var(--line)] bg-white p-5 lg:sticky lg:top-28 lg:self-start">
               <h2 className="text-lg font-semibold text-[var(--ink)]">Table of Contents</h2>
               <div className="mt-4 grid gap-2 text-sm text-[var(--steel)]">
@@ -158,14 +158,14 @@ export default async function NewsDetailPage({ params }: Props) {
                 <a href="#faq" className="hover:text-[var(--teal)]">FAQ</a>
               </div>
             </aside>
-            <article className="grid gap-8">
-              <section id="summary" className="rounded-md border border-[var(--line)] bg-white p-6">
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">AI Search Summary</h2>
+            <article className="grid min-w-0 gap-6 sm:gap-8">
+              <section id="summary" className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">Technical Summary</h2>
                 <p className="mt-4 text-base leading-8 text-[var(--steel)]">{article.geoSummary}</p>
               </section>
 
-              <section id="key-takeaways" className="rounded-md border border-[var(--line)] bg-white p-6">
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">Key Takeaways</h2>
+              <section id="key-takeaways" className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">Key Takeaways</h2>
                 <ul className="mt-4 grid gap-3 text-base leading-7 text-[var(--steel)]">
                   {article.keyTakeaways.map((item) => (
                     <li key={item}>- {item}</li>
@@ -174,23 +174,23 @@ export default async function NewsDetailPage({ params }: Props) {
               </section>
 
               {article.bodyHtml ? (
-                <section className="rounded-md border border-[var(--line)] bg-white p-6">
+                <section className="min-w-0 rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
                   <div className="prose-news" dangerouslySetInnerHTML={{ __html: article.bodyHtml }} />
                 </section>
               ) : article.sections.map((section) => (
-                <section key={section.heading} id={section.heading.toLowerCase().replace(/[^a-z0-9]+/g, "-")} className="rounded-md border border-[var(--line)] bg-white p-6">
-                  <h2 className="text-3xl font-semibold text-[var(--ink)]">{section.heading}</h2>
+                <section key={section.heading} id={section.heading.toLowerCase().replace(/[^a-z0-9]+/g, "-")} className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                  <h2 className="break-words text-2xl font-semibold leading-tight text-[var(--ink)] [overflow-wrap:anywhere] sm:text-3xl">{section.heading}</h2>
                   <p className="mt-4 text-base leading-8 text-[var(--steel)]">{section.body}</p>
                 </section>
               ))}
 
-              {article.faqs.length > 0 && <section id="faq" className="rounded-md border border-[var(--line)] bg-white p-6">
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">FAQ</h2>
+              {article.faqs.length > 0 && <section id="faq" className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">FAQ</h2>
                 <div className="mt-5"><FAQAccordion items={article.faqs} /></div>
               </section>}
 
-              <section className="rounded-md border border-[var(--line)] bg-white p-6">
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">Related Products</h2>
+              {relatedProducts.length > 0 && <section className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">Related Products</h2>
                 <div className="mt-4 flex flex-wrap gap-3">
                   {relatedProducts.map((product) => (
                     <Link key={product.slug} href={`/products/${product.slug}`} className="rounded-md border border-[var(--line)] px-4 py-2 text-sm font-semibold text-[var(--teal)]">
@@ -198,10 +198,10 @@ export default async function NewsDetailPage({ params }: Props) {
                     </Link>
                   ))}
                 </div>
-              </section>
+              </section>}
 
-              <section id="source" className="rounded-md border border-[var(--line)] bg-white p-6">
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">Source Information</h2>
+              <section id="source" className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">Source Information</h2>
                 <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
                   <div className="rounded-md bg-[var(--muted)] p-4">
                     <dt className="font-semibold text-[var(--ink)]">Source title</dt>
@@ -225,8 +225,8 @@ export default async function NewsDetailPage({ params }: Props) {
                 </a>
               </section>
 
-              <section className="rounded-md border border-[var(--line)] bg-[#071428] p-6 text-white">
-                <h2 className="text-3xl font-semibold">Need technical support?</h2>
+              <section className="rounded-md border border-[var(--line)] bg-[#071428] p-4 text-white sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">Need technical support?</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-white/72">
                   Send drawings, specifications, or purchasing questions. XIJIU will help review your piston rod, chrome plated rod, honed tube, or rod component requirements.
                 </p>
@@ -235,12 +235,12 @@ export default async function NewsDetailPage({ params }: Props) {
                 </Link>
               </section>
 
-              <section>
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">Related Articles</h2>
+              {relatedArticles.length > 0 && <section>
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">Related Articles</h2>
                 <div className="mt-5 grid gap-5 md:grid-cols-2">
                   {relatedArticles.map((item) => <NewsCard key={item.slug} article={item} />)}
                 </div>
-              </section>
+              </section>}
             </article>
           </div>
         </section>

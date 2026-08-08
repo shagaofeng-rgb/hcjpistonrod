@@ -74,12 +74,12 @@ export default async function BlogDetailPage({ params }: Props) {
       <Header />
       <main>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-        <section className="bg-white py-14">
+        <section className="bg-white py-10 md:py-14">
           <div className="container">
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: article.title }]} />
             <p className="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--amber)]">{article.category}</p>
-            <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight text-[var(--ink)] md:text-5xl">{article.title}</h1>
-            <p className="mt-4 text-sm font-semibold text-[var(--steel)]">
+            <h1 className="mt-3 max-w-4xl break-words text-3xl font-semibold leading-tight text-[var(--ink)] [overflow-wrap:anywhere] sm:text-4xl md:text-5xl">{article.title}</h1>
+            <p className="mt-4 flex flex-wrap gap-x-2 gap-y-1 text-sm font-semibold leading-6 text-[var(--steel)]">
               By {article.author} | Published {article.date} | Updated {article.updatedAt}
             </p>
           </div>
@@ -87,14 +87,14 @@ export default async function BlogDetailPage({ params }: Props) {
 
         <section className="section pt-0">
           <div className="container">
-            <div className="relative aspect-[16/7] overflow-hidden rounded-md bg-[var(--muted)]">
-              <Image src={article.image} alt={article.imageAlt} fill priority className="object-cover" sizes="100vw" />
+            <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-[var(--muted)] sm:aspect-[16/7]">
+              <Image src={article.image} alt={article.imageAlt} fill priority className="object-cover" sizes="(max-width: 640px) 100vw, 1280px" />
             </div>
           </div>
         </section>
 
         <section className="section">
-          <div className="container grid gap-10 lg:grid-cols-[0.32fr_1fr]">
+          <div className="container grid gap-8 lg:grid-cols-[0.32fr_1fr] lg:gap-10">
             <aside className="rounded-md border border-[var(--line)] bg-white p-5 lg:sticky lg:top-28 lg:self-start">
               <h2 className="text-lg font-semibold text-[var(--ink)]">Article Summary</h2>
               <ul className="mt-4 grid gap-2 text-sm leading-6 text-[var(--steel)]">
@@ -104,25 +104,25 @@ export default async function BlogDetailPage({ params }: Props) {
               </ul>
             </aside>
 
-            <article className="grid gap-8">
-              <section className="rounded-md border border-[var(--line)] bg-white p-6">
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">AI Search Summary</h2>
+            <article className="grid min-w-0 gap-6 sm:gap-8">
+              <section className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">Technical Summary</h2>
                 <p className="mt-4 text-base leading-8 text-[var(--steel)]">{article.geoSummary}</p>
               </section>
 
               {article.bodyHtml ? (
-                <section className="rounded-md border border-[var(--line)] bg-white p-6">
+                <section className="min-w-0 rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
                   <div className="prose-news" dangerouslySetInnerHTML={{ __html: article.bodyHtml }} />
                 </section>
               ) : article.sections.map((section) => (
-                <section key={section.heading} className="rounded-md border border-[var(--line)] bg-white p-6">
-                  <h2 className="text-3xl font-semibold text-[var(--ink)]">{section.heading}</h2>
+                <section key={section.heading} className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                  <h2 className="break-words text-2xl font-semibold leading-tight text-[var(--ink)] [overflow-wrap:anywhere] sm:text-3xl">{section.heading}</h2>
                   <p className="mt-4 text-base leading-8 text-[var(--steel)]">{section.body}</p>
                 </section>
               ))}
 
-              {article.faqs.length > 0 && <section className="rounded-md border border-[var(--line)] bg-white p-6">
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">Related Products</h2>
+              {relatedProducts.length > 0 && <section className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">Related Products</h2>
                 <div className="mt-4 flex flex-wrap gap-3">
                   {relatedProducts.map((product) => (
                     <Link key={product.slug} href={`/products/${product.slug}`} className="rounded-md border border-[var(--line)] px-4 py-2 text-sm font-semibold text-[var(--teal)]">
@@ -132,21 +132,21 @@ export default async function BlogDetailPage({ params }: Props) {
                 </div>
               </section>}
 
-              <section className="rounded-md border border-[var(--line)] bg-white p-6">
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">FAQ</h2>
+              {article.faqs.length > 0 && <section className="rounded-md border border-[var(--line)] bg-white p-4 sm:p-6">
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">FAQ</h2>
                 <div className="mt-5">
                   <FAQAccordion items={article.faqs} />
                 </div>
-              </section>
+              </section>}
 
-              <section>
-                <h2 className="text-3xl font-semibold text-[var(--ink)]">More Technical Articles</h2>
+              {relatedArticles.length > 0 && <section>
+                <h2 className="text-2xl font-semibold leading-tight text-[var(--ink)] sm:text-3xl">More Technical Articles</h2>
                 <div className="mt-5 grid gap-5 md:grid-cols-2">
                   {relatedArticles.map((item) => (
                     <NewsCard key={item.slug} article={item} hrefBase="/blog" />
                   ))}
                 </div>
-              </section>
+              </section>}
             </article>
           </div>
         </section>

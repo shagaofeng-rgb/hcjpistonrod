@@ -77,20 +77,49 @@ html {
   overflow: hidden;
 }
 
+.prose-news {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.prose-news > :first-child { margin-top: 0; }
+
 .prose-news h2,
 .prose-news h3 {
   margin-top: 1.75rem;
   color: var(--ink);
   font-weight: 650;
   line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
-.prose-news h2 { font-size: 1.75rem; }
-.prose-news h3 { font-size: 1.3rem; }
+.prose-news h2 { font-size: clamp(1.5rem, 3vw, 1.75rem); }
+.prose-news h3 { font-size: clamp(1.2rem, 2.4vw, 1.3rem); }
 .prose-news p,
-.prose-news li { margin-top: 0.9rem; color: var(--steel); line-height: 1.9; }
+.prose-news li { margin-top: 0.9rem; color: var(--steel); font-size: 1rem; line-height: 1.9; }
 .prose-news ul,
 .prose-news ol { margin-top: 1rem; padding-left: 1.35rem; }
 .prose-news ul { list-style: disc; }
 .prose-news ol { list-style: decimal; }
-.prose-news a { color: var(--teal); text-decoration: underline; }
+.prose-news a { color: var(--teal); overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 0.15em; }
+.prose-news blockquote { margin-top: 1.25rem; border-left: 3px solid var(--cyan); padding-left: 1rem; color: var(--steel); font-style: italic; }
+.prose-news img { display: block; width: 100%; max-width: 100%; height: auto; margin-top: 1.25rem; object-fit: contain; }
+.prose-news table { display: block; width: 100%; max-width: 100%; margin-top: 1.25rem; overflow-x: auto; border-collapse: collapse; border: 1px solid var(--line); }
+.prose-news th,
+.prose-news td { min-width: 7.5rem; border: 1px solid var(--line); padding: 0.7rem 0.8rem; text-align: left; vertical-align: top; color: var(--steel); line-height: 1.55; }
+.prose-news th { background: var(--muted); color: var(--ink); font-weight: 650; }
+.prose-news pre,
+.prose-news code { display: none; }
+
+@media (max-width: 640px) {
+  .prose-news h2,
+  .prose-news h3 { margin-top: 1.5rem; }
+  .prose-news p,
+  .prose-news li { font-size: 0.975rem; line-height: 1.8; }
+  .prose-news ul,
+  .prose-news ol { padding-left: 1.15rem; }
+  .prose-news th,
+  .prose-news td { min-width: 7rem; padding: 0.6rem 0.7rem; font-size: 0.9rem; }
+}
