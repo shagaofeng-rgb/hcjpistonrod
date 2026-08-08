@@ -27,6 +27,7 @@ type NewsRow = {
   source_language: string | null;
   geo_summary: string | null;
   key_takeaways: string[] | null;
+  content_channel: "news" | "blog";
 };
 
 function toIso(value: Date | string) {
@@ -77,11 +78,11 @@ async function getDatabaseNews(slug?: string, includeNoindex = false) {
       coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt,
       coalesce(nc.english_name, nc.name, 'Industry News') as category, na.tags, na.related_products,
       na.published_at, na.updated_at, na.source_title, na.source_publisher, na.source_author, na.source_url,
-      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways
+      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways, na.content_channel
      from news_articles na
      left join news_categories nc on nc.id = na.category_id
      left join media_assets ma on ma.id = na.cover_image_id
-     where na.deleted_at is null and na.status = 'published' and na.published_at is not null and na.published_at <= now()
+     where na.deleted_at is null and na.content_channel = 'news' and na.status = 'published' and na.published_at is not null and na.published_at <= now()
        ${indexSql} and na.body_html is not null and na.excerpt is not null
        and coalesce(na.cover_image_url, ma.url) is not null ${slugSql}
      order by na.published_at desc`,
@@ -99,11 +100,11 @@ async function getDatabaseBlog(slug?: string) {
       coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt,
       coalesce(nc.english_name, nc.name, 'Industry News') as category, na.tags, na.related_products,
       na.published_at, na.updated_at, na.source_title, na.source_publisher, na.source_author, na.source_url,
-      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways
+      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways, na.content_channel
      from news_articles na
      left join news_categories nc on nc.id = na.category_id
      left join media_assets ma on ma.id = na.cover_image_id
-     where na.deleted_at is null and na.status = 'published' and na.published_at is not null and na.published_at <= now()
+     where na.deleted_at is null and na.content_channel = 'blog' and na.status = 'published' and na.published_at is not null and na.published_at <= now()
        and na.robots not ilike '%noindex%' and na.body_html is not null and na.excerpt is not null
        and coalesce(na.cover_image_url, ma.url) is not null
        and coalesce(na.automation_notes, '') not ilike 'Automatically generated%' ${slugSql}

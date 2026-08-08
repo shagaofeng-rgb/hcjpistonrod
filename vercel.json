@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/sitemap",
       "schedule": "20 2 */3 * *"
+    },
+    {
+      "path": "/api/cron/editorial",
+      "schedule": "5 3 * * *"
     }
   ]
 }

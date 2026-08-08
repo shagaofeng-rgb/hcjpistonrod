@@ -5,9 +5,10 @@
 1. Create a Draft from approved first-party facts or an original technical resource.
 2. Complete technical review: product facts, process statements, drawings, test records and image rights.
 3. Complete marketing review: brand language, clarity, originality, metadata and internal links.
-4. An authorized administrator manually publishes the item and records the publisher, review status and update time.
+4. For Blog items with standing owner authorization, set `content_channel = blog`, `auto_publish_approved = true` and an `auto_publish_at` time. Vercel publishes at most one due item per scheduled run and writes an audit record.
+5. All other content is published manually by an authorized administrator, who records the publisher, review status and update time.
 
-News is limited to verifiable first-party company events. Blog is limited to original, enduring technical guidance. No external feed, AI-generated text, scheduled task or webhook may create or publish either type.
+News is limited to verifiable first-party company events and is never published by the scheduler. Blog is limited to original, enduring technical guidance. The scheduler only publishes prewritten, owner-approved Blog drafts stored in the controlled editorial library; it does not use external feeds, RSS, third-party news or a generative API.
 
 ## Draft checks
 

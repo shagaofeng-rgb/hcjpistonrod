@@ -45,13 +45,13 @@ function staticEntries(): SitemapEntry[] {
 
 type ProductRow = { slug: string; status: string; robots: string; canonical_url: string | null; sitemap_enabled: boolean; published_at: Date | null; updated_at: Date };
 type CategoryRow = { slug: string; canonical_url: string | null; is_enabled: boolean; updated_at: Date };
-type ArticleRow = { slug: string; status: string; robots: string; canonical_url: string | null; published_at: Date | null; updated_at: Date };
+type ArticleRow = { slug: string; content_channel: "news" | "blog"; status: string; robots: string; canonical_url: string | null; published_at: Date | null; updated_at: Date };
 
 async function databaseEntries() {
   const [productResult, categoryResult, articleResult] = await Promise.all([
     query<ProductRow>(`select slug, status, robots, canonical_url, sitemap_enabled, published_at, updated_at from products_cms where deleted_at is null and status = 'published'`),
     query<CategoryRow>(`select slug, canonical_url, is_enabled, updated_at from product_categories_cms where deleted_at is null and is_enabled = true`),
-    query<ArticleRow>(`select slug, status, robots, canonical_url, published_at, updated_at from news_articles where deleted_at is null and status = 'published' and published_at is not null and published_at <= now()`),
+    query<ArticleRow>(`select slug, content_channel, status, robots, canonical_url, published_at, updated_at from news_articles where deleted_at is null and status = 'published' and published_at is not null and published_at <= now()`),
   ]);
 
   const entries: SitemapEntry[] = [];
@@ -67,8 +67,8 @@ async function databaseEntries() {
     if (row.is_enabled && canonical === expectedUrl) entries.push({ loc: expectedUrl, lastmod: normalizeLastmod(row.updated_at), kind: "categories" });
   }
   for (const row of articleResult.rows) {
-    if (!isIndexableNewsSlug(row.slug)) continue;
-    const expectedUrl = absolute(`/news/${encodeURIComponent(row.slug)}`);
+    if (row.content_channel === "news" && !isIndexableNewsSlug(row.slug)) continue;
+    const expectedUrl = absolute(`/${row.content_channel}/${encodeURIComponent(row.slug)}`);
     if (shouldIncludeCmsPage({ status: row.status, robots: row.robots, canonicalUrl: row.canonical_url, expectedUrl, sitemapEnabled: true })) {
       entries.push({ loc: expectedUrl, lastmod: normalizeLastmod(row.updated_at || row.published_at || STATIC_PAGE_LASTMOD), kind: "posts" });
     }
