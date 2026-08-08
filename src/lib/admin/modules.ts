@@ -31,7 +31,7 @@ export const adminModules = [
 export const moduleContent = {
   products: {
     title: "产品管理",
-    description: "查看、检索和导出当前前台发布的产品内容、分类归属、前台链接和SEO状态。",
+    description: "查看、检索和导出 CMS 中的产品记录、分类归属、前台链接和 SEO 状态；公开产品页面仍使用版本化内容并由同步任务对齐。",
     apiModule: "products",
     columns: ["产品名称", "型号", "Slug", "状态", "前台链接", "分类"],
     actions: ["检索", "导出", "刷新"],
@@ -59,7 +59,7 @@ export const moduleContent = {
   },
   analytics: {
     title: "访问分析",
-    description: "查看当前网站内容规模和访问数据源状态。",
+    description: "仅展示已同步到本站数据库的真实访问汇总；Vercel Web Analytics 的连接状态在数据概览中显示。",
     apiModule: "analytics",
     columns: ["范围", "访问量", "访客数", "维度值", "转化", "日期"],
     actions: ["检索", "导出", "刷新"],
@@ -101,7 +101,7 @@ export const moduleContent = {
   },
   sync: {
     title: "数据同步",
-    description: "查看网站内容、客户表单和外部SEO数据源的连接状态。",
+    description: "查看数据库中已登记的数据源及其最近一次真实同步状态；外部服务配置状态在数据概览中显示。",
     apiModule: "sync",
     columns: ["数据源", "类型", "配置状态", "连接状态", "最后同步", "下次运行"],
     actions: ["检索", "导出", "刷新"],

@@ -6,7 +6,7 @@ import type { AdminDateRange } from "@/lib/admin/date-range";
 import type { AdminTableRow } from "@/lib/admin/site-data";
 import { AdminTimeRangeFilter } from "./admin-time-range-filter";
 
-export function AdminDataTable({ title, columns, rows, range }: { title: string; columns: readonly string[]; rows: AdminTableRow[]; range: AdminDateRange }) {
+export function AdminDataTable({ title, columns, rows, range, emptyMessage }: { title: string; columns: readonly string[]; rows: AdminTableRow[]; range: AdminDateRange; emptyMessage?: string }) {
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 20;
@@ -38,7 +38,7 @@ export function AdminDataTable({ title, columns, rows, range }: { title: string;
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
           <input
             className="h-10 w-full rounded-md border border-[#d3e0e7] pl-10 pr-3 text-sm outline-none ring-[#19a9e5]/20 focus:ring-4"
-            placeholder="搜索当前真实数据"
+            placeholder="搜索当前数据"
             value={keyword}
             onChange={(event) => { setKeyword(event.target.value); setPage(1); }}
           />
@@ -61,14 +61,14 @@ export function AdminDataTable({ title, columns, rows, range }: { title: string;
                 {row.cells.map((cell, index) => <td key={`${row.id}-${index}`} className="max-w-[320px] truncate px-4 py-3 text-[#526a7c]" title={cell}>{cell}</td>)}
               </tr>
             )) : (
-              <tr><td colSpan={columns.length} className="px-4 py-16 text-center text-sm text-slate-500">没有匹配的数据。</td></tr>
+              <tr><td colSpan={columns.length} className="px-4 py-16 text-center text-sm leading-6 text-slate-500">{emptyMessage || "当前所选时间范围内暂无真实记录。"}</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d3e0e7] p-4 text-sm text-[#526a7c]">
-        <span>{range.label}：共 {filtered.length} 条真实记录，每页 {pageSize} 条</span>
+        <span>{range.label}：共 {filtered.length} 条记录，每页 {pageSize} 条</span>
         <div className="flex items-center gap-2">
           <button type="button" disabled={currentPage <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} className="h-9 rounded-md border border-[#d3e0e7] px-3 transition hover:border-[#0068ae] disabled:opacity-40">上一页</button>
           <span className="grid h-9 min-w-9 place-items-center rounded-md bg-[#0068ae] px-2 text-white">{currentPage}/{totalPages}</span>
