@@ -1,5 +1,6 @@
 import { runScheduledBlogPublication } from "@/lib/editorial-autopublish";
 import { runSitemapMaintenance } from "@/lib/sitemap/service";
+import { revalidatePath } from "next/cache";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -13,6 +14,12 @@ export async function GET(request: Request) {
 
   const publication = await runScheduledBlogPublication();
   if (!publication.ok) return Response.json(publication, { status: 500 });
+
+  if (publication.published) {
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${publication.article.slug}`);
+    revalidatePath("/sitemap.xml");
+  }
 
   const sitemap = publication.published
     ? await runSitemapMaintenance({ trigger: "content-change", submit: false })
