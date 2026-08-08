@@ -65,7 +65,7 @@ for (const path of keyPaths) {
     assert(item.body.includes(`Sitemap: ${productionOrigin}/sitemap.xml`), "robots.txt is missing the production sitemap index");
     assert(contentType.includes("text/plain"), "robots.txt has the wrong content type");
   } else {
-    assertHtml(path, item.body);
+    assertHtml(new URL(item.response.url).pathname, item.body);
   }
   results.push({ path, status: item.response.status, bytes: item.body.length, durationMs: item.durationMs });
 }
