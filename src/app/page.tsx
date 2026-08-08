@@ -16,7 +16,7 @@ import {
 import { AdvantageCard } from "@/components/advantage-card";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { HeroSlider } from "@/components/hero-slider";
+import { Hero } from "@/components/hero-slider";
 import { NewsCard } from "@/components/news-card";
 import { ProductCard } from "@/components/product-card";
 import { StatsCounter } from "@/components/stats-counter";
@@ -138,7 +138,7 @@ export default async function Home() {
       <Header />
       <main>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
-        <HeroSlider />
+        <Hero />
 
         <section className="border-b border-[var(--line)] bg-[var(--background)] py-7">
           <div className="container">
