@@ -35,6 +35,21 @@ Date: 2026-08-08
 | Filtered News page | `noindex, follow` metadata confirmed |
 | Sitemap exclusions | Redirected and three historical automatic News URLs absent |
 
+## Production verification
+
+Deployment: `dpl_7M8go7HZGcKEJJmeJ9ALfsrJyW2G` (Vercel production, Ready on 2026-08-08).
+
+| Production URL / check | Result |
+| --- | --- |
+| `/`, `/products/honed-tube`, `/products/chrome-plated-rod`, `/products/piston-rod` | HTTP 200 |
+| `/news/choose-hard-chrome-plated-rod-for-mobile-machinery` | HTTP 301 to the matching `/blog/` URL |
+| Preserved automatic News sample | HTTP 200 with `noindex, follow` |
+| `/sitemap.xml` | HTTP 200; migrated and retained historical automatic News URLs absent |
+| `/robots.txt`, `/llms.txt` | HTTP 200 |
+| Product schema sample | `ItemPage` present; no `Product` JSON-LD emitted |
+
+Cold-request timing captured from the verification host: home 2.04 s total, core product pages 1.52-1.70 s, retained News page 1.37 s. These are network-inclusive single samples, not a synthetic performance score.
+
 ## Known limits and next data requirements
 
 - Product copy intentionally avoids unverified numeric capability, certification, price, MOQ, lead-time and order-specific specification claims. The outstanding fact fields are tracked in `docs/hcj-product-data-gaps.md`.
