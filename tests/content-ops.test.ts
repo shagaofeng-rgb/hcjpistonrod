@@ -4,6 +4,7 @@ import { topicRotation } from "../src/lib/content-ops/catalog";
 import { getContentOpsConfig } from "../src/lib/content-ops/config";
 import { generateDeterministicDraft } from "../src/lib/content-ops/generator";
 import { createGithubContentCommit } from "../src/lib/content-ops/github";
+import { renderControlledMarkdown } from "../src/lib/content-ops/markdown";
 import { selectNextTopic } from "../src/lib/content-ops/rotation";
 import { buildValidation, similarity, validateSource } from "../src/lib/content-ops/validators";
 
@@ -45,6 +46,27 @@ test("draft_only configuration cannot publish", () => {
   if (previous.dry === undefined) delete process.env.CONTENT_OPS_DRY_RUN; else process.env.CONTENT_OPS_DRY_RUN = previous.dry;
   if (previous.mode === undefined) delete process.env.PUBLISH_MODE; else process.env.PUBLISH_MODE = previous.mode;
   if (previous.auto === undefined) delete process.env.AUTO_PUBLISH; else process.env.AUTO_PUBLISH = previous.auto;
+});
+
+test("all production publishing switches must be enabled", () => {
+  const previous = { enabled: process.env.CONTENT_OPS_ENABLED, dry: process.env.CONTENT_OPS_DRY_RUN, mode: process.env.PUBLISH_MODE, auto: process.env.AUTO_PUBLISH };
+  process.env.CONTENT_OPS_ENABLED = "true";
+  process.env.CONTENT_OPS_DRY_RUN = "false";
+  process.env.PUBLISH_MODE = "auto";
+  process.env.AUTO_PUBLISH = "true";
+  assert.equal(getContentOpsConfig().canPublish, true);
+  if (previous.enabled === undefined) delete process.env.CONTENT_OPS_ENABLED; else process.env.CONTENT_OPS_ENABLED = previous.enabled;
+  if (previous.dry === undefined) delete process.env.CONTENT_OPS_DRY_RUN; else process.env.CONTENT_OPS_DRY_RUN = previous.dry;
+  if (previous.mode === undefined) delete process.env.PUBLISH_MODE; else process.env.PUBLISH_MODE = previous.mode;
+  if (previous.auto === undefined) delete process.env.AUTO_PUBLISH; else process.env.AUTO_PUBLISH = previous.auto;
+});
+
+test("controlled markdown renderer creates presentation HTML without executable markup", () => {
+  const html = renderControlledMarkdown("# Hidden title\n\n## Checklist\n\n| Input | Why |\n| --- | --- |\n| Drawing | Review |\n\n<script>alert(1)</script>");
+  assert.match(html, /<h2>Checklist<\/h2>/);
+  assert.match(html, /<table>/);
+  assert.doesNotMatch(html, /<script>/);
+  assert.match(html, /&lt;script&gt;/);
 });
 
 test("GitHub adapter refuses to write without server-side credentials", async () => {

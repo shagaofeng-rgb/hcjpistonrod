@@ -19,7 +19,7 @@ PUBLISH_MODE=draft_only
 AUTO_PUBLISH=false
 ```
 
-All four conditions must be explicitly changed before any publication adapter can run. Existing manual publication review remains the source of truth for public content. A generated draft must also pass source, product-scope, factual-claim, duplication, content-quality, link, image-rights and SEO validation. Product performance, certification, dimensions, standards and customer claims are not generated without an approved product fact and a project-specific source.
+All four conditions must be explicitly changed before any publication adapter can run. In this site, a validated record is published through the existing PostgreSQL Blog CMS, which keeps the public page, canonical URL and sitemap in the same content source. A generated draft must also pass source, product-scope, factual-claim, duplication, content-quality, link, image-rights and SEO validation. Product performance, certification, dimensions, standards and customer claims are not generated without an approved product fact and a project-specific source.
 
 ## Local dry run and review
 
@@ -36,9 +36,9 @@ Add a source only after verifying its official/public URL, permitted access, dat
 
 ## Publishing, rollback and emergency stop
 
-The GitHub adapter is server-only and needs a GitHub fine-grained token limited to repository Contents read/write. Store `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BRANCH` and `GITHUB_CONTENT_TOKEN` only in Vercel. It reads the latest file SHA before writing, uses a content-derived idempotency key and records the resulting commit SHA.
+The optional GitHub adapter is server-only and needs a GitHub fine-grained token limited to repository Contents read/write. It is not the active publishing path because this site already has a PostgreSQL content CMS. The CMS publisher is idempotent by article slug, records the public CMS ID in `content_ops_article_records`, writes a publishing log, and revalidates the Blog and sitemap paths after a successful production request.
 
-To stop every content task immediately, set `CONTENT_OPS_ENABLED=false` in Vercel. To return a record to a non-public state, set its `content_ops_article_records.status` to `draft` and clear `published_at`/`source_commit`; no audit record is deleted. The pre-change Git tag and logical database snapshot recorded in the deployment report provide rollback references.
+To stop every content task immediately, set `CONTENT_OPS_ENABLED=false` in Vercel. To return a record to a non-public state, change the linked `news_articles.status` to `draft`, then set its `content_ops_article_records.status` to `draft` and clear `published_at`/`published_article_id`/`source_commit`; no audit record is deleted. The pre-change Git tag and logical database snapshot recorded in the deployment report provide rollback references.
 
 ## Search Console
 

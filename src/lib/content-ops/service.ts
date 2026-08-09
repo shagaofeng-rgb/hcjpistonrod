@@ -2,7 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import { approvedNewsSources } from "./catalog";
 import { getContentOpsConfig } from "./config";
 import { generateDeterministicDraft } from "./generator";
-import { addCandidate, recentContentArticles, storeDraft, storeNewsSources, storeRun, syncGovernedCatalog } from "./repository";
+import { addCandidate, publishControlledArticle, recentContentArticles, storeDraft, storeNewsSources, storeRun, syncGovernedCatalog } from "./repository";
 import { selectNextTopic } from "./rotation";
 import { buildValidation, contentHash } from "./validators";
 
@@ -60,8 +60,16 @@ export async function runArticleCycle(): Promise<RunResult> {
   }
   const draft = generateDeterministicDraft(topic);
   const validation = buildValidation(draft, prior.map((article) => ({ title: article.title, body: article.markdown })), config.titleSimilarityThreshold, config.contentSimilarityThreshold, config.canPublish);
-  const validationsPassed = Object.entries(validation).filter(([key]) => key !== "publish").every(([, result]) => result.passed);
-  const saved = await storeDraft(draft, validation, contentHash(draft.markdown), contentHash(draft.title));
+  const validationsPassed = Object.values(validation).every((result) => result.passed);
+  const markdownHash = contentHash(draft.markdown);
+  const titleHash = contentHash(draft.title);
+  const saved = await storeDraft(draft, validation, markdownHash, titleHash);
+  if (config.canPublish && validationsPassed && saved.stored) {
+    const published = await publishControlledArticle({ articleId: saved.id, draft, contentHash: markdownHash, titleHash });
+    const details = { created: 1, articleId: saved.id, slug: draft.slug, stored: saved.stored, validationsPassed, status: published.ok ? "published" : "draft", publishBlocked: false, published };
+    await storeRun("article_cycle", published.ok ? "success" : "failed", details);
+    return { ok: published.ok, details };
+  }
   const details = { created: 1, articleId: saved.id, slug: draft.slug, stored: saved.stored, validationsPassed, status: "draft", publishBlocked: !config.canPublish };
   await storeRun("article_cycle", validationsPassed ? "success" : "skipped", details);
   return { ok: true, details };

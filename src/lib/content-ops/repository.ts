@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
+import { revalidatePath } from "next/cache";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
+import { site } from "@/lib/site";
 import { approvedProductFacts, ownedAssets } from "./catalog";
+import { renderControlledMarkdown } from "./markdown";
 import type { ArticleBrief, ArticleDraft, DraftValidation, NewsSource, Topic } from "./types";
 
 type StoredArticle = { title: string; markdown: string; topic: Topic };
@@ -82,6 +85,110 @@ export async function storeDraft(draft: ArticleDraft, validation: DraftValidatio
     ],
   );
   return { id: result.rows[0]?.id ?? randomUUID(), stored: true };
+}
+
+type PublishResult = { ok: true; articleId: string; publicArticleId: string; url: string } | { ok: false; reason: string };
+
+async function technicalGuidesCategoryId() {
+  const result = await query<{ id: string }>(
+    `insert into news_categories (name, english_name, slug, sort_order, is_enabled)
+     values ('Technical Guides', 'Technical Guides', 'technical-guides', 80, true)
+     on conflict (slug) do update set english_name = excluded.english_name, is_enabled = true, updated_at = now()
+     returning id`,
+  );
+  return result.rows[0]?.id ?? null;
+}
+
+export async function publishControlledArticle(input: { articleId: string; draft: ArticleDraft; contentHash: string; titleHash: string }): Promise<PublishResult> {
+  if (!hasDatabaseConfig()) return { ok: false, reason: "Database publishing is not configured" };
+
+  try {
+    const categoryId = await technicalGuidesCategoryId();
+    const image = input.draft.imagePlan[0];
+    const asset = image ? ownedAssets.find((item) => item.id === image.assetId) : null;
+    if (!image || !asset) return { ok: false, reason: "A verified owned cover image is required" };
+
+    const publicUrl = `${site.domain}/blog/${input.draft.slug}`;
+    const published = await query<{ id: string }>(
+      `insert into news_articles (
+        category_id, title, english_title, slug, author, excerpt, body_html, cover_image_url, image_alt,
+        tags, related_products, status, published_at, seo_title, seo_description, seo_keywords, canonical_url,
+        robots, og_fields, language, source_title, source_publisher, source_author, source_url,
+        canonical_source_url, source_language, source_published_at, source_fetched_at, source_timezone,
+        source_fingerprint, content_hash, geo_summary, key_takeaways, primary_keyword, secondary_keywords,
+        automation_notes, content_channel, auto_publish_approved, auto_published_at
+      ) values (
+        $1, $2, $2, $3, 'XIJIU Editorial Team', $4, $5, $6, $7,
+        $8::jsonb, $9::jsonb, 'published', now(), $2, $10, $11, $12,
+        'index,follow', $13::jsonb, 'en', $2, $14, 'XIJIU Editorial Team', $12,
+        $12, 'en', now(), now(), 'Asia/Shanghai',
+        $15, $16, $17, $18::jsonb, $19, $20::jsonb,
+        'Controlled content operations: published only after deterministic source, claims, duplication, link, image and SEO checks.',
+        'blog', true, now()
+      )
+      on conflict (slug) do update set
+        title = excluded.title, english_title = excluded.english_title, excerpt = excluded.excerpt,
+        body_html = excluded.body_html, cover_image_url = excluded.cover_image_url, image_alt = excluded.image_alt,
+        tags = excluded.tags, related_products = excluded.related_products, status = 'published', published_at = coalesce(news_articles.published_at, now()),
+        seo_title = excluded.seo_title, seo_description = excluded.seo_description, seo_keywords = excluded.seo_keywords,
+        canonical_url = excluded.canonical_url, robots = excluded.robots, og_fields = excluded.og_fields,
+        source_fingerprint = excluded.source_fingerprint, content_hash = excluded.content_hash,
+        geo_summary = excluded.geo_summary, key_takeaways = excluded.key_takeaways,
+        primary_keyword = excluded.primary_keyword, secondary_keywords = excluded.secondary_keywords,
+        automation_notes = excluded.automation_notes, content_channel = 'blog', auto_publish_approved = true,
+        auto_published_at = now(), updated_at = now()
+      returning id`,
+      [
+        categoryId, input.draft.title, input.draft.slug, input.draft.excerpt, renderControlledMarkdown(input.draft.markdown), asset.path, image.alt,
+        JSON.stringify([input.draft.brief.primaryKeyword, ...input.draft.brief.secondaryKeywords]), JSON.stringify([input.draft.brief.productSlug]),
+        input.draft.description, input.draft.brief.primaryKeyword, publicUrl,
+        JSON.stringify({ title: input.draft.title, description: input.draft.description, image: asset.path }), site.brandName,
+        input.titleHash, input.contentHash, input.draft.excerpt,
+        JSON.stringify([input.draft.brief.uniqueAngle, "Project-specific technical confirmation is required before production."]),
+        input.draft.brief.primaryKeyword, JSON.stringify(input.draft.brief.secondaryKeywords),
+      ],
+    );
+    const publicArticleId = published.rows[0]?.id;
+    if (!publicArticleId) return { ok: false, reason: "The CMS did not return a published article id" };
+
+    await query(
+      `update content_ops_article_records
+       set status = 'published', published_at = coalesce(published_at, now()), published_article_id = $2, source_commit = $3, updated_at = now()
+       where id = $1`,
+      [input.articleId, publicArticleId, `cms:news_articles:${publicArticleId}`],
+    );
+    let cacheRevalidated = true;
+    try {
+      revalidatePath("/blog");
+      revalidatePath(`/blog/${input.draft.slug}`);
+      revalidatePath("/sitemap.xml");
+      revalidatePath("/sitemap-posts.xml");
+    } catch (error) {
+      cacheRevalidated = false;
+      console.warn("[content-ops] CMS article was published but cache invalidation was unavailable", {
+        slug: input.draft.slug,
+        message: error instanceof Error ? error.message : "unknown error",
+      });
+    }
+    await query(
+      `insert into content_ops_publishing_logs (article_id, action, status, details)
+       values ($1, 'cms_publish', 'success', $2::jsonb)`,
+      [input.articleId, JSON.stringify({ publicArticleId, publicUrl, channel: "blog", mode: "controlled-auto", cacheRevalidated })],
+    );
+    return { ok: true, articleId: input.articleId, publicArticleId, url: publicUrl };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "Unknown CMS publishing error";
+    try {
+      await query(
+        `insert into content_ops_publishing_logs (article_id, action, status, details)
+         values ($1, 'cms_publish', 'failed', $2::jsonb)`,
+        [input.articleId, JSON.stringify({ reason })],
+      );
+    } catch {
+      // Preserve the original publishing error when audit logging is unavailable.
+    }
+    return { ok: false, reason };
+  }
 }
 
 export async function addCandidate(input: { sourceId: string; title: string; url: string; publishedAt: string; summary: string; relevanceReason: string; industries: string[]; productFamilies: string[] }) {

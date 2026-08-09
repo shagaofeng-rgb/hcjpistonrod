@@ -90,7 +90,7 @@ For ${topic.industry.toLowerCase()} work, ${review.questions} Confirm the assemb
 
 ## Source and scope
 
-Prepared from the approved XIJIU product catalog. No external news or third-party image is used. This draft is for technical and marketing review before any public release.
+Prepared from the approved XIJIU product catalog. No external news or third-party image is used. This article provides selection guidance and is not a performance promise; project-specific technical confirmation is required before production.
 
 ## FAQ
 
