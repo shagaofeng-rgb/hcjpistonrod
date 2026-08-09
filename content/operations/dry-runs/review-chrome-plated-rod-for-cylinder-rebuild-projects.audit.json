@@ -1,0 +1,99 @@
+{
+  "status": "draft_only",
+  "generatedAt": "2026-08-09T09:25:58.335Z",
+  "brief": {
+    "id": "brief-rod-rebuild",
+    "productSlug": "chrome-plated-rod",
+    "productFamily": "Hard Chrome Plated Rods",
+    "industry": "Hydraulic maintenance",
+    "scenario": "cylinder rebuild projects",
+    "primaryKeyword": "hard chrome plated rod",
+    "secondaryKeywords": [
+      "hydraulic piston rod",
+      "chrome rod supplier",
+      "hydraulic cylinder rod"
+    ],
+    "uniqueAngle": "Review the rod before a refurbishment scope is released",
+    "requiredConditions": [
+      "drawing or sample",
+      "application conditions",
+      "dimensional requirements",
+      "inspection requirements"
+    ],
+    "internalLinks": [
+      "/products/chrome-plated-rod",
+      "/industries",
+      "/contact"
+    ],
+    "assetPlan": [
+      "factory-chrome-rod-stock"
+    ],
+    "claimsToVerify": [
+      "chrome-plated-rod-drawing-review",
+      "chrome-plated-rod-project-verification"
+    ],
+    "approvedNewsIds": []
+  },
+  "factIds": [
+    "chrome-plated-rod-drawing-review",
+    "chrome-plated-rod-project-verification"
+  ],
+  "citations": [],
+  "imagePlan": [
+    {
+      "assetId": "factory-chrome-rod-stock",
+      "ownership": "owned",
+      "alt": "Chrome rod stock in the XIJIU workshop.",
+      "role": "owned supporting factory image"
+    }
+  ],
+  "validation": {
+    "source": {
+      "passed": true,
+      "details": [
+        "No external news was used; article is scoped as a selection guide."
+      ]
+    },
+    "claims": {
+      "passed": true,
+      "details": []
+    },
+    "productScope": {
+      "passed": true,
+      "details": []
+    },
+    "duplication": {
+      "passed": true,
+      "details": []
+    },
+    "contentQuality": {
+      "passed": true,
+      "details": []
+    },
+    "links": {
+      "passed": true,
+      "details": []
+    },
+    "images": {
+      "passed": true,
+      "details": []
+    },
+    "seo": {
+      "passed": true,
+      "details": []
+    },
+    "publish": {
+      "passed": false,
+      "details": [
+        "Publishing is disabled unless all explicit production switches are enabled."
+      ]
+    }
+  },
+  "contentHash": "7d995e522899040813e21af5b81a045b057ef4d94da50c5b8f1a68186c7c4d82",
+  "titleHash": "ac5c20fb25ad9da3682a02a0097960f5f43d8edb643e589c603c8c3d30009440",
+  "pendingReview": [
+    "technical review",
+    "marketing review",
+    "explicit publish authorization"
+  ]
+}

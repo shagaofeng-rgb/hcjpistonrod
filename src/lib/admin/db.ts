@@ -63,6 +63,13 @@ export function getPool() {
   return pool;
 }
 
+export async function closeDatabasePool() {
+  if (!pool) return;
+  const current = pool;
+  pool = null;
+  await current.end();
+}
+
 export async function query<T extends QueryResultRow = QueryResultRow>(text: string, values: unknown[] = []) {
   return getPool().query<T>(text, values);
 }

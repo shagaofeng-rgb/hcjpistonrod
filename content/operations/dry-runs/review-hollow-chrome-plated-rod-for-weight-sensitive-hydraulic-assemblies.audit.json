@@ -1,0 +1,99 @@
+{
+  "status": "draft_only",
+  "generatedAt": "2026-08-09T09:25:58.821Z",
+  "brief": {
+    "id": "brief-hollow-assembly",
+    "productSlug": "hollow-chrome-plated-rod",
+    "productFamily": "Hollow Chrome Plated Rods",
+    "industry": "Mobile equipment",
+    "scenario": "weight-sensitive hydraulic assemblies",
+    "primaryKeyword": "hollow chrome plated rod",
+    "secondaryKeywords": [
+      "hollow hydraulic rod",
+      "hollow piston rod",
+      "custom chrome rod"
+    ],
+    "uniqueAngle": "Clarify geometry and connection needs before material selection",
+    "requiredConditions": [
+      "drawing or sample",
+      "application conditions",
+      "dimensional requirements",
+      "inspection requirements"
+    ],
+    "internalLinks": [
+      "/products/hollow-chrome-plated-rod",
+      "/industries",
+      "/contact"
+    ],
+    "assetPlan": [
+      "site-hollow-chrome-plated-rod"
+    ],
+    "claimsToVerify": [
+      "hollow-chrome-plated-rod-drawing-review",
+      "hollow-chrome-plated-rod-project-verification"
+    ],
+    "approvedNewsIds": []
+  },
+  "factIds": [
+    "hollow-chrome-plated-rod-drawing-review",
+    "hollow-chrome-plated-rod-project-verification"
+  ],
+  "citations": [],
+  "imagePlan": [
+    {
+      "assetId": "site-hollow-chrome-plated-rod",
+      "ownership": "owned",
+      "alt": "Hollow chrome plated rod product image.",
+      "role": "owned supporting factory image"
+    }
+  ],
+  "validation": {
+    "source": {
+      "passed": true,
+      "details": [
+        "No external news was used; article is scoped as a selection guide."
+      ]
+    },
+    "claims": {
+      "passed": true,
+      "details": []
+    },
+    "productScope": {
+      "passed": true,
+      "details": []
+    },
+    "duplication": {
+      "passed": true,
+      "details": []
+    },
+    "contentQuality": {
+      "passed": true,
+      "details": []
+    },
+    "links": {
+      "passed": true,
+      "details": []
+    },
+    "images": {
+      "passed": true,
+      "details": []
+    },
+    "seo": {
+      "passed": true,
+      "details": []
+    },
+    "publish": {
+      "passed": false,
+      "details": [
+        "Publishing is disabled unless all explicit production switches are enabled."
+      ]
+    }
+  },
+  "contentHash": "13e71b33f0b382255b165798889efa1b8c0ed6b45b023f2d8ba1b63ef3a1f2ee",
+  "titleHash": "0877e597e3dd7e53fb6ea6565db40f3d5e7dc817bc421e52d8dd609ef2a863a3",
+  "pendingReview": [
+    "technical review",
+    "marketing review",
+    "explicit publish authorization"
+  ]
+}

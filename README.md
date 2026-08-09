@@ -105,6 +105,13 @@ The `/api/rfq` route sends form submissions through SMTP. Configure these enviro
 - `SMTP_FROM_NAME`
 - `RFQ_TO_EMAIL`
 
-## Manual News and Blog Workflow
+## Controlled Content Operations
 
-News and Blog content is managed manually in the Chinese admin backend. A draft must complete technical and marketing review before an authorized administrator publishes it. The website does not collect external news feeds, generate articles, or schedule automatic publication. See `docs/hcj-content-operations.md` for the required review record and publication checks.
+The former News and Blog automatic-publication runtime has been removed. The replacement system keeps source candidates, drafts, validations and publishing logs in PostgreSQL. It is disabled by default and cannot publish unless all four controls are enabled: `CONTENT_OPS_ENABLED=true`, `CONTENT_OPS_DRY_RUN=false`, `PUBLISH_MODE=auto`, and `AUTO_PUBLISH=true`.
+
+- `GET /api/cron/news-ingest` runs daily at `01:15 UTC` (09:15 Asia/Shanghai) and records only minimal allowlisted source metadata.
+- `GET /api/cron/article-cycle` runs every second day at `01:25 UTC` (09:25 Asia/Shanghai) and creates at most one validated draft.
+- Both endpoints require `Authorization: Bearer $CRON_SECRET` and do not publish while the default switches are active.
+- Run `pnpm content:dry-run` to create three local, non-public HCJ draft examples and audit reports under `content/operations/dry-runs/`.
+
+See `docs/hcj-controlled-content-operations.md` for review, rollback and enabling instructions.

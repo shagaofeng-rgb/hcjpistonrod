@@ -1,0 +1,99 @@
+{
+  "status": "draft_only",
+  "generatedAt": "2026-08-09T09:25:59.543Z",
+  "brief": {
+    "id": "brief-st52-drawing",
+    "productSlug": "st52-honed-tube",
+    "productFamily": "ST52 Honed Tubes",
+    "industry": "Hydraulic cylinder manufacture",
+    "scenario": "drawing-based cylinder projects",
+    "primaryKeyword": "ST52 honed tube",
+    "secondaryKeywords": [
+      "ST52 hydraulic tube",
+      "honed tube material",
+      "cylinder tube specification"
+    ],
+    "uniqueAngle": "Review tube dimensions and mating parts together",
+    "requiredConditions": [
+      "drawing or sample",
+      "application conditions",
+      "dimensional requirements",
+      "inspection requirements"
+    ],
+    "internalLinks": [
+      "/products/st52-honed-tube",
+      "/industries",
+      "/contact"
+    ],
+    "assetPlan": [
+      "factory-cnc-machining-line"
+    ],
+    "claimsToVerify": [
+      "st52-honed-tube-drawing-review",
+      "st52-honed-tube-project-verification"
+    ],
+    "approvedNewsIds": []
+  },
+  "factIds": [
+    "st52-honed-tube-drawing-review",
+    "st52-honed-tube-project-verification"
+  ],
+  "citations": [],
+  "imagePlan": [
+    {
+      "assetId": "factory-cnc-machining-line",
+      "ownership": "owned",
+      "alt": "CNC machining line in the XIJIU workshop.",
+      "role": "owned supporting factory image"
+    }
+  ],
+  "validation": {
+    "source": {
+      "passed": true,
+      "details": [
+        "No external news was used; article is scoped as a selection guide."
+      ]
+    },
+    "claims": {
+      "passed": true,
+      "details": []
+    },
+    "productScope": {
+      "passed": true,
+      "details": []
+    },
+    "duplication": {
+      "passed": true,
+      "details": []
+    },
+    "contentQuality": {
+      "passed": true,
+      "details": []
+    },
+    "links": {
+      "passed": true,
+      "details": []
+    },
+    "images": {
+      "passed": true,
+      "details": []
+    },
+    "seo": {
+      "passed": true,
+      "details": []
+    },
+    "publish": {
+      "passed": false,
+      "details": [
+        "Publishing is disabled unless all explicit production switches are enabled."
+      ]
+    }
+  },
+  "contentHash": "cbc3b4ded483fd284a3d579a8c2a57898edf5ef93b62d0bc98c281764a78c6db",
+  "titleHash": "6666471dac0c3d57ff1e862381679b5a1c89c62d8834e63065488675c96538cf",
+  "pendingReview": [
+    "technical review",
+    "marketing review",
+    "explicit publish authorization"
+  ]
+}

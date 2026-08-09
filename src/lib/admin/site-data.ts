@@ -127,6 +127,21 @@ export async function getAdminModuleRows(moduleKey: string, range: AdminDateRang
       return result.rows.map((row) => ({ id: row.id, cells: [row.title, row.content_channel === "blog" ? "Blog" : "News", row.author || "-", row.status, dateCell(row.published_at), row.view_count] }));
     }
 
+    if (moduleKey === "content-ops") {
+      const where: string[] = [];
+      const values: unknown[] = [];
+      appendDateRangeCondition(where, values, "created_at", range);
+      const result = await query<{ id: string; title: string; slug: string; status: string; validation: Record<string, { passed?: boolean }> | null; created_at: Date; updated_at: Date }>(
+        `select id, title, slug, status, validation, created_at, updated_at from content_ops_article_records ${where.length ? `where ${where.join(" and ")}` : ""} order by created_at desc limit 200`,
+        values,
+      );
+      return result.rows.map((row) => {
+        const values = Object.values(row.validation || {});
+        const checksPassed = values.length > 0 && values.every((value) => value.passed === true);
+        return { id: row.id, cells: [row.title, row.slug, row.status, checksPassed ? "通过" : "待人工审核", dateCell(row.created_at), dateCell(row.updated_at)] };
+      });
+    }
+
     if (moduleKey === "leads") {
       const where = ["archived_at is null"];
       const values: unknown[] = [];

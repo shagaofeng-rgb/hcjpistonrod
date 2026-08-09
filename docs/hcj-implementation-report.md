@@ -53,7 +53,7 @@ Cold-request timing captured from the verification host: home 2.04 s total, core
 ## Scheduled Blog publication update
 
 - Migration `007_scheduled_blog_publication` separates `news` and `blog` database channels and adds an owner-authorized Blog queue with schedule, publication-run and audit fields.
-- Vercel invokes `/api/cron/editorial` daily at `03:05 UTC`. Each run publishes at most one due, prewritten, owner-approved Blog draft. The job uses no RSS, third-party content feed or generative API, and it never publishes News.
+- Historical note: the former `/api/cron/editorial` scheduled Blog publisher was retired on 2026-08-09. It has no route, service, queue script or Vercel Cron entry; public Blog records and audit history were preserved.
 - A new production `CRON_SECRET` was configured and the production deployment was rebuilt to load it. The secret is not stored in the repository or this report.
 - End-to-end proof: `ck45-honed-tube-vs-st52-honed-tube` was published by the protected production endpoint on 2026-08-08. The article is HTTP 200, appears in `/blog`, appears in `sitemap-posts.xml`, and has an `audit_logs` entry with `action = scheduled_publish` and `result = success`.
 
