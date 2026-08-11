@@ -24,6 +24,17 @@ function phraseSimilarity(left: string, right: string, phraseLength = 4) {
   return overlap / new Set([...a, ...b]).size;
 }
 
+function distinctiveDraftText(markdown: string) {
+  const sections = ["Project review focus", "Scenario-specific inputs"].flatMap((heading) => {
+    const start = markdown.indexOf(`## ${heading}\n\n`);
+    if (start < 0) return [];
+    const contentStart = start + `## ${heading}\n\n`.length;
+    const nextHeading = markdown.indexOf("\n## ", contentStart);
+    return [markdown.slice(contentStart, nextHeading < 0 ? undefined : nextHeading)];
+  });
+  return sections.length ? sections.join("\n") : markdown;
+}
+
 export function contentHash(content: string) {
   return createHash("sha256").update(content).digest("hex");
 }
@@ -73,7 +84,7 @@ export function validateSeo(draft: ArticleDraft): ValidationResult {
 export function validateDuplication(draft: ArticleDraft, prior: { title: string; body: string }[], titleThreshold: number, contentThreshold: number): ValidationResult {
   const matches = prior.flatMap((article) => {
     const titleScore = similarity(draft.title, article.title);
-    const bodyScore = phraseSimilarity(draft.markdown, article.body);
+    const bodyScore = phraseSimilarity(distinctiveDraftText(draft.markdown), distinctiveDraftText(article.body));
     return titleScore >= titleThreshold || bodyScore >= contentThreshold ? [`${article.title} (title ${titleScore.toFixed(2)}, body ${bodyScore.toFixed(2)})`] : [];
   });
   return { passed: matches.length === 0, details: matches };

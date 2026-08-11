@@ -35,6 +35,19 @@ test("near-duplicate titles are detected", () => {
   assert.ok(similarity("Review chrome plated rod for hydraulic rebuild", "Review chrome plated rod for hydraulic cylinder rebuild") > 0.8);
 });
 
+test("distinct project scenarios are not rejected because they share the controlled article structure", () => {
+  const replacement = generateDeterministicDraft(topicRotation[4]);
+  const incomingInspection = generateDeterministicDraft(topicRotation[10]);
+  const validation = buildValidation(incomingInspection, [{ title: replacement.title, body: replacement.markdown }], 0.82, 0.72, true);
+  assert.equal(validation.duplication.passed, true);
+});
+
+test("an identical controlled draft is rejected as duplicate", () => {
+  const draft = generateDeterministicDraft(topicRotation[10]);
+  const validation = buildValidation(draft, [{ title: draft.title, body: draft.markdown }], 0.82, 0.72, true);
+  assert.equal(validation.duplication.passed, false);
+});
+
 test("draft_only configuration cannot publish", () => {
   const previous = { enabled: process.env.CONTENT_OPS_ENABLED, dry: process.env.CONTENT_OPS_DRY_RUN, mode: process.env.PUBLISH_MODE, auto: process.env.AUTO_PUBLISH };
   process.env.CONTENT_OPS_ENABLED = "true";

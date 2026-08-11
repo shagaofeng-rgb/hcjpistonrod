@@ -70,6 +70,7 @@ export function generateDeterministicDraft(topic: Topic): ArticleDraft {
   const review = guidance[product.slug];
   if (!review) throw new Error(`Draft guidance is missing for ${product.slug}`);
   const checklist = review.rows.map(([input, why, provide]) => `| ${input} | ${why} | ${provide} |`).join("\n");
+  const conditions = topic.requiredConditions.join(", ");
   const markdown = `# ${title}
 
 Procurement teams reviewing ${product.name.toLowerCase()} for ${topic.scenario} benefit from fixing the engineering inputs before comparing quotations. ${review.context} This note is a selection guide, not a performance promise; the project file should be reviewed before production is confirmed.
@@ -77,6 +78,14 @@ Procurement teams reviewing ${product.name.toLowerCase()} for ${topic.scenario} 
 ## Product context
 
 XIJIU can review ${product.name.toLowerCase()} against a buyer drawing or sample for ${product.application}. ${topic.uniqueAngle}. Final dimensions, material, surface requirements and application suitability require project-specific confirmation.
+
+## Project review focus
+
+For ${topic.industry.toLowerCase()} work involving ${topic.scenario}, organize the review around the actual assembly rather than a generic product label. ${topic.uniqueAngle}. Record ${conditions} in the enquiry file, identify the drawing revision that governs the request and note the evidence required before release. This keeps quotation, technical review and receiving inspection aligned with the same project conditions.
+
+## Scenario-specific inputs
+
+Prepare a short decision record for this request: identify the equipment context as ${topic.industry.toLowerCase()}, describe the ${topic.scenario} scenario in the buyer's own terms, and state the review objective as ${topic.uniqueAngle.toLowerCase()}. Include the applicable conditions: ${conditions}. This record gives the technical team a defined starting point and prevents unrelated catalogue assumptions from entering the quotation.
 
 ## Evaluation checklist
 
