@@ -138,7 +138,17 @@ export async function getAdminModuleRows(moduleKey: string, range: AdminDateRang
       return result.rows.map((row) => {
         const values = Object.values(row.validation || {});
         const checksPassed = values.length > 0 && values.every((value) => value.passed === true);
-        return { id: row.id, cells: [row.title, row.slug, row.status, checksPassed ? "通过" : "待人工审核", dateCell(row.created_at), dateCell(row.updated_at)] };
+        return {
+          id: row.id,
+          cells: [
+            row.title,
+            row.slug,
+            row.status,
+            checksPassed ? "自动校验通过" : "自动校验未通过",
+            dateCell(row.created_at),
+            dateCell(row.updated_at),
+          ],
+        };
       });
     }
 

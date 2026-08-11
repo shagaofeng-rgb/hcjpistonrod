@@ -42,7 +42,12 @@ export function hasVercelAnalyticsConfig() {
 }
 
 export function hasGoogleSearchConsoleConfig() {
-  return Boolean(process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY);
+  const hasCredentials = Boolean(
+    process.env.GOOGLE_SERVICE_ACCOUNT_JSON
+      || process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH
+      || (process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY),
+  );
+  return process.env.GOOGLE_SEARCH_CONSOLE_ENABLED === "true" && hasCredentials;
 }
 
 export function getPool() {

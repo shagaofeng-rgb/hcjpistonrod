@@ -8,7 +8,6 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { NewsCard } from "@/components/news-card";
 import { products, site } from "@/lib/site";
-import { newsArticles } from "../../../../data/news";
 import { getPublishedBlogArticle, getPublishedBlogArticles } from "@/lib/news-content";
 
 type Props = {
@@ -17,8 +16,9 @@ type Props = {
 
 export const revalidate = 300;
 
-export function generateStaticParams() {
-  return newsArticles.map((article) => ({ slug: article.slug }));
+export async function generateStaticParams() {
+  const articles = await getPublishedBlogArticles();
+  return articles.map((article) => ({ slug: article.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

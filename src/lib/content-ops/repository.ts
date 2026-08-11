@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 import { approvedProductFacts, ownedAssets } from "./catalog";
@@ -163,6 +163,7 @@ export async function publishControlledArticle(input: { articleId: string; draft
       revalidatePath(`/${input.channel}/${input.draft.slug}`);
       revalidatePath("/sitemap.xml");
       revalidatePath("/sitemap-posts.xml");
+      revalidateTag("hcj-published-content", { expire: 0 });
     } catch (error) {
       cacheRevalidated = false;
       console.warn("[content-ops] CMS article was published but cache invalidation was unavailable", {

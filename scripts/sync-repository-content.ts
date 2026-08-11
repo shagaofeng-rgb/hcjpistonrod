@@ -7,6 +7,7 @@ import { productCategories } from "../data/categories";
 import { company } from "../data/company";
 import { factoryPhotos } from "../data/factory-photos";
 import { imageCredits } from "../data/image-credits";
+import { newsArticles } from "../data/news";
 import { products } from "../data/products";
 
 const { Pool } = pg;
@@ -123,6 +124,110 @@ async function syncProducts(client: PoolClient, categoryIds: Map<string, string>
   }
 }
 
+function categorySlug(category: string) {
+  return category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>\"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '\"': "&quot;" })[character] || character);
+}
+
+function repositoryBlogHtml(article: (typeof newsArticles)[number]) {
+  const sections = article.sections
+    .map((section) => `<section><h2>${escapeHtml(section.heading)}</h2><p>${escapeHtml(section.body)}</p></section>`)
+    .join("");
+  const faqs = article.faqs.length
+    ? `<section><h2>FAQ</h2>${article.faqs.map((faq) => `<h3>${escapeHtml(faq.question)}</h3><p>${escapeHtml(faq.answer)}</p>`).join("")}</section>`
+    : "";
+  return `${sections}${faqs}`;
+}
+
+async function syncBlogArticles(client: PoolClient) {
+  const categories = new Map<string, string>();
+  for (const [index, name] of [...new Set(newsArticles.map((article) => article.category))].entries()) {
+    const result = await client.query<{ id: string }>(
+      `insert into news_categories (name, english_name, slug, sort_order, is_enabled, updated_at)
+       values ($1, $1, $2, $3, true, now())
+       on conflict (slug) do update set name = excluded.name, english_name = excluded.english_name,
+       sort_order = excluded.sort_order, is_enabled = true, deleted_at = null, updated_at = now()
+       returning id`,
+      [name, categorySlug(name), index + 1],
+    );
+    categories.set(name, result.rows[0].id);
+  }
+
+  for (const article of newsArticles) {
+    const bodyHtml = repositoryBlogHtml(article);
+    const canonicalUrl = `${company.domain}/blog/${article.slug}`;
+    const contentHash = createHash("sha256").update(bodyHtml).digest("hex");
+    await client.query(
+      `insert into news_articles
+        (category_id, title, english_title, slug, author, excerpt, body_html, image_alt, tags, related_products,
+         related_articles, status, published_at, seo_title, seo_description, seo_keywords, canonical_url, robots,
+         og_fields, language, updated_source_at, source_title, source_publisher, source_author, source_url,
+         canonical_source_url, source_language, source_published_at, source_fetched_at, source_timezone,
+         source_fingerprint, event_fingerprint, content_hash, cover_image_url, cover_image_source_url,
+         cover_image_page_url, cover_image_fetched_at, geo_summary, key_takeaways, primary_keyword,
+         secondary_keywords, automation_notes, content_channel, updated_at)
+       values
+        ($1,$2,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb,'[]'::jsonb,'published',$10,$2,$5,$11,$12,
+         'index,follow',$13::jsonb,'en',$14,$15,$16,$4,$17,$17,'en',$18,$19,'Asia/Shanghai',$20,$21,$22,
+         $23,$17,$17,$19,$24,$25::jsonb,$26,$27::jsonb,'Repository blog synchronization','blog',$19)
+       on conflict (slug) do update set
+         category_id = excluded.category_id, title = excluded.title, english_title = excluded.english_title,
+         author = excluded.author, excerpt = excluded.excerpt, body_html = excluded.body_html,
+         image_alt = excluded.image_alt, tags = excluded.tags, related_products = excluded.related_products,
+         status = excluded.status, published_at = excluded.published_at, seo_title = excluded.seo_title,
+         seo_description = excluded.seo_description, seo_keywords = excluded.seo_keywords,
+         canonical_url = excluded.canonical_url, robots = excluded.robots, og_fields = excluded.og_fields,
+         updated_source_at = excluded.updated_source_at, source_title = excluded.source_title,
+         source_publisher = excluded.source_publisher, source_author = excluded.source_author,
+         source_url = excluded.source_url, canonical_source_url = excluded.canonical_source_url,
+         source_language = excluded.source_language, source_published_at = excluded.source_published_at,
+         source_fetched_at = excluded.source_fetched_at, source_timezone = excluded.source_timezone,
+         source_fingerprint = excluded.source_fingerprint, event_fingerprint = excluded.event_fingerprint,
+         content_hash = excluded.content_hash, cover_image_url = excluded.cover_image_url,
+         cover_image_source_url = excluded.cover_image_source_url, cover_image_page_url = excluded.cover_image_page_url,
+         cover_image_fetched_at = excluded.cover_image_fetched_at, geo_summary = excluded.geo_summary,
+         key_takeaways = excluded.key_takeaways, primary_keyword = excluded.primary_keyword,
+         secondary_keywords = excluded.secondary_keywords, content_channel = excluded.content_channel,
+         automation_notes = excluded.automation_notes, deleted_at = null, updated_at = excluded.updated_at
+       where news_articles.automation_notes = 'Repository blog synchronization'
+          or (news_articles.content_channel = 'news' and news_articles.canonical_url = $28)`,
+      [
+        categories.get(article.category) || null,
+        article.title,
+        article.slug,
+        article.author,
+        article.excerpt,
+        bodyHtml,
+        article.imageAlt,
+        JSON.stringify([article.category, ...article.relatedProducts]),
+        JSON.stringify(article.relatedProducts),
+        article.source.publishedAt,
+        [article.category, "hydraulic components", "XIJIU"].join(", "),
+        canonicalUrl,
+        JSON.stringify({ title: article.title, description: article.excerpt, image: article.image }),
+        article.source.fetchedAt,
+        article.source.title,
+        article.source.publisher,
+        canonicalUrl,
+        article.source.publishedAt,
+        article.source.fetchedAt,
+        `repository-blog:${article.slug}`,
+        `repository-blog:${contentHash}`,
+        contentHash,
+        article.image,
+        article.geoSummary,
+        JSON.stringify(article.keyTakeaways),
+        article.category,
+        JSON.stringify(article.relatedProducts),
+        `${company.domain}/news/${article.slug}`,
+      ],
+    );
+  }
+}
+
 async function syncSystemState(client: PoolClient) {
   const settings: Record<string, unknown> = {
     "site.identity": { brand: company.brandName, factory: company.factoryName, exporter: company.exportCompanyName },
@@ -159,6 +264,7 @@ async function main() {
     const mediaIds = await syncMedia(client);
     const categoryIds = await syncCategories(client, mediaIds);
     await syncProducts(client, categoryIds, mediaIds);
+    await syncBlogArticles(client);
     await syncSystemState(client);
     await client.query("commit");
     const counts = await client.query(

@@ -1,4 +1,5 @@
-import { newsArticles, type NewsArticle } from "../../data/news";
+import type { NewsArticle } from "../../data/news";
+import { unstable_cache } from "next/cache";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 import { sanitizeArticleHtml } from "@/lib/content-html";
@@ -114,13 +115,25 @@ async function getDatabaseBlog(slug?: string) {
   return result.rows.map(toArticle);
 }
 
+const getCachedDatabaseNews = unstable_cache(
+  () => getDatabaseNews(),
+  ["hcj", "published-news"],
+  { revalidate: 300, tags: ["hcj-published-content"] },
+);
+
+const getCachedDatabaseBlog = unstable_cache(
+  () => getDatabaseBlog(),
+  ["hcj", "published-blog"],
+  { revalidate: 300, tags: ["hcj-published-content"] },
+);
+
 export async function getPublishedNewsArticles() {
   if (!hasDatabaseConfig()) return [];
   try {
-    const databaseArticles = await getDatabaseNews();
+    const databaseArticles = await getCachedDatabaseNews();
     return databaseArticles.filter((article) => !newsToBlogRedirects[article.slug] && !historicalNoindexNewsSlugs.has(article.slug));
   } catch (error) {
-    console.error("[news] database read failed; using repository content", { message: error instanceof Error ? error.message : "unknown error" });
+    console.error("[news] database read failed", { message: error instanceof Error ? error.message : "unknown error" });
     return [];
   }
 }
@@ -128,36 +141,37 @@ export async function getPublishedNewsArticles() {
 export async function getPublishedNewsArticle(slug: string) {
   if (hasDatabaseConfig()) {
     try {
-      const rows = await getDatabaseNews(slug, historicalNoindexNewsSlugs.has(slug));
-      if (rows[0]) return rows[0];
+      const rows = historicalNoindexNewsSlugs.has(slug)
+        ? await getDatabaseNews(slug, true)
+        : await getCachedDatabaseNews();
+      const article = rows.find((row) => row.slug === slug);
+      if (article) return article;
     } catch (error) {
-      console.error("[news] article read failed; using repository content", { slug, message: error instanceof Error ? error.message : "unknown error" });
+      console.error("[news] article read failed", { slug, message: error instanceof Error ? error.message : "unknown error" });
     }
   }
   return undefined;
 }
 
 export async function getPublishedBlogArticles() {
-  if (!hasDatabaseConfig()) return newsArticles;
+  if (!hasDatabaseConfig()) return [];
   try {
-    const databaseArticles = await getDatabaseBlog();
-    const merged = new Map(newsArticles.map((article) => [article.slug, article]));
-    databaseArticles.forEach((article) => merged.set(article.slug, article));
-    return [...merged.values()].sort((a, b) => b.source.publishedAt.localeCompare(a.source.publishedAt));
+    return await getCachedDatabaseBlog();
   } catch (error) {
-    console.error("[blog] database read failed; using repository content", { message: error instanceof Error ? error.message : "unknown error" });
-    return newsArticles;
+    console.error("[blog] database read failed", { message: error instanceof Error ? error.message : "unknown error" });
+    return [];
   }
 }
 
 export async function getPublishedBlogArticle(slug: string) {
   if (hasDatabaseConfig()) {
     try {
-      const rows = await getDatabaseBlog(slug);
-      if (rows[0]) return rows[0];
+      const rows = await getCachedDatabaseBlog();
+      const article = rows.find((row) => row.slug === slug);
+      if (article) return article;
     } catch (error) {
-      console.error("[blog] article read failed; using repository content", { slug, message: error instanceof Error ? error.message : "unknown error" });
+      console.error("[blog] article read failed", { slug, message: error instanceof Error ? error.message : "unknown error" });
     }
   }
-  return newsArticles.find((article) => article.slug === slug);
+  return undefined;
 }

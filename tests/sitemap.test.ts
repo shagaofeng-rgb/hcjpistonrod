@@ -7,6 +7,7 @@ import { buildSitemapDocuments, diffSitemapEntries, renderSitemapIndex, renderUr
 import { submitSitemapToSearchConsole } from "../src/lib/sitemap/google";
 import { writeXmlAtomically } from "../scripts/sitemap-generate";
 import { releaseInMemorySitemapLock, tryAcquireInMemorySitemapLock } from "../src/lib/sitemap/service";
+import { hasGoogleSearchConsoleConfig } from "../src/lib/admin/db";
 
 const entry = (loc: string, lastmod = "2026-07-01T00:00:00.000Z", kind: SitemapEntry["kind"] = "products"): SitemapEntry => ({ loc, lastmod, kind });
 
@@ -63,6 +64,32 @@ test("Search Console stays disabled without calling Google", async () => {
   const result = await submitSitemapToSearchConsole({ enabled: false, fetchImpl: async () => { calls += 1; return new Response(); } });
   assert.equal(result.attempted, false);
   assert.equal(calls, 0);
+});
+
+test("admin status recognizes every supported authorized Search Console credential format", () => {
+  const previous = {
+    enabled: process.env.GOOGLE_SEARCH_CONSOLE_ENABLED,
+    json: process.env.GOOGLE_SERVICE_ACCOUNT_JSON,
+    path: process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH,
+    email: process.env.GSC_CLIENT_EMAIL,
+    key: process.env.GSC_PRIVATE_KEY,
+  };
+  try {
+    process.env.GOOGLE_SEARCH_CONSOLE_ENABLED = "true";
+    process.env.GOOGLE_SERVICE_ACCOUNT_JSON = "{\\\"client_email\\\":\\\"service@example.com\\\"}";
+    delete process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH;
+    delete process.env.GSC_CLIENT_EMAIL;
+    delete process.env.GSC_PRIVATE_KEY;
+    assert.equal(hasGoogleSearchConsoleConfig(), true);
+    process.env.GOOGLE_SEARCH_CONSOLE_ENABLED = "false";
+    assert.equal(hasGoogleSearchConsoleConfig(), false);
+  } finally {
+    if (previous.enabled === undefined) delete process.env.GOOGLE_SEARCH_CONSOLE_ENABLED; else process.env.GOOGLE_SEARCH_CONSOLE_ENABLED = previous.enabled;
+    if (previous.json === undefined) delete process.env.GOOGLE_SERVICE_ACCOUNT_JSON; else process.env.GOOGLE_SERVICE_ACCOUNT_JSON = previous.json;
+    if (previous.path === undefined) delete process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH; else process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH = previous.path;
+    if (previous.email === undefined) delete process.env.GSC_CLIENT_EMAIL; else process.env.GSC_CLIENT_EMAIL = previous.email;
+    if (previous.key === undefined) delete process.env.GSC_PRIVATE_KEY; else process.env.GSC_PRIVATE_KEY = previous.key;
+  }
 });
 
 test("Search Console submission succeeds with an authorized token", async () => {

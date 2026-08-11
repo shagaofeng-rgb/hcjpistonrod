@@ -43,6 +43,10 @@ function staticEntries(): SitemapEntry[] {
   ];
 }
 
+function sitePageEntries(): SitemapEntry[] {
+  return indexablePages.map((path) => ({ loc: absolute(path), lastmod: STATIC_PAGE_LASTMOD, kind: "pages" as const }));
+}
+
 type ProductRow = { slug: string; status: string; robots: string; canonical_url: string | null; sitemap_enabled: boolean; published_at: Date | null; updated_at: Date };
 type CategoryRow = { slug: string; canonical_url: string | null; is_enabled: boolean; updated_at: Date };
 type ArticleRow = { slug: string; content_channel: "news" | "blog"; status: string; robots: string; canonical_url: string | null; published_at: Date | null; updated_at: Date };
@@ -81,7 +85,7 @@ export async function getPublicSitemapEntries() {
   if (!hasDatabaseConfig()) return { entries: fallback, source: "static" as const, warnings: [] as string[] };
   try {
     const entries = await databaseEntries();
-    return { entries: [...fallback, ...entries], source: "database+static" as const, warnings: [] as string[] };
+    return { entries: [...sitePageEntries(), ...entries], source: "database+site-pages" as const, warnings: [] as string[] };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown database sitemap error";
     return { entries: fallback, source: "static-fallback" as const, warnings: [message] };
