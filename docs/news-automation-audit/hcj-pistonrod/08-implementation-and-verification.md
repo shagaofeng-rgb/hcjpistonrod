@@ -1,6 +1,6 @@
 # News Automation Implementation and Verification
 
-Implementation timestamp: 2026-08-11 Asia/Shanghai.
+Implementation timestamp: 2026-08-11 Asia/Shanghai. Production activation update: 2026-08-11 Asia/Shanghai.
 
 ## Scope completed in the working tree
 
@@ -41,23 +41,29 @@ The published News template now includes an original-source panel, original publ
 | Local Blog sitemap compatibility | `GET /sitemap-posts.xml` returned `308` to `/blog-sitemap.xml`; the new route returned `200` |
 | Local cron safety | An unsigned `GET /api/cron/news-ingest` returned `503` because no local cron secret was configured; it did not invoke a task |
 
-## Not executed / cannot be claimed yet
+## Production activation and live verification
 
-- Migration 011 has **not** been run against the production database.
-- No production environment variable, Vercel cron, CMS record, cache, News list/detail page, Search Console submission or third-party source has been changed in this task.
-- A real 48-hour publication cycle and browser verification of a newly published production News item cannot be claimed until production deployment is explicitly authorized and valid production secrets are available.
-- The historical content triage in `04-existing-content-triage.csv` is a review record. Its `update` decisions require a human editorial decision before any historical page is changed.
+- Fresh logical production backup: `backups/hcj-admin-logical-20260811T052349519Z.json`.
+- Migration `011_news_site_isolation` was applied once in a database transaction. Verification: 11 scoped `news_articles`, 10 scoped historical operation records, 0 unscoped articles, 1 `news_site_configs` row and 1 applied migration-ledger row.
+- Git commits `3416b8d` and `345672e` were pushed to `main` and deployed. The current Vercel production deployment `dpl_4KBSjT5Zn6z9MwoPCERbhBmSWnqk` is `Ready` and aliases both production domains.
+- Production `NEWS_AUTOMATION_ENABLED` and `NEWS_AUTOMATION_SITE_ID` are configured. `NEWS_AUTOMATION_PRODUCTION_ENABLED=false` is explicitly configured, so 12-hour ingestion may run but News publication cannot occur accidentally.
+- Production route evidence: legacy `/api/cron/article-cycle` returns HTTP 410; `/robots.txt` advertises the three independent sitemap routes; News API contained only News and Blog API contained only Blog before historical content governance.
+- Public self-check passed on `https://www.hcjpistonrod.com`: 22 key routes, 4 sitemap-index documents, 25 primary index/Blog URLs and 1 News URL were checked for HTTP status, titles, H1s, canonical tags, XML format, sitemap host/canonical integrity and source panel presence.
+- The one historical self-sourced automatic News page was retained but changed to `noindex,follow`. It remains recoverable from the backup and direct URL, but is no longer eligible for News list or sitemap output.
+
+## Still blocked / cannot be claimed yet
+
+- Production has no configured `OPENAI_API_KEY` and no `NEWS_EDITORIAL_MODEL`. The 48-hour publisher therefore cannot compose a compliant 700-1,000 word attributed News summary, and publication is intentionally disabled rather than faked.
+- A real successful 48-hour publication cycle, its `news_delivery_checks` record, an unauthenticated browser check of a newly published News card/detail page, and its News RSS/sitemap appearance remain unverified until a valid, billable OpenAI API key and model name are supplied through Vercel.
+- Search Console credential health and actual submission response were not re-tested; the existing 72-hour throttle remains unchanged.
 
 ## Production activation checklist (requires explicit authorization)
 
-1. Create a fresh logical database backup with `pnpm db:backup` and retain the resulting path.
-2. Review and apply migration 011 once through the existing migration runner; verify the migration ledger and new `site_id` backfill.
-3. Configure `NEWS_AUTOMATION_ENABLED=true`, `NEWS_AUTOMATION_PRODUCTION_ENABLED=true`, `NEWS_AUTOMATION_SITE_ID=hcj-pistonrod`, `NEWS_EDITORIAL_MODEL`, `OPENAI_API_KEY`, `CRON_SECRET` and the existing alert target only in secure production environment variables.
-4. Confirm the allowlisted RSS endpoints, their terms/robots status and the active product-theme URLs. Do not activate on missing or expired source approval.
-5. Deploy the code and `vercel.json`; verify no legacy `article-cycle` schedule remains.
-6. Run four controlled ingest executions in the correct 12-hour logical windows, then one publish-controller run. Do not bypass the quality gate.
-7. Use an unauthenticated browser plus HTTP requests to verify the new News list, detail page, canonical, JSON-LD, News RSS/sitemap and absence from Blog API/list/sitemap. Preserve the `news_delivery_checks` record.
-8. Confirm the next publish controller call in the same 48-hour cycle returns `cycle_already_published` and creates no second article.
+1. In Vercel only, add a valid `OPENAI_API_KEY` and `NEWS_EDITORIAL_MODEL`; then change `NEWS_AUTOMATION_PRODUCTION_ENABLED` from `false` to `true` and redeploy. Do not place these credentials in the repository or report.
+2. Confirm the allowlisted RSS endpoints, their terms/robots status and the active product-theme URLs. Do not activate on missing or expired source approval.
+3. Run four controlled ingest executions in the correct 12-hour logical windows, then one publish-controller run. Do not bypass the quality gate.
+4. Use an unauthenticated browser plus HTTP requests to verify the new News list, detail page, canonical, JSON-LD, News RSS/sitemap and absence from Blog API/list/sitemap. Preserve the `news_delivery_checks` record.
+5. Confirm the next publish controller call in the same 48-hour cycle returns `cycle_already_published` and creates no second article.
 
 ## Rollback
 
