@@ -112,7 +112,11 @@ export function buildSitemapDocuments(entries: SitemapEntry[], limits?: { maxUrl
     const chunks = splitEntries(kindEntries, limits?.maxUrls, limits?.maxBytes);
     chunks.forEach((chunk, index) => {
       const isSplit = chunks.length > 1;
-      const fileName = isSplit ? `sitemaps/${kind}-${index + 1}.xml` : `sitemap-${kind}.xml`;
+      const fileName = isSplit
+        ? `sitemaps/${kind}-${index + 1}.xml`
+        : kind === "blog"
+          ? "blog-sitemap.xml"
+          : `sitemap-${kind}.xml`;
       result.push({
         kind,
         fileName,

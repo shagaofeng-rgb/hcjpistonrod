@@ -6,9 +6,9 @@ const productionOrigin = "https://www.hcjpistonrod.com";
 
 const keyPaths = [
   "/", "/products", "/products/chrome-plated-rod", "/products/honed-tube", "/products/ck45-chrome-plated-rod",
-  "/why-xijiu", "/about", "/industries", "/news", "/news/choose-hard-chrome-plated-rod-for-mobile-machinery",
+  "/why-xijiu", "/about", "/industries", "/news",
   "/blog", "/blog/choose-hard-chrome-plated-rod-for-mobile-machinery", "/search?q=chrome%20rod", "/contact",
-  "/sitemap.xml", "/sitemap-pages.xml", "/sitemap-categories.xml", "/sitemap-products.xml", "/sitemap-posts.xml",
+  "/sitemap.xml", "/sitemap-pages.xml", "/sitemap-categories.xml", "/sitemap-products.xml", "/blog-sitemap.xml",
   "/news-sitemap.xml", "/news/rss.xml", "/robots.txt", "/admin/login",
 ];
 
@@ -72,7 +72,7 @@ for (const path of keyPaths) {
 
 const index = await fetchChecked("/sitemap.xml");
 const sitemapLocations = [...index.body.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1].replace(/&amp;/g, "&"));
-assert(sitemapLocations.length >= 4, "Sitemap index must contain pages, categories, products, and posts");
+assert(sitemapLocations.length >= 4, "Sitemap index must contain pages, categories, products, and Blog URLs");
 
 const publicUrls = [];
 for (const location of sitemapLocations) {
@@ -92,5 +92,13 @@ for (const url of publicUrls) {
   assert(canonical && comparableUrl(canonical) === comparableUrl(url), `Canonical mismatch for ${url}: ${canonical || "missing"}`);
 }
 
+const newsSitemap = await fetchChecked("/news-sitemap.xml");
+const newsUrls = [...newsSitemap.body.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1].replace(/&amp;/g, "&"));
+for (const url of newsUrls) {
+  assert(url.startsWith(`${productionOrigin}/news/`), `News sitemap contains a non-News URL: ${url}`);
+  const page = await fetchChecked(localizeUrl(url));
+  assertHtml(new URL(url).pathname, page.body);
+}
+
 console.table(results);
-console.log(`Self-check passed: ${results.length} key routes, ${sitemapLocations.length} sitemap files, and ${publicUrls.length} canonical public URLs on ${baseUrl}.`);
+console.log(`Self-check passed: ${results.length} key routes, ${sitemapLocations.length} sitemap files, ${publicUrls.length} Blog/index URLs, and ${newsUrls.length} News URLs on ${baseUrl}.`);
