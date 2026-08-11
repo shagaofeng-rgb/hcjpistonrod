@@ -134,10 +134,10 @@ const getCachedDatabaseBlog = unstable_cache(
   { revalidate: 300, tags: ["site:hcj-pistonrod:blog"] },
 );
 
-export async function getPublishedNewsArticles() {
+export async function getPublishedNewsArticles(options?: { fresh?: boolean }) {
   if (!hasDatabaseConfig()) return [];
   try {
-    const databaseArticles = await getCachedDatabaseNews();
+    const databaseArticles = options?.fresh ? await getDatabaseNews() : await getCachedDatabaseNews();
     return databaseArticles.filter((article) => !newsToBlogRedirects[article.slug] && !historicalNoindexNewsSlugs.has(article.slug));
   } catch (error) {
     console.error("[news] database read failed", { message: error instanceof Error ? error.message : "unknown error" });
