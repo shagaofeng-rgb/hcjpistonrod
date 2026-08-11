@@ -4,21 +4,21 @@ import { hasDatabaseConfig, query } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 import { approvedProductFacts, ownedAssets } from "./catalog";
 import { renderControlledMarkdown } from "./markdown";
-import type { ArticleBrief, ArticleDraft, DraftValidation, NewsSource, Topic } from "./types";
+import type { ArticleBrief, ArticleDraft, ContentChannel, DraftValidation, NewsSource, Topic } from "./types";
 
-type StoredArticle = { title: string; markdown: string; topic: Topic };
+type StoredArticle = { title: string; markdown: string; topic: Topic; status: "draft" | "approved" | "published" };
 
 export async function recentContentArticles(limit = 50): Promise<StoredArticle[]> {
   if (!hasDatabaseConfig()) return [];
-  const result = await query<{ title: string; markdown: string; brief: ArticleBrief }>(
-    `select title, markdown, brief
+  const result = await query<{ title: string; markdown: string; brief: ArticleBrief; status: StoredArticle["status"] }>(
+    `select title, markdown, brief, status
      from content_ops_article_records
      where status in ('draft', 'approved', 'published')
      order by created_at desc
      limit $1`,
     [limit],
   );
-  return result.rows.map((row) => ({ title: row.title, markdown: row.markdown, topic: row.brief }));
+  return result.rows.map((row) => ({ title: row.title, markdown: row.markdown, topic: row.brief, status: row.status }));
 }
 
 export async function storeRun(kind: "news_ingest" | "article_cycle", status: "success" | "skipped" | "failed", details: Record<string, unknown>) {
@@ -99,7 +99,7 @@ async function technicalGuidesCategoryId() {
   return result.rows[0]?.id ?? null;
 }
 
-export async function publishControlledArticle(input: { articleId: string; draft: ArticleDraft; contentHash: string; titleHash: string }): Promise<PublishResult> {
+export async function publishControlledArticle(input: { articleId: string; draft: ArticleDraft; contentHash: string; titleHash: string; channel: ContentChannel }): Promise<PublishResult> {
   if (!hasDatabaseConfig()) return { ok: false, reason: "Database publishing is not configured" };
 
   try {
@@ -108,7 +108,7 @@ export async function publishControlledArticle(input: { articleId: string; draft
     const asset = image ? ownedAssets.find((item) => item.id === image.assetId) : null;
     if (!image || !asset) return { ok: false, reason: "A verified owned cover image is required" };
 
-    const publicUrl = `${site.domain}/blog/${input.draft.slug}`;
+    const publicUrl = `${site.domain}/${input.channel}/${input.draft.slug}`;
     const published = await query<{ id: string }>(
       `insert into news_articles (
         category_id, title, english_title, slug, author, excerpt, body_html, cover_image_url, image_alt,
@@ -124,7 +124,7 @@ export async function publishControlledArticle(input: { articleId: string; draft
         $12, 'en', now(), now(), 'Asia/Shanghai',
         $15, $16, $17, $18::jsonb, $19, $20::jsonb,
         'Controlled content operations: published only after deterministic source, claims, duplication, link, image and SEO checks.',
-        'blog', true, now()
+        $21, true, now()
       )
       on conflict (slug) do update set
         title = excluded.title, english_title = excluded.english_title, excerpt = excluded.excerpt,
@@ -135,7 +135,7 @@ export async function publishControlledArticle(input: { articleId: string; draft
         source_fingerprint = excluded.source_fingerprint, content_hash = excluded.content_hash,
         geo_summary = excluded.geo_summary, key_takeaways = excluded.key_takeaways,
         primary_keyword = excluded.primary_keyword, secondary_keywords = excluded.secondary_keywords,
-        automation_notes = excluded.automation_notes, content_channel = 'blog', auto_publish_approved = true,
+        automation_notes = excluded.automation_notes, content_channel = excluded.content_channel, auto_publish_approved = true,
         auto_published_at = now(), updated_at = now()
       returning id`,
       [
@@ -145,7 +145,7 @@ export async function publishControlledArticle(input: { articleId: string; draft
         JSON.stringify({ title: input.draft.title, description: input.draft.description, image: asset.path }), site.brandName,
         input.titleHash, input.contentHash, input.draft.excerpt,
         JSON.stringify([input.draft.brief.uniqueAngle, "Project-specific technical confirmation is required before production."]),
-        input.draft.brief.primaryKeyword, JSON.stringify(input.draft.brief.secondaryKeywords),
+        input.draft.brief.primaryKeyword, JSON.stringify(input.draft.brief.secondaryKeywords), input.channel,
       ],
     );
     const publicArticleId = published.rows[0]?.id;
@@ -159,8 +159,8 @@ export async function publishControlledArticle(input: { articleId: string; draft
     );
     let cacheRevalidated = true;
     try {
-      revalidatePath("/blog");
-      revalidatePath(`/blog/${input.draft.slug}`);
+      revalidatePath(`/${input.channel}`);
+      revalidatePath(`/${input.channel}/${input.draft.slug}`);
       revalidatePath("/sitemap.xml");
       revalidatePath("/sitemap-posts.xml");
     } catch (error) {
@@ -173,7 +173,7 @@ export async function publishControlledArticle(input: { articleId: string; draft
     await query(
       `insert into content_ops_publishing_logs (article_id, action, status, details)
        values ($1, 'cms_publish', 'success', $2::jsonb)`,
-      [input.articleId, JSON.stringify({ publicArticleId, publicUrl, channel: "blog", mode: "controlled-auto", cacheRevalidated })],
+      [input.articleId, JSON.stringify({ publicArticleId, publicUrl, channel: input.channel, mode: "controlled-auto", cacheRevalidated })],
     );
     return { ok: true, articleId: input.articleId, publicArticleId, url: publicUrl };
   } catch (error) {

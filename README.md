@@ -110,7 +110,7 @@ The `/api/rfq` route sends form submissions through SMTP. Configure these enviro
 The former News and Blog automatic-publication runtime has been removed. The replacement system keeps source candidates, drafts, validations and publishing logs in PostgreSQL. It is disabled by default and cannot publish unless all four controls are enabled: `CONTENT_OPS_ENABLED=true`, `CONTENT_OPS_DRY_RUN=false`, `PUBLISH_MODE=auto`, and `AUTO_PUBLISH=true`.
 
 - `GET /api/cron/news-ingest` runs daily at `01:15 UTC` (09:15 Asia/Shanghai) and records only minimal allowlisted source metadata.
-- `GET /api/cron/article-cycle` runs every second day at `01:25 UTC` (09:25 Asia/Shanghai) and creates at most one validated record. It publishes to the existing Blog CMS only when all four explicit controls are enabled and every validation passes; otherwise it remains a private draft.
+- `GET /api/cron/article-cycle` runs every second day at `01:25 UTC` (09:25 Asia/Shanghai) and creates at most one validated record. It publishes directly to the configured public channel (`CONTENT_OPS_CHANNEL=news` by default) only when all four explicit controls are enabled and every validation passes; otherwise it remains a private draft.
 - Both endpoints require `Authorization: Bearer $CRON_SECRET` and do not publish while the default switches are active.
 - Run `pnpm content:dry-run` to create three local, non-public HCJ draft examples and audit reports under `content/operations/dry-runs/`.
 

@@ -1,4 +1,5 @@
 export type ContentPublishMode = "draft_only" | "auto";
+export type ContentChannel = "news" | "blog";
 
 export type ProductFact = {
   id: string;

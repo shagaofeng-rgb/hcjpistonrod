@@ -1,4 +1,4 @@
-import type { ContentPublishMode } from "./types";
+import type { ContentChannel, ContentPublishMode } from "./types";
 
 function flag(value: string | undefined, fallback: boolean) {
   if (value === undefined) return fallback;
@@ -15,12 +15,14 @@ export function getContentOpsConfig() {
   const enabled = flag(process.env.CONTENT_OPS_ENABLED, false);
   const dryRun = flag(process.env.CONTENT_OPS_DRY_RUN, true);
   const autoPublish = flag(process.env.AUTO_PUBLISH, false);
+  const channel: ContentChannel = process.env.CONTENT_OPS_CHANNEL === "blog" ? "blog" : "news";
 
   return {
     enabled,
     dryRun,
     publishMode,
     autoPublish,
+    channel,
     canPublish: enabled && !dryRun && publishMode === "auto" && autoPublish,
     timezone: process.env.CONTENT_OPS_TIMEZONE || "Asia/Shanghai",
     newsMaxAgeDays: numberValue(process.env.NEWS_MAX_AGE_DAYS, 90),

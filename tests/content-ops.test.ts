@@ -61,6 +61,15 @@ test("all production publishing switches must be enabled", () => {
   if (previous.auto === undefined) delete process.env.AUTO_PUBLISH; else process.env.AUTO_PUBLISH = previous.auto;
 });
 
+test("controlled publishing targets News unless Blog is explicitly selected", () => {
+  const previous = process.env.CONTENT_OPS_CHANNEL;
+  delete process.env.CONTENT_OPS_CHANNEL;
+  assert.equal(getContentOpsConfig().channel, "news");
+  process.env.CONTENT_OPS_CHANNEL = "blog";
+  assert.equal(getContentOpsConfig().channel, "blog");
+  if (previous === undefined) delete process.env.CONTENT_OPS_CHANNEL; else process.env.CONTENT_OPS_CHANNEL = previous;
+});
+
 test("controlled markdown renderer creates presentation HTML without executable markup", () => {
   const html = renderControlledMarkdown("# Hidden title\n\n## Checklist\n\n| Input | Why |\n| --- | --- |\n| Drawing | Review |\n\n<script>alert(1)</script>");
   assert.match(html, /<h2>Checklist<\/h2>/);

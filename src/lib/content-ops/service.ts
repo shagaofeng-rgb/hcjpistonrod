@@ -52,6 +52,7 @@ export async function runArticleCycle(): Promise<RunResult> {
   const config = getContentOpsConfig();
   await syncGovernedCatalog();
   const prior = await recentContentArticles(50);
+  const publishedPrior = prior.filter((article) => article.status === "published");
   const topic = selectNextTopic(prior.map((article) => article.topic));
   if (!topic) {
     const details = { created: 0, reason: "No eligible topic after rotation rules" };
@@ -59,13 +60,13 @@ export async function runArticleCycle(): Promise<RunResult> {
     return { ok: true, skipped: true, reason: details.reason, details };
   }
   const draft = generateDeterministicDraft(topic);
-  const validation = buildValidation(draft, prior.map((article) => ({ title: article.title, body: article.markdown })), config.titleSimilarityThreshold, config.contentSimilarityThreshold, config.canPublish);
+  const validation = buildValidation(draft, publishedPrior.map((article) => ({ title: article.title, body: article.markdown })), config.titleSimilarityThreshold, config.contentSimilarityThreshold, config.canPublish);
   const validationsPassed = Object.values(validation).every((result) => result.passed);
   const markdownHash = contentHash(draft.markdown);
   const titleHash = contentHash(draft.title);
   const saved = await storeDraft(draft, validation, markdownHash, titleHash);
   if (config.canPublish && validationsPassed && saved.stored) {
-    const published = await publishControlledArticle({ articleId: saved.id, draft, contentHash: markdownHash, titleHash });
+    const published = await publishControlledArticle({ articleId: saved.id, draft, contentHash: markdownHash, titleHash, channel: config.channel });
     const details = { created: 1, articleId: saved.id, slug: draft.slug, stored: saved.stored, validationsPassed, status: published.ok ? "published" : "draft", publishBlocked: false, published };
     await storeRun("article_cycle", published.ok ? "success" : "failed", details);
     return { ok: published.ok, details };
