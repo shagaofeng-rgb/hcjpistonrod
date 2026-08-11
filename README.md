@@ -38,7 +38,7 @@ pnpm admin:create-user
 - `/admin`
 - `/sitemap.xml`
 - `/sitemap-products.xml`
-- `/sitemap-posts.xml`
+- `/blog-sitemap.xml`
 - `/robots.txt`
 
 ## Chinese Admin Backend
@@ -105,13 +105,10 @@ The `/api/rfq` route sends form submissions through SMTP. Configure these enviro
 - `SMTP_FROM_NAME`
 - `RFQ_TO_EMAIL`
 
-## Controlled Content Operations
+## News Automation
 
-The former News and Blog automatic-publication runtime has been removed. The replacement system keeps source candidates, drafts, validations and publishing logs in PostgreSQL. It is disabled by default and cannot publish unless all four controls are enabled: `CONTENT_OPS_ENABLED=true`, `CONTENT_OPS_DRY_RUN=false`, `PUBLISH_MODE=auto`, and `AUTO_PUBLISH=true`.
+News and Blog are separate editorial systems. The News worker uses only the configured site profile, source whitelist and candidate store; it cannot publish to Blog. `GET /api/cron/news-ingest` runs every 12 hours and only collects, validates, de-duplicates, scores and records external candidates. `GET /api/cron/news-publish` is a 12-hour scheduler tick that enforces a site-scoped 48-hour publication cycle and accepts success only after public HTTP delivery verification.
 
-- `GET /api/cron/news-ingest` runs daily at `01:15 UTC` (09:15 Asia/Shanghai) and records only minimal allowlisted source metadata.
-- `GET /api/cron/article-cycle` runs every second day at `01:25 UTC` (09:25 Asia/Shanghai) and creates at most one validated record. It publishes directly to the configured public channel (`CONTENT_OPS_CHANNEL=news` by default) only when all four explicit controls are enabled and every validation passes; otherwise it remains a private draft.
-- Both endpoints require `Authorization: Bearer $CRON_SECRET` and do not publish while the default switches are active.
-- Run `pnpm content:dry-run` to create three local, non-public HCJ draft examples and audit reports under `content/operations/dry-runs/`.
+The runtime is disabled by default. It needs both `NEWS_AUTOMATION_ENABLED=true` and `NEWS_AUTOMATION_PRODUCTION_ENABLED=true`, a valid site configuration, an approved source candidate, a compliant editorial draft and delivery verification before it can publish a News item. `/api/cron/article-cycle` is retained only as a `410 Gone` compatibility endpoint and cannot publish content.
 
-See `docs/hcj-controlled-content-operations.md` for review, rollback and enabling instructions.
+See `docs/news-automation-audit/hcj-pistonrod/` for the audit baseline, migration and rollback plan.

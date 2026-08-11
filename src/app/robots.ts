@@ -13,7 +13,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "ClaudeBot", disallow: "/" },
       { userAgent: "Applebot-Extended", disallow: "/" },
     ],
-    sitemap: [`${site.domain}/sitemap.xml`, `${site.domain}/news-sitemap.xml`],
+    sitemap: [`${site.domain}/sitemap.xml`, `${site.domain}/news-sitemap.xml`, `${site.domain}/blog-sitemap.xml`],
     host: site.domain,
   };
 }

@@ -11,15 +11,10 @@ export async function GET() {
   const newsArticles = await getPublishedNewsArticles();
   const recentCutoff = Date.now() - 48 * 60 * 60 * 1000;
   const urls = newsArticles
-    .filter((article) => new Date(article.source.publishedAt).getTime() >= recentCutoff)
     .map((article) => {
       const url = `${site.domain}/news/${article.slug}`;
-      return `
-        <url>
-          <loc>${escapeXml(url)}</loc>
-          <lastmod>${article.updatedAt}</lastmod>
-          <changefreq>monthly</changefreq>
-          <priority>0.75</priority>
+      const recent = new Date(article.source.publishedAt).getTime() >= recentCutoff;
+      const newsExtension = recent ? `
           <news:news>
             <news:publication>
               <news:name>${escapeXml(site.brandName)}</news:name>
@@ -27,7 +22,13 @@ export async function GET() {
             </news:publication>
             <news:publication_date>${escapeXml(article.source.publishedAt)}</news:publication_date>
             <news:title>${escapeXml(article.title)}</news:title>
-          </news:news>
+          </news:news>` : "";
+      return `
+        <url>
+          <loc>${escapeXml(url)}</loc>
+          <lastmod>${article.updatedAt}</lastmod>
+          <changefreq>monthly</changefreq>
+          <priority>0.75</priority>${newsExtension}
         </url>`;
     })
     .join("");

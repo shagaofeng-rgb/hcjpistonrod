@@ -7,6 +7,7 @@ import {
   hasVercelAnalyticsConfig,
   query,
 } from "./db";
+import { getSiteConfig } from "@/lib/news-automation/config";
 
 export type AdminTableRow = {
   id: string;
@@ -24,11 +25,11 @@ export async function getAdminOverview(range: AdminDateRange) {
   if (metricsAvailable) {
     const productWhere = ["deleted_at is null", "status = 'published'"];
     const categoryWhere = ["deleted_at is null", "is_enabled = true"];
-    const newsWhere = ["deleted_at is null", "status = 'published'", "published_at <= now()"];
+    const newsWhere = ["deleted_at is null", "status = 'published'", "published_at <= now()", "site_id = $1", "content_channel = 'news'"];
     const seoWhere = ["deleted_at is null"];
     const productValues: unknown[] = [];
     const categoryValues: unknown[] = [];
-    const newsValues: unknown[] = [];
+    const newsValues: unknown[] = [getSiteConfig().siteId];
     const seoValues: unknown[] = [];
     appendDateRangeCondition(productWhere, productValues, "updated_at", range);
     appendDateRangeCondition(categoryWhere, categoryValues, "updated_at", range);
@@ -117,14 +118,15 @@ export async function getAdminModuleRows(moduleKey: string, range: AdminDateRang
       return result.rows.map((row) => ({ id: row.id, cells: [row.name, row.english_name, row.slug, String(row.level), row.is_enabled ? "启用" : "停用", String(row.sort_order)] }));
     }
 
-    if (moduleKey === "news") {
-      const where = ["deleted_at is null"];
-      const values: unknown[] = [];
+    if (moduleKey === "news" || moduleKey === "blog") {
+      const channel = moduleKey;
+      const where = ["deleted_at is null", "site_id = $1", "content_channel = $2"];
+      const values: unknown[] = [getSiteConfig().siteId, channel];
       appendDateRangeCondition(where, values, "coalesce(published_at, updated_at)", range);
-      const result = await query<{ id: string; title: string; content_channel: string; author: string | null; status: string; published_at: Date | null; view_count: string }>(
-        `select id, coalesce(english_title, title) as title, content_channel, author, status, published_at, view_count::text from news_articles where ${where.join(" and ")} order by updated_at desc limit 200`, values,
+      const result = await query<{ id: string; title: string; category: string | null; source_name: string | null; author: string | null; status: string; published_at: Date | null; view_count: string }>(
+        `select id, coalesce(english_title, title) as title, category, source_name, author, status, published_at, view_count::text from news_articles where ${where.join(" and ")} order by updated_at desc limit 200`, values,
       );
-      return result.rows.map((row) => ({ id: row.id, cells: [row.title, row.content_channel === "blog" ? "Blog" : "News", row.author || "-", row.status, dateCell(row.published_at), row.view_count] }));
+      return result.rows.map((row) => ({ id: row.id, cells: [row.title, channel === "news" ? row.source_name || "-" : row.category || "-", row.author || "-", row.status, dateCell(row.published_at), row.view_count] }));
     }
 
     if (moduleKey === "content-ops") {

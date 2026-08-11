@@ -4,7 +4,7 @@
 
 The production site serves a dynamic sitemap index at `https://www.hcjpistonrod.com/sitemap.xml`. The apex domain redirects permanently to the canonical `www` host. The sitemap is generated from the published static catalog plus published PostgreSQL CMS records when `DATABASE_URL` is configured.
 
-The index links to separate page, category, product, and post sitemaps. A sitemap is automatically split before 50,000 URLs or 50 MB. Search, admin, redirect-only, draft, deleted, disabled, noindex, non-self-canonical, and parameter URLs are excluded.
+The index links to separate page, category, product, and Blog sitemaps. News uses its own News sitemap and is never mixed into the Blog sitemap. A sitemap is automatically split before 50,000 URLs or 50 MB. Search, admin, redirect-only, draft, deleted, disabled, noindex, non-self-canonical, and parameter URLs are excluded.
 
 Static content uses fixed repository update timestamps. CMS content uses its real `updated_at` value. The generator does not replace every `lastmod` with the current time.
 
@@ -14,11 +14,11 @@ Static content uses fixed repository update timestamps. CMS content uses its rea
 - `https://www.hcjpistonrod.com/sitemap-pages.xml`
 - `https://www.hcjpistonrod.com/sitemap-categories.xml`
 - `https://www.hcjpistonrod.com/sitemap-products.xml`
-- `https://www.hcjpistonrod.com/sitemap-posts.xml`
+- `https://www.hcjpistonrod.com/blog-sitemap.xml`
 - `https://www.hcjpistonrod.com/news-sitemap.xml`
 - `https://www.hcjpistonrod.com/robots.txt`
 
-When a type exceeds one file, the index switches to `/sitemaps/{type}-{part}.xml` URLs.
+`/sitemap-posts.xml` is retained only as a permanent redirect to `/blog-sitemap.xml` for compatibility. When a type exceeds one file, the index switches to `/sitemaps/{type}-{part}.xml` URLs.
 
 ## Automatic Updates
 

@@ -1,7 +1,7 @@
 export const SITEMAP_MAX_URLS = 50_000;
 export const SITEMAP_MAX_BYTES = 50 * 1024 * 1024;
 
-export type SitemapKind = "pages" | "categories" | "products" | "posts";
+export type SitemapKind = "pages" | "categories" | "products" | "blog";
 
 export type SitemapEntry = {
   loc: string;
@@ -105,7 +105,7 @@ function splitEntries(entries: SitemapEntry[], maxUrls = SITEMAP_MAX_URLS, maxBy
 export function buildSitemapDocuments(entries: SitemapEntry[], limits?: { maxUrls?: number; maxBytes?: number }) {
   const result: SitemapDocument[] = [];
   const deduped = dedupeEntries(entries);
-  const kinds: SitemapKind[] = ["pages", "categories", "products", "posts"];
+  const kinds: SitemapKind[] = ["pages", "categories", "products", "blog"];
 
   for (const kind of kinds) {
     const kindEntries = deduped.filter((entry) => entry.kind === kind);

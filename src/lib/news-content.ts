@@ -2,6 +2,7 @@ import type { NewsArticle } from "../../data/news";
 import { unstable_cache } from "next/cache";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
 import { site } from "@/lib/site";
+import { getSiteConfig } from "@/lib/news-automation/config";
 import { sanitizeArticleHtml } from "@/lib/content-html";
 import { historicalNoindexNewsSlugs, newsToBlogRedirects } from "@/lib/news-rules";
 
@@ -14,6 +15,7 @@ type NewsRow = {
   author: string | null;
   image_url: string;
   image_alt: string | null;
+  cover_image_source_url: string | null;
   category: string | null;
   tags: string[] | null;
   related_products: string[] | null;
@@ -29,6 +31,7 @@ type NewsRow = {
   geo_summary: string | null;
   key_takeaways: string[] | null;
   content_channel: "news" | "blog";
+  editorial_disclaimer: string | null;
 };
 
 function toIso(value: Date | string) {
@@ -52,6 +55,9 @@ function toArticle(row: NewsRow): NewsArticle {
     keyTakeaways: Array.isArray(row.key_takeaways) ? row.key_takeaways : [],
     image: row.image_url.startsWith("https://") ? `/api/media/news-image/${row.id}` : row.image_url,
     imageAlt: row.image_alt || row.title,
+    imageAttribution: row.cover_image_source_url === "owned:hcj-factory-asset"
+      ? "HCJ owned neutral factory asset, used as contextual imagery and not as an event photograph."
+      : row.cover_image_source_url || "Image rights record not available for this historical article.",
     source: {
       title: row.source_title || row.title,
       publisher: row.source_publisher || site.brandName,
@@ -66,24 +72,25 @@ function toArticle(row: NewsRow): NewsArticle {
     sections: [],
     faqs: [],
     bodyHtml: sanitizeArticleHtml(row.body_html),
+    editorialDisclaimer: row.editorial_disclaimer || null,
   };
 }
 
 async function getDatabaseNews(slug?: string, includeNoindex = false) {
-  const values: unknown[] = [];
-  const slugSql = slug ? "and na.slug = $1" : "";
+  const values: unknown[] = [getSiteConfig().siteId];
+  const slugSql = slug ? `and na.slug = $${values.length + 1}` : "";
   const indexSql = includeNoindex ? "" : "and na.robots not ilike '%noindex%'";
   if (slug) values.push(slug);
   const result = await query<NewsRow>(
     `select na.id, na.slug, coalesce(na.english_title, na.title) as title, na.excerpt, na.body_html, na.author,
-      coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt,
+      coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt, na.cover_image_source_url,
       coalesce(nc.english_name, nc.name, 'Industry News') as category, na.tags, na.related_products,
       na.published_at, na.updated_at, na.source_title, na.source_publisher, na.source_author, na.source_url,
-      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways, na.content_channel
+      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways, na.content_channel, na.editorial_disclaimer
      from news_articles na
      left join news_categories nc on nc.id = na.category_id
      left join media_assets ma on ma.id = na.cover_image_id
-     where na.deleted_at is null and na.content_channel = 'news' and na.status = 'published' and na.published_at is not null and na.published_at <= now()
+     where na.deleted_at is null and na.site_id = $1 and na.content_channel = 'news' and na.status = 'published' and na.published_at is not null and na.published_at <= now()
        ${indexSql} and na.body_html is not null and na.excerpt is not null
        and coalesce(na.cover_image_url, ma.url) is not null ${slugSql}
      order by na.published_at desc`,
@@ -93,19 +100,19 @@ async function getDatabaseNews(slug?: string, includeNoindex = false) {
 }
 
 async function getDatabaseBlog(slug?: string) {
-  const values: unknown[] = [];
-  const slugSql = slug ? "and na.slug = $1" : "";
+  const values: unknown[] = [getSiteConfig().siteId];
+  const slugSql = slug ? `and na.slug = $${values.length + 1}` : "";
   if (slug) values.push(slug);
   const result = await query<NewsRow>(
     `select na.id, na.slug, coalesce(na.english_title, na.title) as title, na.excerpt, na.body_html, na.author,
-      coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt,
+      coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt, na.cover_image_source_url,
       coalesce(nc.english_name, nc.name, 'Industry News') as category, na.tags, na.related_products,
       na.published_at, na.updated_at, na.source_title, na.source_publisher, na.source_author, na.source_url,
-      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways, na.content_channel
+      na.source_published_at, na.source_fetched_at, na.source_language, na.geo_summary, na.key_takeaways, na.content_channel, na.editorial_disclaimer
      from news_articles na
      left join news_categories nc on nc.id = na.category_id
      left join media_assets ma on ma.id = na.cover_image_id
-     where na.deleted_at is null and na.content_channel = 'blog' and na.status = 'published' and na.published_at is not null and na.published_at <= now()
+     where na.deleted_at is null and na.site_id = $1 and na.content_channel = 'blog' and na.status = 'published' and na.published_at is not null and na.published_at <= now()
        and na.robots not ilike '%noindex%' and na.body_html is not null and na.excerpt is not null
        and coalesce(na.cover_image_url, ma.url) is not null
        and coalesce(na.automation_notes, '') not ilike 'Automatically generated%' ${slugSql}
@@ -118,13 +125,13 @@ async function getDatabaseBlog(slug?: string) {
 const getCachedDatabaseNews = unstable_cache(
   () => getDatabaseNews(),
   ["hcj", "published-news"],
-  { revalidate: 300, tags: ["hcj-published-content"] },
+  { revalidate: 300, tags: ["site:hcj-pistonrod:news"] },
 );
 
 const getCachedDatabaseBlog = unstable_cache(
   () => getDatabaseBlog(),
   ["hcj", "published-blog"],
-  { revalidate: 300, tags: ["hcj-published-content"] },
+  { revalidate: 300, tags: ["site:hcj-pistonrod:blog"] },
 );
 
 export async function getPublishedNewsArticles() {

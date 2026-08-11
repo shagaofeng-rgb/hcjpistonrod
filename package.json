@@ -12,8 +12,6 @@
     "test:sitemap": "tsx --test tests/sitemap.test.ts",
     "sitemap:generate": "tsx scripts/sitemap-generate.ts",
     "content:sync": "tsx scripts/sync-repository-content.ts",
-    "content:dry-run": "tsx scripts/content-ops-dry-run.ts",
-    "content:revalidate": "tsx scripts/content-ops-revalidate.ts",
     "self-check": "node scripts/site-self-check.mjs",
     "admin:migrate": "node scripts/admin-db.mjs migrate",
     "admin:create-user": "node scripts/admin-db.mjs create-user",

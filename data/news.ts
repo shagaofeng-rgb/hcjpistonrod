@@ -21,11 +21,13 @@ export type NewsArticle = {
   keyTakeaways: string[];
   image: string;
   imageAlt: string;
+  imageAttribution?: string | null;
   source: NewsSource;
   relatedProducts: string[];
   sections: { heading: string; body: string }[];
   faqs: { question: string; answer: string }[];
   bodyHtml?: string;
+  editorialDisclaimer?: string | null;
 };
 
 export const newsArticles: NewsArticle[] = [

@@ -1,6 +1,7 @@
 import { adminApiError, adminError, adminOk, pageParams } from "@/lib/admin/api";
 import { getCurrentAdminUser, hasPermission } from "@/lib/admin/auth";
 import { query } from "@/lib/admin/db";
+import { getSiteConfig } from "@/lib/news-automation/config";
 
 export const runtime = "nodejs";
 
@@ -22,6 +23,14 @@ const modules = {
     permission: "news.manage",
     search: ["title", "english_title", "slug", "author"],
     fields: "id, title, english_title, slug, author, status, published_at, view_count, updated_at",
+    contentChannel: "news",
+  },
+  blog: {
+    table: "news_articles",
+    permission: "news.manage",
+    search: ["title", "english_title", "slug", "author"],
+    fields: "id, title, english_title, slug, author, status, published_at, view_count, updated_at",
+    contentChannel: "blog",
   },
   "content-ops": {
     table: "content_ops_article_records",
@@ -106,6 +115,11 @@ export async function GET(request: Request, context: { params: Promise<{ module:
 
     if (config.table === "analytics_daily_summary" || config.table === "audit_logs" || config.table === "system_settings" || config.table === "sync_sources") {
       where.pop();
+    }
+
+    if ("contentChannel" in config) {
+      values.push(getSiteConfig().siteId, config.contentChannel);
+      where.push(`site_id = $${values.length - 1}`, `content_channel = $${values.length}`);
     }
 
     if (keyword) {

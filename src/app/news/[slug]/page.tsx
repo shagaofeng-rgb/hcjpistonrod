@@ -64,7 +64,7 @@ export default async function NewsDetailPage({ params }: Props) {
     headline: article.title,
     description: article.excerpt,
     image: `${site.domain}${article.image}`,
-    datePublished: article.source.publishedAt,
+    datePublished: `${article.date}T00:00:00+08:00`,
     dateModified: `${article.updatedAt}T08:00:00+08:00`,
     author: { "@type": "Organization", name: article.author },
     publisher: {
@@ -73,6 +73,7 @@ export default async function NewsDetailPage({ params }: Props) {
       logo: { "@type": "ImageObject", url: `${site.domain}/xijiu-logo.png` },
     },
     mainEntityOfPage: articleUrl,
+    isBasedOn: article.source.type === "external" ? article.source.url : undefined,
     articleSection: article.category,
     keywords: [article.category, ...article.relatedProducts].join(", "),
     about: relatedProducts.map((product) => ({ "@type": "Thing", name: product.name, url: `${site.domain}/products/${product.slug}` })),
@@ -221,19 +222,11 @@ export default async function NewsDetailPage({ params }: Props) {
                     <dd className="mt-1 text-[var(--steel)]">{article.source.publishedAt} / {article.source.fetchedAt}</dd>
                   </div>
                 </dl>
-                <a href={article.source.url} className="mt-5 inline-flex font-semibold text-[var(--teal)]" target="_blank" rel="noreferrer">
-                  View source
+                <a href={article.source.url} className="mt-5 inline-flex font-semibold text-[var(--teal)]" target="_blank" rel="noopener noreferrer nofollow">
+                  View original source
                 </a>
-              </section>
-
-              <section className="rounded-md border border-[var(--line)] bg-[#071428] p-4 text-white sm:p-6">
-                <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">Need technical support?</h2>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-white/72">
-                  Send drawings, specifications, or purchasing questions. XIJIU will help review your piston rod, chrome plated rod, honed tube, or rod component requirements.
-                </p>
-                <Link href="/contact" className="mt-5 inline-flex h-11 items-center justify-center rounded-md bg-[var(--amber)] px-4 font-semibold text-white">
-                  Send Inquiry
-                </Link>
+                <p className="mt-4 text-sm leading-6 text-[var(--steel)]"><span className="font-semibold text-[var(--ink)]">Image source / rights:</span> {article.imageAttribution}</p>
+                {article.editorialDisclaimer && <p className="mt-5 border-t border-[var(--line)] pt-4 text-sm leading-6 text-[var(--steel)]">{article.editorialDisclaimer}</p>}
               </section>
 
               {relatedArticles.length > 0 && <section>
