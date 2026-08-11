@@ -33,7 +33,7 @@ export const adminModules = [
 export const moduleContent = {
   products: {
     title: "产品管理",
-    description: "查看、检索和导出 CMS 中的产品记录、分类归属、前台链接和 SEO 状态；公开产品页面仍使用版本化内容并由同步任务对齐。",
+    description: "查看、检索和导出 CMS 中的产品记录、分类归属、前台链接和 SEO 状态；前台公开产品页直接读取已发布的 CMS 记录。",
     apiModule: "products",
     columns: ["产品名称", "型号", "Slug", "状态", "前台链接", "分类"],
     actions: ["检索", "导出", "刷新"],
@@ -47,14 +47,14 @@ export const moduleContent = {
   },
   news: {
     title: "新闻管理",
-    description: "查看、检索和导出当前新闻中心发布的文章、分类、发布时间和前台状态。",
+    description: "查看、检索和导出 News 与 Blog 两个频道的真实文章、分类、发布时间和前台状态。",
     apiModule: "news",
     columns: ["标题", "分类", "作者", "状态", "发布时间", "浏览量"],
     actions: ["检索", "导出", "刷新"],
   },
   "content-ops": {
     title: "内容草稿",
-    description: "受控内容系统生成的真实草稿与验证状态。草稿不会进入前台、搜索或网站地图；公开发布仍需人工技术与市场审核。",
+    description: "受控内容系统的真实执行记录与验证状态。草稿不会进入前台、搜索或网站地图；符合已启用发布规则的 News 内容会直接发布。",
     apiModule: "content-ops",
     columns: ["标题", "Slug", "状态", "验证状态", "创建时间", "更新时间"],
     actions: ["检索", "导出", "刷新"],

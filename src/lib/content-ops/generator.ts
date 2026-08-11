@@ -2,7 +2,8 @@ import { approvedProductFacts, contentCatalog, ownedAssets } from "./catalog";
 import type { ArticleBrief, ArticleDraft, Topic } from "./types";
 
 function titleFor(topic: Topic) {
-  return `What to Review Before Specifying a ${topic.productFamily.replace(/s$/, "")} for ${topic.scenario}`;
+  const scenario = topic.scenario.replace(/\b[a-z]/g, (character) => character.toUpperCase());
+  return `What to Review Before Specifying a ${topic.productFamily.replace(/s$/, "")} for ${scenario}`;
 }
 
 function slugFor(topic: Topic) {

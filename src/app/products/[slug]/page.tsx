@@ -7,8 +7,9 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { FAQAccordion } from "@/components/faq-accordion";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { products, site } from "@/lib/site";
+import { site } from "@/lib/site";
 import { getProductEditorial } from "@/lib/product-editorial";
+import { getPublishedProduct, getPublishedProducts } from "@/lib/product-content";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -20,13 +21,13 @@ const coreProductSlugs = new Set([
 
 export const revalidate = 300;
 
-export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+export async function generateStaticParams() {
+  return (await getPublishedProducts()).map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = products.find((item) => item.slug === slug);
+  const product = await getPublishedProduct(slug);
   if (!product) return {};
   const editorial = getProductEditorial(product);
   return {
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
-  const product = products.find((item) => item.slug === slug);
+  const [product, products] = await Promise.all([getPublishedProduct(slug), getPublishedProducts()]);
   if (!product) notFound();
   const editorial = getProductEditorial(product);
   const relatedProducts = editorial.related

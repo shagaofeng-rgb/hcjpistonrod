@@ -7,8 +7,9 @@ import { FAQAccordion } from "@/components/faq-accordion";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { NewsCard } from "@/components/news-card";
-import { products, site } from "@/lib/site";
+import { site } from "@/lib/site";
 import { getPublishedBlogArticle, getPublishedBlogArticles } from "@/lib/news-content";
+import { getPublishedProducts } from "@/lib/product-content";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -48,8 +49,8 @@ export default async function BlogDetailPage({ params }: Props) {
 
   if (!article) notFound();
 
+  const [products, allArticles] = await Promise.all([getPublishedProducts(), getPublishedBlogArticles()]);
   const relatedProducts = products.filter((product) => article.relatedProducts.includes(product.slug));
-  const allArticles = await getPublishedBlogArticles();
   const relatedArticles = allArticles.filter((item) => item.slug !== article.slug).slice(0, 2);
   const articleUrl = `${site.domain}/blog/${article.slug}`;
   const articleJsonLd = {

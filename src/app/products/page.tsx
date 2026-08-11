@@ -4,10 +4,10 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ProductCard } from "@/components/product-card";
 import { ProductSidebar } from "@/components/product-sidebar";
-import { productCategories, products, site } from "@/lib/site";
+import { site } from "@/lib/site";
+import { getPublishedProducts } from "@/lib/product-content";
 
 const mainProductCategories = new Set(["chrome-plated-rod", "honed-tube"]);
-const mainProducts = products.filter((product) => mainProductCategories.has(product.category));
 
 export const metadata: Metadata = {
   title: "Products",
@@ -29,7 +29,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await getPublishedProducts();
+  const mainProducts = products.filter((product) => mainProductCategories.has(product.category));
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -93,9 +95,9 @@ export default function ProductsPage() {
                 specifications quickly.
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
-                {productCategories.filter((category) => mainProductCategories.has(category.slug)).map((category) => (
-                  <a key={category.slug} href={`/products/${category.slug}`} className="rounded-md border border-[var(--line)] bg-[var(--background)] p-4 font-semibold text-[var(--ink)]">
-                    {category.name}
+                {mainProducts.filter((product) => mainProductCategories.has(product.slug)).map((product) => (
+                  <a key={product.slug} href={`/products/${product.slug}`} className="rounded-md border border-[var(--line)] bg-[var(--background)] p-4 font-semibold text-[var(--ink)]">
+                    {product.name}
                   </a>
                 ))}
               </div>

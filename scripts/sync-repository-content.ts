@@ -66,18 +66,20 @@ async function syncCategories(client: PoolClient, mediaIds: Map<string, string>)
     const result = await client.query<{ id: string }>(
       `insert into product_categories_cms
         (name, english_name, slug, level, summary, description, image_id, sort_order, is_enabled,
-         show_in_navigation, seo_title, seo_description, seo_keywords, canonical_url, updated_at)
-       values ($1,$1,$2,$3,$4,$5,$6,$7,$8,$8,$9,$10,$11,$12,now())
+         show_in_navigation, seo_title, seo_description, seo_keywords, canonical_url, sections, faqs, updated_at)
+       values ($1,$1,$2,$3,$4,$5,$6,$7,$8,$8,$9,$10,$11,$12,$13::jsonb,$14::jsonb,now())
        on conflict (slug) do update set name=excluded.name, english_name=excluded.english_name,
          level=excluded.level, summary=excluded.summary, description=excluded.description,
          image_id=excluded.image_id, sort_order=excluded.sort_order, is_enabled=excluded.is_enabled,
          show_in_navigation=excluded.show_in_navigation, seo_title=excluded.seo_title,
          seo_description=excluded.seo_description, seo_keywords=excluded.seo_keywords,
-         canonical_url=excluded.canonical_url, deleted_at=null, updated_at=now()
+         canonical_url=excluded.canonical_url, sections=excluded.sections, faqs=excluded.faqs,
+         deleted_at=null, updated_at=now()
        returning id`,
       [category.name, category.slug, category.parent ? 2 : 1, category.intro, category.description,
         mediaIds.get(category.image) || null, index + 1, published, category.title, category.description,
-        category.keywords.join(", "), `${company.domain}/products/${category.slug}`],
+        category.keywords.join(", "), `${company.domain}/products/${category.slug}`,
+        JSON.stringify(category.sections), JSON.stringify(category.faqs)],
     );
     ids.set(category.slug, result.rows[0].id);
   }
@@ -113,7 +115,7 @@ async function syncProducts(client: PoolClient, categoryIds: Map<string, string>
       [categoryIds.get(product.category) || null, product.name, productSku(product.slug), product.slug,
         published ? "published" : "draft", product.shortDescription, product.definition,
         JSON.stringify(product.advantages), JSON.stringify(product.applications), JSON.stringify(product.process),
-        JSON.stringify(product.specs), JSON.stringify({ model: product.model, image: product.image, customization: product.customization, quality: product.quality, faqs: product.faqs }),
+        JSON.stringify(product.specs), JSON.stringify({ model: product.model, image: product.image, customization: product.customization, advantages: product.advantages, process: product.process, quality: product.quality, faqs: product.faqs }),
         JSON.stringify([product.category, ...product.applications]), mediaIds.get(product.image) || null,
         product.availability, product.specs["Lead Time"] || "To be confirmed by order", published, index + 1,
         published ? new Date("2026-07-06T06:04:59.000Z") : null,

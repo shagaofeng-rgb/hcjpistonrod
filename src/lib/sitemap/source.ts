@@ -1,6 +1,3 @@
-import { productCategories } from "../../../data/categories";
-import { newsArticles } from "../../../data/news";
-import { products } from "../../../data/products";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
 import { site } from "@/lib/site";
 import { isIndexableNewsSlug } from "@/lib/news-rules";
@@ -8,7 +5,6 @@ import { normalizeCanonicalUrl, normalizeLastmod, shouldIncludeCmsPage, type Sit
 
 const STATIC_PAGE_LASTMOD = "2026-07-08T13:13:04.000Z";
 const STATIC_PRODUCT_LASTMOD = "2026-07-06T06:04:59.000Z";
-const STATIC_CATEGORY_LASTMOD = "2026-07-03T11:19:38.000Z";
 
 const indexablePages = [
   "",
@@ -22,25 +18,8 @@ const indexablePages = [
   "/privacy-policy",
 ];
 
-const primaryCategorySlugs = new Set(["chrome-plated-rod", "honed-tube"]);
-const primaryProductCategories = new Set(["chrome-plated-rod", "honed-tube"]);
-
 function absolute(pathname: string) {
   return new URL(pathname || "/", site.domain).toString();
-}
-
-function staticEntries(): SitemapEntry[] {
-  const categorySlugs = new Set(productCategories.map((category) => category.slug));
-  return [
-    ...indexablePages.map((path) => ({ loc: absolute(path), lastmod: STATIC_PAGE_LASTMOD, kind: "pages" as const })),
-    ...productCategories
-      .filter((category) => primaryCategorySlugs.has(category.slug))
-      .map((category) => ({ loc: absolute(`/products/${category.slug}`), lastmod: STATIC_CATEGORY_LASTMOD, kind: "categories" as const })),
-    ...products
-      .filter((product) => !categorySlugs.has(product.slug) && primaryProductCategories.has(product.category))
-      .map((product) => ({ loc: absolute(`/products/${product.slug}`), lastmod: STATIC_PRODUCT_LASTMOD, kind: "products" as const })),
-    ...newsArticles.map((article) => ({ loc: absolute(`/blog/${article.slug}`), lastmod: normalizeLastmod(article.updatedAt), kind: "posts" as const })),
-  ];
 }
 
 function sitePageEntries(): SitemapEntry[] {
@@ -81,13 +60,22 @@ async function databaseEntries() {
 }
 
 export async function getPublicSitemapEntries() {
-  const fallback = staticEntries();
-  if (!hasDatabaseConfig()) return { entries: fallback, source: "static" as const, warnings: [] as string[] };
+  if (!hasDatabaseConfig()) {
+    return {
+      entries: sitePageEntries(),
+      source: "site-pages-only" as const,
+      warnings: ["CMS database is not configured; dynamic URLs were intentionally omitted."],
+    };
+  }
   try {
     const entries = await databaseEntries();
     return { entries: [...sitePageEntries(), ...entries], source: "database+site-pages" as const, warnings: [] as string[] };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown database sitemap error";
-    return { entries: fallback, source: "static-fallback" as const, warnings: [message] };
+    return {
+      entries: sitePageEntries(),
+      source: "site-pages-only" as const,
+      warnings: [`CMS sitemap read failed; dynamic URLs were intentionally omitted. ${message}`],
+    };
   }
 }

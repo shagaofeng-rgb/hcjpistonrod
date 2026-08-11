@@ -7,9 +7,10 @@ import { FAQAccordion } from "@/components/faq-accordion";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { NewsCard } from "@/components/news-card";
-import { products, site } from "@/lib/site";
+import { site } from "@/lib/site";
 import { getPublishedNewsArticle, getPublishedNewsArticles } from "@/lib/news-content";
 import { historicalNoindexNewsSlugs, newsToBlogRedirects } from "@/lib/news-rules";
+import { getPublishedProducts } from "@/lib/product-content";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -52,7 +53,7 @@ export default async function NewsDetailPage({ params }: Props) {
 
   if (!article) notFound();
 
-  const allArticles = await getPublishedNewsArticles();
+  const [allArticles, products] = await Promise.all([getPublishedNewsArticles(), getPublishedProducts()]);
   const relatedArticles = allArticles.filter((item) => item.slug !== article.slug).slice(0, 2);
   const relatedProducts = products.filter((product) => article.relatedProducts.includes(product.slug));
   const articleUrl = `${site.domain}/news/${article.slug}`;

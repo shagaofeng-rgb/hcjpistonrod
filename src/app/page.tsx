@@ -20,9 +20,10 @@ import { Hero } from "@/components/hero-slider";
 import { NewsCard } from "@/components/news-card";
 import { ProductCard } from "@/components/product-card";
 import { StatsCounter } from "@/components/stats-counter";
-import { industries, productCategories, site } from "@/lib/site";
+import { industries, site } from "@/lib/site";
 import { company } from "../../data/company";
 import { getPublishedBlogArticles } from "@/lib/news-content";
+import { getPublishedProducts } from "@/lib/product-content";
 
 export const revalidate = 300;
 
@@ -46,10 +47,6 @@ export const metadata: Metadata = {
     images: [{ url: "/images/og/home.jpg", width: 1200, height: 630, alt: "XIJIU Intelligent Equipment factory" }],
   },
 };
-
-const categoryCards = productCategories.filter((category) =>
-  ["chrome-plated-rod", "honed-tube"].includes(category.slug),
-);
 
 const advantages = [
   {
@@ -116,7 +113,8 @@ const applicationImages: Record<string, string> = {
 };
 
 export default async function Home() {
-  const newsArticles = await getPublishedBlogArticles();
+  const [newsArticles, products] = await Promise.all([getPublishedBlogArticles(), getPublishedProducts()]);
+  const categoryCards = products.filter((product) => ["chrome-plated-rod", "honed-tube"].includes(product.slug));
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",

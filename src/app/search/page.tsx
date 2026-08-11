@@ -4,8 +4,8 @@ import { Search } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { productCategories, products } from "@/lib/site";
 import { getPublishedNewsArticles } from "@/lib/news-content";
+import { getPublishedProducts } from "@/lib/product-content";
 
 export const metadata: Metadata = {
   title: "Search",
@@ -25,7 +25,7 @@ function matchScore(value: string, query: string) {
 
 export default async function SearchPage({ searchParams }: Props) {
   const { q } = await searchParams;
-  const newsArticles = await getPublishedNewsArticles();
+  const [newsArticles, products] = await Promise.all([getPublishedNewsArticles(), getPublishedProducts()]);
   const query = (q || "").trim().toLowerCase();
   const productsResults = query
     ? products
@@ -35,17 +35,6 @@ export default async function SearchPage({ searchParams }: Props) {
           description: product.shortDescription,
           href: `/products/${product.slug}`,
           score: matchScore([product.name, product.model, product.shortDescription, product.category].join(" "), query),
-        }))
-        .filter((item) => item.score > 0)
-    : [];
-  const categoryResults = query
-    ? productCategories
-        .map((category) => ({
-          type: "Category",
-          title: category.name,
-          description: category.description,
-          href: `/products/${category.slug}`,
-          score: matchScore([category.name, category.description].join(" "), query),
         }))
         .filter((item) => item.score > 0)
     : [];
@@ -60,7 +49,7 @@ export default async function SearchPage({ searchParams }: Props) {
         }))
         .filter((item) => item.score > 0)
     : [];
-  const results = [...productsResults, ...categoryResults, ...newsResults].sort((a, b) => b.score - a.score);
+  const results = [...productsResults, ...newsResults].sort((a, b) => b.score - a.score);
 
   return (
     <>
