@@ -27,6 +27,8 @@ export type SiteNewsConfig = {
   rssRoute: "/news/rss.xml";
   sitemapRoute: "/news-sitemap.xml";
   desiredWordCount: { min: number; max: number };
+  sourceNativeWordCount: { min: number; max: number };
+  publicationMode: "source-native";
   ingestIntervalHours: 12;
   publishIntervalHours: 48;
   candidateMaxAgeHours: number;
@@ -108,6 +110,7 @@ export type NewsDraft = {
     author: string | null;
   };
   editorialDisclaimer: string;
+  publicationMode: "source-native";
   relatedProductSlug?: string;
   wordCount: number;
 };

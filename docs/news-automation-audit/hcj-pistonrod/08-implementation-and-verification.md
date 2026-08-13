@@ -1,6 +1,6 @@
 # News Automation Implementation and Verification
 
-Implementation timestamp: 2026-08-11 Asia/Shanghai. Production activation update: 2026-08-11 Asia/Shanghai.
+Implementation timestamp: 2026-08-11 Asia/Shanghai. Production activation update: 2026-08-13 Asia/Shanghai.
 
 ## Scope completed in the working tree
 
@@ -9,6 +9,7 @@ Implementation timestamp: 2026-08-11 Asia/Shanghai. Production activation update
 - Added the stable `hcj-pistonrod` configuration, isolated News and Blog routes, cache tags, admin filters, APIs, RSS and sitemaps.
 - Retired the legacy `/api/cron/article-cycle` publisher with an explicit HTTP 410 response. It cannot publish a Blog or News entry.
 - Changed Vercel schedule source code to two 12-hour ingest ticks and 12-hour publish-controller ticks. The controller has a 48-hour site-timezone cycle gate, so a successful cycle cannot publish twice.
+- Replaced the model-dependent writer with a source-native brief composer. It uses only a white-listed source's title, short source-provided summary, URL and publication date; it makes no content-generation API call.
 - Kept all historical `news_articles` and `content_ops_*` records. No historical publication, redirect, noindex decision or source field was changed.
 
 ## New task contract
@@ -33,7 +34,7 @@ The published News template now includes an original-source panel, original publ
 | --- | --- |
 | Lint | `pnpm lint` passed |
 | Existing content safety tests | `pnpm test:content`: 5 passed |
-| New configuration/window/scoring tests | `pnpm exec tsx --test tests/news-automation.test.ts`: 7 passed |
+| New configuration/window/scoring tests | `pnpm exec tsx --test tests/news-automation.test.ts`: 9 passed |
 | Sitemap tests | `pnpm test:sitemap`: 10 passed |
 | Admin password tests | `pnpm test:admin`: 2 passed |
 | Production compilation without a database | `DATABASE_URL='' pnpm build` passed; 47 routes generated, including `/admin/blog`, `/api/blog/*`, `/api/cron/news-*` and independent sitemap routes |
@@ -46,22 +47,22 @@ The published News template now includes an original-source panel, original publ
 - Fresh logical production backup: `backups/hcj-admin-logical-20260811T052349519Z.json`.
 - Migration `011_news_site_isolation` was applied once in a database transaction. Verification: 11 scoped `news_articles`, 10 scoped historical operation records, 0 unscoped articles, 1 `news_site_configs` row and 1 applied migration-ledger row.
 - Git commits `3416b8d` and `345672e` were pushed to `main` and deployed. The current Vercel production deployment `dpl_4KBSjT5Zn6z9MwoPCERbhBmSWnqk` is `Ready` and aliases both production domains.
-- Production `NEWS_AUTOMATION_ENABLED` and `NEWS_AUTOMATION_SITE_ID` are configured. `NEWS_AUTOMATION_PRODUCTION_ENABLED=false` is explicitly configured, so 12-hour ingestion may run but News publication cannot occur accidentally.
+- Production `NEWS_AUTOMATION_ENABLED` and `NEWS_AUTOMATION_SITE_ID` are configured. The source-native publisher requires no OpenAI, Gemini or other content-generation credential.
 - Production route evidence: legacy `/api/cron/article-cycle` returns HTTP 410; `/robots.txt` advertises the three independent sitemap routes; News API contained only News and Blog API contained only Blog before historical content governance.
 - Public self-check passed on `https://www.hcjpistonrod.com`: 22 key routes, 4 sitemap-index documents, 25 primary index/Blog URLs and 1 News URL were checked for HTTP status, titles, H1s, canonical tags, XML format, sitemap host/canonical integrity and source panel presence.
 - The one historical self-sourced automatic News page was retained but changed to `noindex,follow`. It remains recoverable from the backup and direct URL, but is no longer eligible for News list or sitemap output.
 
-## Still blocked / cannot be claimed yet
+## Remaining operational limits
 
-- Production has no configured `OPENAI_API_KEY` and no `NEWS_EDITORIAL_MODEL`. The 48-hour publisher therefore cannot compose a compliant 700-1,000 word attributed News summary, and publication is intentionally disabled rather than faked.
-- A real successful 48-hour publication cycle, its `news_delivery_checks` record, an unauthenticated browser check of a newly published News card/detail page, and its News RSS/sitemap appearance remain unverified until a valid, billable OpenAI API key and model name are supplied through Vercel.
+- Source-native briefs are deliberately concise and attributed. They are not 700-1,000 word original analyses, and the publisher must not expand RSS text into an unverified rewrite.
+- The publisher still needs a fresh (within the configured 72-hour window), white-listed and industry-relevant source item. It will not publish stale or unrelated items merely to fill a 48-hour slot.
 - Search Console credential health and actual submission response were not re-tested; the existing 72-hour throttle remains unchanged.
 
 ## Production activation checklist (requires explicit authorization)
 
-1. In Vercel only, add a valid `OPENAI_API_KEY` and `NEWS_EDITORIAL_MODEL`; then change `NEWS_AUTOMATION_PRODUCTION_ENABLED` from `false` to `true` and redeploy. Do not place these credentials in the repository or report.
+1. In Vercel, set both `NEWS_AUTOMATION_ENABLED` and `NEWS_AUTOMATION_PRODUCTION_ENABLED` to `true`, then redeploy. No model key is required.
 2. Confirm the allowlisted RSS endpoints, their terms/robots status and the active product-theme URLs. Do not activate on missing or expired source approval.
-3. Run four controlled ingest executions in the correct 12-hour logical windows, then one publish-controller run. Do not bypass the quality gate.
+3. Allow four 12-hour ingest windows to complete, then verify the 48-hour publish-controller run. Do not bypass the quality gate or freshness limit.
 4. Use an unauthenticated browser plus HTTP requests to verify the new News list, detail page, canonical, JSON-LD, News RSS/sitemap and absence from Blog API/list/sitemap. Preserve the `news_delivery_checks` record.
 5. Confirm the next publish controller call in the same 48-hour cycle returns `cycle_already_published` and creates no second article.
 

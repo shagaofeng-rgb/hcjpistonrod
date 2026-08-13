@@ -27,6 +27,8 @@ const siteConfigs: SiteConfig[] = [
       rssRoute: "/news/rss.xml",
       sitemapRoute: "/news-sitemap.xml",
       desiredWordCount: { min: 700, max: 1000 },
+      sourceNativeWordCount: { min: 90, max: 420 },
+      publicationMode: "source-native",
       ingestIntervalHours: 12,
       publishIntervalHours: 48,
       candidateMaxAgeHours: 72,

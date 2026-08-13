@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { composeNewsFallback, validateNewsDraft } from "../src/lib/news-automation/composer";
+import { composeSourceNativeNews, validateNewsDraft } from "../src/lib/news-automation/composer";
 import { getSiteConfig, validateSiteConfig } from "../src/lib/news-automation/config";
 import { currentWindowStart, normalizeUrl, scoreCandidate } from "../src/lib/news-automation/rules";
 import { parseFeedItems } from "../src/lib/news-automation/service";
@@ -11,6 +11,7 @@ test("site configuration contains the required independent News and Blog boundar
   assert.deepEqual(validateSiteConfig(config), { valid: true, errors: [] });
   assert.equal(config.news.ingestIntervalHours, 12);
   assert.equal(config.news.publishIntervalHours, 48);
+  assert.equal(config.news.publicationMode, "source-native");
   assert.equal(config.blog.allowNewsAutomation, false);
   assert.notEqual(config.news.listRoute, config.blog.listRoute);
   assert.notEqual(config.news.sitemapRoute, config.blog.sitemapRoute);
@@ -93,7 +94,7 @@ test("WordPress source APIs are normalized as metadata-only News candidates", ()
   assert.equal(items[0].summary, "A collaborative approach to modern mobile hydraulics.");
 });
 
-test("fallback composition cannot be published as a fabricated 700-word News article", () => {
+test("source-native composition publishes a concise attributed brief without a model API", () => {
   const candidate = scoreCandidate({
     sourceId: "fluid-power-world",
     sourceName: "Fluid Power World",
@@ -105,10 +106,12 @@ test("fallback composition cannot be published as a fabricated 700-word News art
     summary: "A source summary about hydraulic equipment.",
     imageRights: "not-used",
   }, config, new Date("2026-08-11T04:00:00.000Z"));
-  const draft = composeNewsFallback(candidate);
+  const draft = composeSourceNativeNews(candidate);
   const result = validateNewsDraft(draft, candidate, config);
-  assert.equal(result.passed, false);
-  assert.ok(result.failures.includes("word_count_out_of_range"));
+  assert.equal(result.passed, true);
+  assert.equal(draft.publicationMode, "source-native");
+  assert.match(draft.bodyHtml, /This is a concise source-attributed brief/);
+  assert.match(draft.bodyHtml, /Fluid Power World/);
 });
 
 test("quality gates reject non-allowlisted sources, sales calls to action and excessive internal links", () => {
@@ -123,17 +126,7 @@ test("quality gates reject non-allowlisted sources, sales calls to action and ex
     summary: "Hydraulic equipment manufacturing standards, inspection and supply-chain information.",
     imageRights: "not-used",
   }, config, new Date("2026-08-11T04:00:00.000Z"));
-  const body = Array.from({ length: 180 }, () => "Independent source context for hydraulic equipment and manufacturing standards.").join(" ");
-  const validDraft = {
-    title: candidate.title,
-    slug: "hydraulic-standards-update",
-    description: "A sourced editorial summary of a hydraulic standards update.",
-    excerpt: "A sourced editorial summary.",
-    bodyHtml: `<h2>What changed</h2><p>${body}</p>`,
-    sourcePanel: { name: candidate.sourceName, url: candidate.normalizedUrl, publishedAt: candidate.publishedAt, author: null },
-    editorialDisclaimer: "Independent editorial summary based on the original source.",
-    wordCount: 720,
-  };
+  const validDraft = composeSourceNativeNews(candidate);
   assert.equal(validateNewsDraft(validDraft, candidate, config).passed, true);
   const salesDraft = { ...validDraft, bodyHtml: `${validDraft.bodyHtml}<p>Contact us to request a quote.</p>` };
   assert.ok(validateNewsDraft(salesDraft, candidate, config).failures.includes("promotional_call_to_action"));

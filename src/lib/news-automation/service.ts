@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import { composeEditorialNews, validateNewsDraft } from "./composer";
+import { composeSourceNativeNews, validateNewsDraft } from "./composer";
 import { getActiveProductTheme, getSiteConfig, validateSiteConfig } from "./config";
 import { currentWindowStart, scoreCandidate } from "./rules";
 import { assignPublicationCandidate, finishIngestRun, getPublicationRun, getRecentSuccessfulIngests, invalidateNewsCaches, markCandidateRetry, markCandidateUsed, publishNewsArticle, recordAuditEvent, reserveBestCandidate, startIngestRun, startPublicationRun, updatePublicationRun, upsertCandidate, upsertNewsSource, verifyPublicNewsDelivery, withPublicationLock } from "./repository";
@@ -182,7 +182,7 @@ export async function runNewsPublish(siteId?: string, fetchImpl: typeof fetch = 
     await assignPublicationCandidate(publicationRunId, candidate.id);
     try {
       await updatePublicationRun(publicationRunId, "composing", { candidateId: candidate.id, themeId: theme.themeId });
-      const draft = await composeEditorialNews(candidate, config, fetchImpl);
+      const draft = composeSourceNativeNews(candidate);
       const quality = validateNewsDraft(draft, candidate, config);
       if (!quality.passed) {
         const details = { candidateId: candidate.id, themeId: theme.themeId, qualityFailures: quality.failures };
