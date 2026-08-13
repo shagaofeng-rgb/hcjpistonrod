@@ -3,6 +3,7 @@ import test from "node:test";
 import { composeNewsFallback, validateNewsDraft } from "../src/lib/news-automation/composer";
 import { getSiteConfig, validateSiteConfig } from "../src/lib/news-automation/config";
 import { currentWindowStart, normalizeUrl, scoreCandidate } from "../src/lib/news-automation/rules";
+import { parseFeedItems } from "../src/lib/news-automation/service";
 
 const config = getSiteConfig("hcj-pistonrod");
 
@@ -67,6 +68,21 @@ test("specialist fluid-power sources retain relevant RSS items with concise summ
   }, config, new Date("2026-08-13T01:00:00.000Z"));
   assert.equal(candidate.rejectReason, undefined);
   assert.ok(candidate.score >= config.news.minScore);
+});
+
+test("WordPress source APIs are normalized as metadata-only News candidates", () => {
+  const source = config.sources.primaryWhitelist.find((item) => item.id === "fluid-power-journal");
+  assert.ok(source);
+  const items = parseFeedItems(JSON.stringify([{
+    date_gmt: "2026-08-11T10:00:00",
+    modified_gmt: "2026-08-11T11:00:00",
+    link: "https://fluidpowerjournal.com/when-experience-drives-design/",
+    title: { rendered: "When Experience Drives Design" },
+    excerpt: { rendered: "<p>A collaborative approach to modern mobile hydraulics.</p>" },
+  }]), source, config);
+  assert.equal(items.length, 1);
+  assert.equal(items[0].publishedAt, "2026-08-11T10:00:00Z");
+  assert.equal(items[0].summary, "A collaborative approach to modern mobile hydraulics.");
 });
 
 test("fallback composition cannot be published as a fabricated 700-word News article", () => {

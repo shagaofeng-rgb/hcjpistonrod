@@ -26,8 +26,44 @@ function itemValue(item: Record<string, unknown>, key: string) {
   return "";
 }
 
-function parseFeedItems(xml: string, source: SiteNewsSource, config: SiteConfig): CandidateInput[] {
-  const parsed = new XMLParser({ ignoreAttributes: false }).parse(xml) as { rss?: { channel?: { item?: Record<string, unknown>[] | Record<string, unknown> } }; feed?: { entry?: Record<string, unknown>[] | Record<string, unknown> } };
+function stripHtml(value: string) {
+  return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function sourceDate(value: unknown) {
+  if (typeof value !== "string" || !value) return "";
+  return /(?:Z|[+-]\d{2}:?\d{2})$/i.test(value) ? value : `${value}Z`;
+}
+
+function parseWordPressItems(payload: string, source: SiteNewsSource, config: SiteConfig): CandidateInput[] | null {
+  try {
+    const raw = JSON.parse(payload) as unknown;
+    if (!Array.isArray(raw)) return null;
+    return raw.map((item) => {
+      const record = item as { link?: unknown; date_gmt?: unknown; modified_gmt?: unknown; title?: { rendered?: unknown }; excerpt?: { rendered?: unknown } };
+      return {
+        sourceId: source.id,
+        sourceName: source.name,
+        sourceDomain: source.domain,
+        title: stripHtml(typeof record.title?.rendered === "string" ? record.title.rendered : ""),
+        url: typeof record.link === "string" ? record.link.trim() : "",
+        publishedAt: sourceDate(record.date_gmt),
+        updatedAt: sourceDate(record.modified_gmt) || undefined,
+        author: null,
+        language: config.publicationLanguage,
+        summary: stripHtml(typeof record.excerpt?.rendered === "string" ? record.excerpt.rendered : "").slice(0, 3000),
+        imageRights: "not-used" as const,
+      };
+    }).filter((item) => Boolean(item.title && item.url && item.publishedAt));
+  } catch {
+    return null;
+  }
+}
+
+export function parseFeedItems(payload: string, source: SiteNewsSource, config: SiteConfig): CandidateInput[] {
+  const wordPressItems = parseWordPressItems(payload, source, config);
+  if (wordPressItems) return wordPressItems;
+  const parsed = new XMLParser({ ignoreAttributes: false }).parse(payload) as { rss?: { channel?: { item?: Record<string, unknown>[] | Record<string, unknown> } }; feed?: { entry?: Record<string, unknown>[] | Record<string, unknown> } };
   const raw = parsed.rss?.channel?.item ?? parsed.feed?.entry ?? [];
   const items = Array.isArray(raw) ? raw : [raw];
   return items.map((item) => {
@@ -38,11 +74,11 @@ function parseFeedItems(xml: string, source: SiteNewsSource, config: SiteConfig)
       sourceDomain: source.domain,
       title: itemValue(item, "title").trim(),
       url: link.trim(),
-      publishedAt: itemValue(item, "pubDate") || itemValue(item, "published") || itemValue(item, "updated"),
-      updatedAt: itemValue(item, "updated") || undefined,
+      publishedAt: sourceDate(itemValue(item, "pubDate") || itemValue(item, "published") || itemValue(item, "updated")),
+      updatedAt: sourceDate(itemValue(item, "updated")) || undefined,
       author: itemValue(item, "author") || null,
       language: config.publicationLanguage,
-      summary: (itemValue(item, "description") || itemValue(item, "summary")).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 3000),
+      summary: stripHtml(itemValue(item, "description") || itemValue(item, "summary")).slice(0, 3000),
       imageRights: "not-used" as const,
     };
   }).filter((item) => Boolean(item.title && item.url && item.publishedAt));
