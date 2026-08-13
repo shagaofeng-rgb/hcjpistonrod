@@ -71,8 +71,16 @@ test("specialist fluid-power sources retain relevant RSS items with concise summ
 });
 
 test("WordPress source APIs are normalized as metadata-only News candidates", () => {
-  const source = config.sources.primaryWhitelist.find((item) => item.id === "fluid-power-journal");
-  assert.ok(source);
+  const source = {
+    id: "wordpress-test-source",
+    name: "WordPress Test Source",
+    domain: "example.test",
+    type: "trade-media" as const,
+    allowedTopics: ["hydraulics"],
+    allowedLanguages: ["en"],
+    rssOrApiUrl: "https://example.test/wp-json/wp/v2/posts",
+    sourceTrustScore: 85,
+  };
   const items = parseFeedItems(JSON.stringify([{
     date_gmt: "2026-08-11T10:00:00",
     modified_gmt: "2026-08-11T11:00:00",
