@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import type { CandidateInput, ScoredCandidate, SiteConfig } from "./types";
 
-const scopeTerms = ["hydraulic", "fluid power", "piston rod", "chrome", "honed", "cylinder", "manufactur", "machin", "material", "steel", "coating", "industrial", "engineering", "standard", "supply chain", "equipment"];
+const scopeTerms = ["hydraulic", "mobile hydraulics", "fluid power", "piston rod", "chrome", "honed", "cylinder", "manufactur", "machin", "material", "steel", "coating", "industrial", "engineering", "standard", "supply chain", "equipment"];
 const buyerTerms = ["standard", "regulation", "safety", "supply", "quality", "manufactur", "equipment", "material", "technology", "inspection", "energy"];
 
 export function sha256(value: string) {
@@ -32,10 +32,13 @@ export function scoreCandidate(input: CandidateInput, config: SiteConfig, now = 
   const normalizedUrl = normalizeUrl(input.url);
   const text = `${input.title} ${input.summary}`;
   const age = ageHours(input.publishedAt, now);
-  const scope = Math.min(30, tokenCount(text, scopeTerms) * 4);
+  const sourceConfig = [...config.sources.primaryWhitelist, ...config.sources.fallbackWhitelist].find((item) => item.id === input.sourceId);
+  const isSpecialistFluidPowerSource = sourceConfig?.allowedTopics.some((topic) => topic.toLowerCase() === "hydraulics")
+    && /\b(?:hydraulics?|fluid power)\b/i.test(text);
+  const scope = Math.min(30, Math.max(tokenCount(text, scopeTerms) * 4, isSpecialistFluidPowerSource ? 21 : 0));
   const buyerImpact = Math.min(20, tokenCount(text, buyerTerms) * 3);
   const freshness = age >= 0 && age <= config.news.candidateMaxAgeHours ? 15 : age >= 0 && age <= config.news.fallbackCandidateMaxAgeDays * 24 ? 6 : 0;
-  const source = Math.min(15, Math.round((config.sources.primaryWhitelist.find((item) => item.id === input.sourceId) ?? config.sources.fallbackWhitelist.find((item) => item.id === input.sourceId))?.sourceTrustScore ?? 0) / 6);
+  const source = Math.min(15, Math.round(sourceConfig?.sourceTrustScore ?? 0) / 6);
   const theme = getThemeScore(text, config);
   const image = input.imageRights === "owned-neutral" || input.imageRights === "not-used" ? 5 : 0;
   const score = scope + buyerImpact + freshness + source + theme + image;

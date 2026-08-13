@@ -53,6 +53,22 @@ test("relevant fresh external candidate is scored while stale or unrelated candi
   assert.equal(unrelated.rejectReason, "outside_industry_scope");
 });
 
+test("specialist fluid-power sources retain relevant RSS items with concise summaries", () => {
+  const candidate = scoreCandidate({
+    sourceId: "fluid-power-journal",
+    sourceName: "Fluid Power Journal",
+    sourceDomain: "fluidpowerjournal.com",
+    title: "When Experience Drives Design",
+    url: "https://fluidpowerjournal.com/when-experience-drives-design/",
+    publishedAt: "2026-08-11T10:00:00.000Z",
+    language: "en",
+    summary: "A collaborative approach to modern mobile hydraulics.",
+    imageRights: "not-used",
+  }, config, new Date("2026-08-13T01:00:00.000Z"));
+  assert.equal(candidate.rejectReason, undefined);
+  assert.ok(candidate.score >= config.news.minScore);
+});
+
 test("fallback composition cannot be published as a fabricated 700-word News article", () => {
   const candidate = scoreCandidate({
     sourceId: "fluid-power-world",

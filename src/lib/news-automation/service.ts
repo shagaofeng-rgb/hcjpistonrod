@@ -11,6 +11,14 @@ function automationEnabled(config: SiteConfig) {
   return config.enabled && config.news.enabled && process.env.NEWS_AUTOMATION_ENABLED === "true";
 }
 
+function rssRequestHeaders(config: SiteConfig) {
+  return {
+    "user-agent": `${config.brandName} News Collector/2.0 (+${config.siteUrl})`,
+    accept: "application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.5",
+    "accept-language": `${config.locale},en;q=0.9`,
+  };
+}
+
 function itemValue(item: Record<string, unknown>, key: string) {
   const value = item[key];
   if (typeof value === "string") return value;
@@ -55,7 +63,7 @@ export async function runNewsIngest(siteId?: string, fetchImpl: typeof fetch = f
     for (const source of sources) {
       await upsertNewsSource(config.siteId, source);
       try {
-        const response = await fetchImpl(source.rssOrApiUrl, { headers: { "user-agent": `${config.brandName} News Collector/2.0 (+${config.siteUrl})` }, signal: AbortSignal.timeout(10_000) });
+        const response = await fetchImpl(source.rssOrApiUrl, { headers: rssRequestHeaders(config), signal: AbortSignal.timeout(10_000) });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         for (const raw of parseFeedItems(await response.text(), source, config)) {
           const candidate = scoreCandidate(raw, config);
@@ -87,7 +95,7 @@ async function collectFallbackCandidates(config: SiteConfig, fetchImpl: typeof f
   for (const source of config.sources.fallbackWhitelist) {
     await upsertNewsSource(config.siteId, source);
     try {
-      const response = await fetchImpl(source.rssOrApiUrl, { headers: { "user-agent": `${config.brandName} News Collector/2.0 (+${config.siteUrl})` }, signal: AbortSignal.timeout(10_000) });
+      const response = await fetchImpl(source.rssOrApiUrl, { headers: rssRequestHeaders(config), signal: AbortSignal.timeout(10_000) });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       for (const raw of parseFeedItems(await response.text(), source, config)) {
         const candidate = scoreCandidate(raw, config);
