@@ -48,7 +48,7 @@ export async function upsertNewsSource(siteId: string, source: SiteConfig["sourc
   await query(
     `insert into news_sources (site_id, name, domain, feed_url, source_type, language, priority, is_enabled, terms_note)
      values ($1, $2, $3, $4, $5, 'en', $6, true, 'Allowlisted RSS/API metadata only; no image reuse or full-text republication.')
-     on conflict (site_id, domain) do update set name = excluded.name, feed_url = excluded.feed_url, source_type = excluded.source_type,
+     on conflict (site_id, domain) where deleted_at is null do update set name = excluded.name, feed_url = excluded.feed_url, source_type = excluded.source_type,
        priority = excluded.priority, is_enabled = true, updated_at = now()`,
     [siteId, source.name, source.domain, source.rssOrApiUrl, source.type, source.sourceTrustScore],
   );
