@@ -3,13 +3,14 @@ import Link from "next/link";
 import { ArrowRight, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import { megaMenuGroups, site } from "@/lib/site";
 
-export function Footer() {
+export function Footer({ homepage = false }: { homepage?: boolean }) {
   const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
+  const layoutClass = homepage ? "home-container" : "container";
 
   return (
     <footer className="bg-[#061a2f] pb-16 text-white md:pb-0">
       <div className="border-b border-white/12">
-        <div className="container flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between">
+        <div className={`${layoutClass} flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between`}>
           <div className="flex items-center gap-4">
             <span className="grid h-12 w-12 place-items-center rounded-full border border-[#19a9e5]/70 text-[#81d2f3]">
               <Send size={20} />
@@ -29,7 +30,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="container grid gap-10 py-12 md:grid-cols-[1.2fr_0.8fr_0.8fr_1fr]">
+      <div className={`${layoutClass} grid gap-10 py-12 md:grid-cols-[1.2fr_0.8fr_0.8fr_1fr]`}>
         <div>
           <Image
             src="/images/home-redesign/template-brand-lockup.png"
@@ -86,7 +87,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10 py-5">
-        <div className="container flex flex-col gap-2 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
+        <div className={`${layoutClass} flex flex-col gap-2 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between`}>
           <span>© 2026 Nantong HCJ. Factory: {site.factoryName}. Trading company: {site.exportCompanyName}.</span>
           <span>Privacy Policy &nbsp;|&nbsp; Terms of Use</span>
         </div>

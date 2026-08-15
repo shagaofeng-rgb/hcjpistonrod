@@ -45,6 +45,12 @@ html {
   margin-inline: auto;
 }
 
+/* The selected homepage reference uses a wider 12-column canvas than inner pages. */
+.home-container {
+  width: min(88vw, 2160px);
+  margin-inline: auto;
+}
+
 .container > * {
   min-width: 0;
 }
@@ -56,6 +62,10 @@ html {
 @media (max-width: 700px) {
   .container {
     width: min(100% - 32px, 1280px);
+  }
+
+  .home-container {
+    width: min(100% - 32px, 2160px);
   }
 
   .section {

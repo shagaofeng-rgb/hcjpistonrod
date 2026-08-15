@@ -66,7 +66,7 @@ export function Header() {
         </div>
       </div>}
 
-      <div className="container flex min-h-[68px] items-center justify-between gap-2 py-2 sm:gap-4">
+      <div className={`${isHomepage ? "home-container" : "container"} flex min-h-[68px] items-center justify-between gap-2 py-2 sm:gap-4`}>
         <Link href="/" className="block min-w-0" aria-label={`${site.brandName} home`} onClick={closeAll}>
           <Image
             src="/images/home-redesign/template-brand-lockup.png"
