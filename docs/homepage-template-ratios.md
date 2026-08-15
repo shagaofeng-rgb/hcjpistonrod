@@ -20,7 +20,8 @@ The homepage implementation uses these measurements as desktop layout rules. Val
 
 ## Responsive Contract
 
-- Desktop preserves the two equal hero columns from 1024 px upward.
+- Tablet and desktop preserve the two equal hero columns from 768 px upward; the tablet copy scale and selector spacing compress without changing the image/copy relationship.
 - Wide displays do not increase hero horizontal padding beyond 96 px; this prevents the copy column from collapsing on 2K and 4K screens.
-- Below 1024 px the hero becomes a readable vertical flow, while all image assets retain their aspect ratio and are never stretched.
+- Below 768 px the hero becomes a readable vertical flow with a shorter image band, while all image assets retain their aspect ratio and are never stretched.
 - The product rail remains horizontally scrollable on small screens rather than compressing labels or icons.
+- Product rows use a two-column mobile grid so the icon, title, description and specification remain one readable unit; industry and process sections use compact two-column mobile grids.

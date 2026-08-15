@@ -73,7 +73,7 @@ export default function Home() {
       <main className="bg-[#f7f9fa]">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
         <section className="border-b border-[#d9e3e9] bg-white">
-          <div className="home-container flex min-h-11 items-center overflow-x-auto whitespace-nowrap py-2 text-xs font-medium text-[#132b42] sm:text-sm">
+          <div className="home-container flex min-h-11 items-center overflow-x-auto overscroll-x-contain whitespace-nowrap py-2 text-xs font-medium text-[#132b42] [scrollbar-width:none] sm:text-sm">
             {[
               ["Piston Rods", "/images/home-redesign/icons/product-piston-rod.png"],
               ["Chrome Plated Rods", "/images/home-redesign/icons/product-chrome-rod.png"],
@@ -101,13 +101,13 @@ export default function Home() {
             <div>
               {productRows.map((item) => {
                 return (
-                  <Link key={item.name} href={item.href} className="group grid gap-4 border-b border-[#d9e3e9] py-5 transition hover:bg-[#f7fafc] md:grid-cols-[64px_minmax(0,1.4fr)_minmax(12rem,1fr)_28px] md:items-center md:px-4">
-                    <Image src={item.icon} alt="" width={44} height={44} className="mt-0.5 h-11 w-11 shrink-0 object-contain" />
+                  <Link key={item.name} href={item.href} className="group grid grid-cols-[48px_minmax(0,1fr)] gap-x-3 gap-y-2 border-b border-[#d9e3e9] py-5 transition hover:bg-[#f7fafc] sm:grid-cols-[56px_minmax(0,1fr)] sm:gap-x-4 md:grid-cols-[64px_minmax(0,1.4fr)_minmax(12rem,1fr)_28px] md:items-center md:px-4">
+                    <Image src={item.icon} alt="" width={44} height={44} className="row-span-2 mt-0.5 h-10 w-10 shrink-0 object-contain sm:h-11 sm:w-11 md:row-auto" />
                     <div>
                       <h3 className="text-lg font-semibold text-[#061a2f]">{item.name}</h3>
                       <p className="mt-1 max-w-md text-sm leading-6 text-[#526a7c]">{item.description}</p>
                     </div>
-                    <p className="whitespace-pre-line text-sm leading-6 text-[#526a7c] md:pl-4">{item.spec}</p>
+                    <p className="col-start-2 whitespace-pre-line text-sm leading-6 text-[#526a7c] md:col-auto md:pl-4">{item.spec}</p>
                     <ArrowRight size={20} className="hidden text-[#0068ae] transition group-hover:translate-x-1 md:block" />
                   </Link>
                 );
@@ -125,7 +125,7 @@ export default function Home() {
               <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">Controlled Processes.<br />Measured Results.</h2>
               <p className="mt-5 max-w-lg text-base leading-7 text-white/76">From material to final inspection, every step is controlled and documented to meet your requirements.</p>
             </div>
-            <div className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-6">
+            <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-6 sm:mt-12 sm:gap-x-7 sm:gap-y-7 lg:grid-cols-6">
               {processSteps.map((step, index) => {
                 const Icon = step.icon;
                 return <div key={step.label} className="border-t border-white/24 pt-4 lg:border-t-0 lg:pt-0">
@@ -136,7 +136,7 @@ export default function Home() {
                 </div>;
               })}
             </div>
-            <div className="mt-12 grid border-t border-white/30 pt-7 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="mt-10 grid grid-cols-2 border-t border-white/30 pt-5 sm:mt-12 sm:pt-7 lg:grid-cols-5">
               {["±0.01 mm|Dimensional Tolerance", "Ra 0.2 μm|Surface Finish", "100%|Inspection Coverage", "12 m|Max Single Piece Length", "20 - 600 mm|Diameter Range"].map((item) => {
                 const [value, label] = item.split("|");
                 return <div key={value} className="border-b border-white/15 py-5 sm:border-b-0 sm:border-r sm:px-5 first:pl-0 last:border-r-0">
@@ -152,16 +152,16 @@ export default function Home() {
           <div className="home-container">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0068ae]">Industries we serve</p>
             <h2 className="mt-2 text-3xl font-semibold text-[#061a2f] sm:text-4xl">Powering Critical Applications</h2>
-            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {industries.map((industry) => {
-                return <Link key={industry.label} href="/industries" className="group min-h-60 border border-[#d9e3e9] bg-white p-5 transition hover:-translate-y-1 hover:border-[#0068ae] hover:shadow-[0_12px_24px_rgba(6,26,47,0.08)]">
-                  <Image src={industry.icon} alt="" width={50} height={50} className="h-[50px] w-[50px] object-contain" />
-                  <h3 className="mt-6 text-base font-semibold leading-5 text-[#061a2f]">{industry.label}</h3>
-                  <p className="mt-3 text-sm leading-6 text-[#526a7c]">{industry.body}</p>
+                return <Link key={industry.label} href="/industries" className="group min-h-[210px] border border-[#d9e3e9] bg-white p-4 transition hover:-translate-y-1 hover:border-[#0068ae] hover:shadow-[0_12px_24px_rgba(6,26,47,0.08)] sm:min-h-60 sm:p-5">
+                  <Image src={industry.icon} alt="" width={50} height={50} className="h-[42px] w-[42px] object-contain sm:h-[50px] sm:w-[50px]" />
+                  <h3 className="mt-4 text-sm font-semibold leading-5 text-[#061a2f] sm:mt-6 sm:text-base">{industry.label}</h3>
+                  <p className="mt-3 text-xs leading-5 text-[#526a7c] sm:text-sm sm:leading-6">{industry.body}</p>
                 </Link>;
               })}
             </div>
-            <div className="mt-12 grid gap-6 border-t border-[#d9e3e9] pt-8 md:grid-cols-4">
+            <div className="mt-10 grid gap-6 border-t border-[#d9e3e9] pt-8 sm:grid-cols-2 xl:grid-cols-4">
               {[
                 { title: "Drawing to Delivery", body: "Upload your drawing and get expert feedback fast.", icon: "/images/home-redesign/icons/service-drawing.png" },
                 { title: "Engineering Support", body: "Collaborate with engineers to optimize manufacturability.", icon: "/images/home-redesign/icons/service-support.png" },

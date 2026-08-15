@@ -51,6 +51,12 @@ html {
   margin-inline: auto;
 }
 
+@media (max-width: 1023px) {
+  .home-container {
+    width: min(calc(100% - 48px), 2160px);
+  }
+}
+
 .container > * {
   min-width: 0;
 }

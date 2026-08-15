@@ -7,11 +7,13 @@
 - Full-view comparison: `/Users/apple/Documents/huichengjin/tmp/home-reference-vs-implementation.png`
 - Lower-page desktop capture: `/Users/apple/Documents/huichengjin/tmp/home-corrected-footer-1440.png`
 - Mobile capture: `/Users/apple/Documents/huichengjin/tmp/home-corrected-mobile-top.png`
+- Responsive repair captures: `/Users/apple/Documents/huichengjin/tmp/home-mobile-after-top.png`, `/Users/apple/Documents/huichengjin/tmp/home-tablet-after-top.png`, `/Users/apple/Documents/huichengjin/tmp/home-desktop-after-top.png`, `/Users/apple/Documents/huichengjin/tmp/home-mobile-after-process.png`, and `/Users/apple/Documents/huichengjin/tmp/home-mobile-after-industries.png`
 
 **Comparison setup**
 - Source crop: 862 x 604 px, paired beside the same top-of-page state from the implementation for side-by-side review.
 - Implementation: 1440 x 1024 CSS px at device scale factor 1.
 - Mobile verification: 390 x 844 CSS px at device scale factor 1.
+- Responsive repair verification: 320 x 740, 390 x 844, 768 x 1024 and 1440 x 1000 CSS px at device scale factor 1.
 - State: homepage at the top of the page, Rod selected in the drawing selector.
 
 **Findings**
@@ -29,6 +31,8 @@
 3. [P2 fixed] The footer brand treatment inverted the entire raster lockup into an unreadable white block. The source lockup is now shown in its original, legible form on a white logo plate in the newly added dark footer. Evidence: `/Users/apple/Documents/huichengjin/tmp/home-footer-final.png`.
 4. [P1 fixed] On ultra-wide screens, hero copy used `calc((100vw - 1280px)/2)` as its horizontal padding. This pushed the right column toward the center and made its content appear as a narrow strip. Hero columns are now a stable 50/50 grid with bounded `clamp()` padding; homepage sections use a dedicated 88% canvas. Evidence: desktop DOM measurement at 1440 px reports `720px 720px` hero columns and a `1267px` canvas.
 5. [P2 fixed] Generic line icons did not match the selected visual reference. The top rail, selector, product rows, industries, and service row now use the measured, reference-matched icon assets. Evidence: browser DOM inspected 29 loaded homepage icon images.
+6. [P1 fixed] The 768 px layout stacked the hero image above the copy block, creating a 971 px-tall first section; mobile product rows also became single-column content stacks. The hero now keeps the reference's 50/50 composition from 768 px upward, while mobile has a 270 px image band and product rows keep their icon, copy and specifications in a two-column grid. Evidence: browser measurements record a 384 px / 384 px tablet hero grid with a 629 px hero, and a 48 px / 298 px mobile product row with no page overflow.
+7. [P2 fixed] Process metrics and industry cards were vertically sparse on phones. Their mobile layouts now use two equal columns while retaining the desktop six-card and five-metric compositions. Evidence: 390 px browser inspection reports six industry cards at 173 px x 210 px and no horizontal document overflow.
 
 **Focused region comparison**
 - The hero/header comparison was required because it contains the logo crop, navigation density, 50/50 image/text split, selector state, and CTA treatment. It is documented in the combined side-by-side image above.
@@ -41,6 +45,10 @@
 - Product selector: selecting Tube produces `aria-pressed="true"` and `/contact?interest=tube`.
 - Desktop at 1440 x 1000: 50/50 hero = `720px / 720px`; hero copy padding = `40px 72px`; selector = `368px x 189px`.
 - Mobile at 390 x 844: one-column hero, `scrollWidth - viewportWidth = 0`, and 23 reference icon assets loaded in the visible route.
+- Narrow mobile at 320 x 740: `scrollWidth - viewportWidth = 0`; header, selector and product rail remain within the viewport.
+- Tablet at 768 x 1024: hero grid = `384px / 384px`, hero height = `629px`, and document overflow = `0`.
+- Desktop at 1440 x 1000: hero grid = `720px / 720px`, hero height = `539px`, and document overflow = `0`.
+- Mobile menu opens all homepage routes without overflow. Selecting Tube updates the drawing action to `/contact?interest=tube` and sets `aria-pressed="true"`.
 - Desktop, mobile, process section, footer, and mobile navigation were browser-checked.
 
 **Follow-up Polish**
