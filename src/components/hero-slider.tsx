@@ -1,48 +1,43 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { HomeDrawingSelector } from "@/components/home-drawing-selector";
 
 export function Hero() {
   return (
-    <section className="overflow-hidden border-b border-[#0d385c] bg-[#061a2f] text-white">
-      <div className="grid min-h-[620px] lg:grid-cols-[0.92fr_1.08fr]">
-        <div className="flex items-center px-5 py-16 sm:px-10 lg:px-[max(52px,calc((100vw-1280px)/2))] lg:pr-16">
-          <div className="max-w-xl">
-            <div className="mb-8 h-px w-16 bg-[var(--cyan)]" />
-            <h1 className="text-xs font-semibold uppercase tracking-[0.22em] text-[#81d2f3]">
-              Piston Rod, Chrome Plated Rod &amp; Honed Tube Manufacturer
-            </h1>
-            <p className="mt-5 text-4xl font-semibold leading-[1.08] sm:text-5xl xl:text-6xl">Factory Direct Chrome Rods</p>
-            <p className="mt-6 max-w-lg text-base leading-7 text-white/76 sm:text-lg sm:leading-8">
-              XIJIU Intelligent Equipment supplies piston rods, hard chrome plated rods, honed tubes, and precision hydraulic components from an organized production workshop.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/contact"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[var(--teal)] px-5 font-semibold text-white transition hover:bg-[var(--teal-dark)] active:translate-y-px"
-              >
-                Get A Quote <ArrowRight size={18} />
-              </Link>
-              <Link
-                href="/products"
-                className="inline-flex h-12 items-center justify-center rounded-md border border-white/28 px-5 font-semibold text-white transition hover:border-white/60 hover:bg-white/8 active:translate-y-px"
-              >
-                View Products
-              </Link>
-            </div>
-          </div>
-        </div>
-        <div className="relative min-h-[330px] overflow-hidden border-t border-white/10 lg:border-l lg:border-t-0">
+    <section className="border-b border-[#d9e3e9] bg-[#f7f9fa]">
+      <div className="grid lg:min-h-[560px] lg:grid-cols-2">
+        <div className="relative min-h-[380px] overflow-hidden border-b border-[#d9e3e9] lg:order-1 lg:border-b-0 lg:border-r">
           <Image
-            src="/images/factory/workshop-overview.jpg"
-            alt="Factory direct chrome rod production at XIJIU Intelligent Equipment"
+            src="/images/home-redesign/template-hero-rods.png"
+            alt="Precision machined piston rod ends"
             fill
             priority
             className="object-cover"
-            sizes="(min-width: 1024px) 58vw, 100vw"
+            sizes="(min-width: 1024px) 50vw, 100vw"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-[linear-gradient(90deg,rgba(6,26,47,0.92),rgba(6,26,47,0.12))] px-6 py-5 text-xs font-semibold uppercase tracking-[0.16em] text-white/85">
-            Jiangsu Xijiu Intelligent Equipment | Haian, China
+        </div>
+        <div className="relative flex items-center overflow-hidden bg-white px-5 py-14 sm:px-10 lg:order-2 lg:px-[max(54px,calc((100vw-1280px)/2))]">
+          <div className="absolute right-0 top-0 h-52 w-52 border-b border-l border-[#e5ebef] opacity-80" aria-hidden="true" />
+          <div className="relative z-10 max-w-xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0068ae]">Engineered. Machined. Verified.</p>
+            <h1 className="mt-4 max-w-lg text-4xl font-semibold leading-[1.04] text-[#061a2f] sm:text-5xl xl:text-[4rem]">
+              Precision Rods.<br />Reliable Motion.<br />Built to Print.
+            </h1>
+            <p className="mt-5 max-w-lg text-base leading-7 text-[#526a7c] sm:text-[17px]">
+              XIJIU Intelligent Equipment manufactures precision piston rods, hard chrome plated rods, honed tubes, and custom-machined hydraulic components for demanding applications.
+            </p>
+            <div className="mt-7 max-w-[22rem]">
+              <HomeDrawingSelector />
+            </div>
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">
+              <Link href="/contact" className="inline-flex items-center gap-2 text-[#0068ae] hover:text-[#004f85]">
+                Send Your Drawing <ArrowRight size={16} />
+              </Link>
+              <Link href="/products" className="inline-flex items-center gap-2 text-[#061a2f] hover:text-[#0068ae]">
+                Explore Products <ArrowRight size={16} />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

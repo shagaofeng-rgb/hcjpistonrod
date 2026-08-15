@@ -7,7 +7,7 @@ import { site } from "@/lib/site";
 
 export function FloatingCTA() {
   const pathname = usePathname();
-  if (pathname.startsWith("/admin")) return null;
+  if (pathname === "/" || pathname.startsWith("/admin")) return null;
   const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
 
   return (

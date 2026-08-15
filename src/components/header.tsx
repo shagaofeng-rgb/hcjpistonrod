@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Globe2, Mail, Menu, MessageCircle, Send, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { megaMenuGroups, navItems, site } from "@/lib/site";
 
 export function Header() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -24,6 +26,18 @@ export function Header() {
   };
 
   const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
+  const isHomepage = pathname === "/";
+  const headerNavItems = isHomepage
+    ? [
+        { label: "Products", href: "/products" },
+        { label: "Capabilities", href: "/why-xijiu" },
+        { label: "Why Xijiu", href: "/why-xijiu" },
+        { label: "Industries", href: "/industries" },
+        { label: "Resources", href: "/news" },
+        { label: "About", href: "/about" },
+        { label: "Contact", href: "/contact" },
+      ]
+    : navItems;
 
   return (
     <header
@@ -32,7 +46,7 @@ export function Header() {
       }`}
       onMouseLeave={() => setMegaOpen(false)}
     >
-      <div className="border-b border-[var(--line)] bg-[#071428] py-2 text-xs text-white/76">
+      {!isHomepage && <div className="border-b border-white/10 bg-[#061a2f] py-2 text-xs text-white/76">
         <div className="container flex items-center justify-between gap-4">
           <span className="hidden sm:inline">
             {site.brandName} | Factory: {site.factoryName}
@@ -50,46 +64,39 @@ export function Header() {
             </span>
           </div>
         </div>
-      </div>
+      </div>}
 
-      <div className="container flex min-h-18 items-center justify-between gap-2 py-3 sm:gap-4">
-        <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3" aria-label={`${site.brandName} home`} onClick={closeAll}>
-          <span className="relative h-12 w-12 overflow-hidden rounded-md border border-[var(--line)] bg-white">
-            <Image
-              src="/xijiu-logo.png"
-              alt="XIJIU Intelligent Equipment logo"
-              fill
-              priority
-              className="object-contain p-1.5"
-              sizes="48px"
-            />
-          </span>
-          <span className="min-w-0 leading-tight">
-            <span className="block text-[15px] font-semibold tracking-[0.04em] text-[var(--ink)] sm:text-base">NANTONG HCJ</span>
-            <span className="block text-xs uppercase tracking-[0.16em] text-[var(--steel)]">
-              XIJIU Intelligent Equipment
-            </span>
-          </span>
+      <div className="container flex min-h-[68px] items-center justify-between gap-2 py-2 sm:gap-4">
+        <Link href="/" className="block min-w-0" aria-label={`${site.brandName} home`} onClick={closeAll}>
+          <Image
+            src="/images/home-redesign/template-brand-lockup.png"
+            alt="Nantong HCJ | Xijiu Intelligent Equipment"
+            width={235}
+            height={70}
+            priority
+            className="h-auto w-[170px] object-contain sm:w-[190px]"
+            sizes="(max-width: 640px) 170px, 190px"
+          />
         </Link>
 
         <nav className="hidden items-center gap-1 text-sm font-medium text-[var(--steel)] lg:flex">
-          {navItems.map((item) =>
+          {headerNavItems.map((item) =>
             item.label === "Products" ? (
               <button
-                key={item.href}
+                key={item.label}
                 type="button"
                 onMouseEnter={() => setMegaOpen(true)}
                 onFocus={() => setMegaOpen(true)}
-                className="inline-flex h-10 items-center gap-1 rounded-md px-3 transition hover:bg-[var(--muted)] hover:text-[var(--teal)]"
+                className="inline-flex h-10 items-center gap-1 px-3 transition hover:bg-[#f2f6f8] hover:text-[#0068ae]"
               >
                 Products <ChevronDown size={15} />
               </button>
             ) : (
               <Link
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 onFocus={() => setMegaOpen(false)}
-                className="inline-flex h-10 items-center rounded-md px-3 transition hover:bg-[var(--muted)] hover:text-[var(--teal)]"
+                className="inline-flex h-10 items-center px-3 transition hover:bg-[#f2f6f8] hover:text-[#0068ae]"
               >
                 {item.label}
               </Link>
@@ -101,11 +108,11 @@ export function Header() {
           <Link
             href="/contact"
             onClick={closeAll}
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-[var(--amber)] px-3 text-sm font-semibold text-white transition hover:bg-[var(--teal-dark)] active:translate-y-px sm:px-4"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 bg-[#0068ae] px-3 text-sm font-semibold text-white transition hover:bg-[#004f85] active:translate-y-px sm:px-4"
           >
             <Send size={17} />
             <span className="sm:hidden">Quote</span>
-            <span className="hidden sm:inline">Quote Now</span>
+            <span className="hidden sm:inline">{isHomepage ? "Start With Your Drawing" : "Quote Now"}</span>
           </Link>
           <button
             type="button"
@@ -164,9 +171,9 @@ export function Header() {
 
       {open && (
         <div className="container grid gap-3 pb-4 text-sm font-semibold text-[var(--steel)] lg:hidden">
-          {navItems.map((item) => (
+          {headerNavItems.map((item) => (
             <Link
-              key={item.href}
+              key={item.label}
               href={item.href}
               onClick={closeAll}
               className="rounded-md border border-[var(--line)] bg-white px-4 py-3 text-[var(--ink)]"
