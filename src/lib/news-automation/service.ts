@@ -31,8 +31,11 @@ function stripHtml(value: string) {
 }
 
 function sourceDate(value: unknown) {
-  if (typeof value !== "string" || !value) return "";
-  return /(?:Z|[+-]\d{2}:?\d{2})$/i.test(value) ? value : `${value}Z`;
+  if (typeof value !== "string" || !value.trim()) return "";
+  const raw = value.trim();
+  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2}|\b(?:GMT|UTC))$/i.test(raw);
+  const timestamp = Date.parse(hasTimezone ? raw : `${raw}Z`);
+  return Number.isNaN(timestamp) ? "" : new Date(timestamp).toISOString();
 }
 
 function parseWordPressItems(payload: string, source: SiteNewsSource, config: SiteConfig): CandidateInput[] | null {

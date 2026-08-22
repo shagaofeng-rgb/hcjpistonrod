@@ -190,11 +190,43 @@ export async function recordDeliveryCheck(input: { siteId: string; publicationRu
 export async function verifyPublicNewsDelivery(config: SiteConfig, draft: NewsDraft, articleId: string, publicationRunId: string, fetchImpl: typeof fetch = fetch) {
   const listUrl = new URL(config.news.listRoute, config.siteUrl).toString();
   const detailUrl = new URL(`/news/${draft.slug}`, config.siteUrl).toString();
-  const [list, detail] = await Promise.all([fetchImpl(listUrl, { cache: "no-store" }), fetchImpl(detailUrl, { cache: "no-store" })]);
-  const [listHtml, detailHtml] = await Promise.all([list.text(), detail.text()]);
-  const verified = list.ok && detail.ok && listHtml.includes(draft.title) && detailHtml.includes(draft.title) && detailHtml.includes(draft.sourcePanel.url) && detailHtml.includes(draft.editorialDisclaimer);
-  await recordDeliveryCheck({ siteId: config.siteId, publicationRunId, articleId, listUrl, detailUrl, listStatus: list.status, detailStatus: detail.status, verified, details: { titleInList: listHtml.includes(draft.title), titleInDetail: detailHtml.includes(draft.title), sourceVisible: detailHtml.includes(draft.sourcePanel.url), disclaimerVisible: detailHtml.includes(draft.editorialDisclaimer) } });
-  return { verified, listUrl, detailUrl, listStatus: list.status, detailStatus: detail.status };
+  const attempts = 4;
+  let last = { listStatus: 0, detailStatus: 0, titleInList: false, titleInDetail: false, sourceVisible: false, disclaimerVisible: false };
+
+  // Vercel can serve the previous list response for a moment after a tag/path
+  // revalidation. A single immediate check creates a false failure even when
+  // the published page is already correct, so verify the public delivery over
+  // a short bounded window before asking the retry worker to run again.
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const [list, detail] = await Promise.all([fetchImpl(listUrl, { cache: "no-store" }), fetchImpl(detailUrl, { cache: "no-store" })]);
+    const [listHtml, detailHtml] = await Promise.all([list.text(), detail.text()]);
+    last = {
+      listStatus: list.status,
+      detailStatus: detail.status,
+      titleInList: listHtml.includes(draft.title),
+      titleInDetail: detailHtml.includes(draft.title),
+      sourceVisible: detailHtml.includes(draft.sourcePanel.url),
+      disclaimerVisible: detailHtml.includes(draft.editorialDisclaimer),
+    };
+    const verified = list.ok && detail.ok && last.titleInList && last.titleInDetail && last.sourceVisible && last.disclaimerVisible;
+    if (verified || attempt === attempts) {
+      await recordDeliveryCheck({
+        siteId: config.siteId,
+        publicationRunId,
+        articleId,
+        listUrl,
+        detailUrl,
+        listStatus: last.listStatus,
+        detailStatus: last.detailStatus,
+        verified,
+        details: { ...last, attempts: attempt },
+      });
+      return { verified, listUrl, detailUrl, listStatus: last.listStatus, detailStatus: last.detailStatus };
+    }
+    await new Promise((resolve) => setTimeout(resolve, attempt * 1_500));
+  }
+
+  throw new Error("unreachable_news_delivery_verification_state");
 }
 
 export async function invalidateNewsCaches(config: SiteConfig, slug: string) {

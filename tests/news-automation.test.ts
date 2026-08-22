@@ -108,8 +108,24 @@ test("WordPress source APIs are normalized as metadata-only News candidates", ()
     excerpt: { rendered: "<p>A collaborative approach to modern mobile hydraulics.</p>" },
   }]), source, config);
   assert.equal(items.length, 1);
-  assert.equal(items[0].publishedAt, "2026-08-11T10:00:00Z");
+  assert.equal(items[0].publishedAt, "2026-08-11T10:00:00.000Z");
   assert.equal(items[0].summary, "A collaborative approach to modern mobile hydraulics.");
+});
+
+test("RSS dates with a GMT suffix are normalized without an invalid extra timezone suffix", () => {
+  const source = {
+    id: "rss-test-source",
+    name: "RSS Test Source",
+    domain: "example.test",
+    type: "trade-media" as const,
+    allowedTopics: ["hydraulics"],
+    allowedLanguages: ["en"],
+    rssOrApiUrl: "https://example.test/rss.xml",
+    sourceTrustScore: 85,
+  };
+  const items = parseFeedItems(`<?xml version="1.0"?><rss><channel><item><title>Hydraulics update</title><link>https://example.test/hydraulics-update</link><pubDate>18 Aug 2026 14:33 GMT</pubDate><description>Hydraulic equipment update.</description></item></channel></rss>`, source, config);
+  assert.equal(items.length, 1);
+  assert.equal(items[0].publishedAt, "2026-08-18T14:33:00.000Z");
 });
 
 test("source-native composition publishes a concise attributed brief without a model API", () => {
