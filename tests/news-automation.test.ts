@@ -71,6 +71,24 @@ test("specialist fluid-power sources retain relevant RSS items with concise summ
   assert.ok(candidate.score >= config.news.minScore);
 });
 
+test("a recent specialist hydraulics source can be used as the seven-day publication fallback", () => {
+  const candidate = scoreCandidate({
+    sourceId: "power-motion-tech-hydraulics",
+    sourceName: "Power & Motion Tech",
+    sourceDomain: "www.powermotiontech.com",
+    title: "Hydraulics technologies on display at an off-highway equipment event",
+    url: "https://www.powermotiontech.com/hydraulics/news/example",
+    publishedAt: "2026-08-18T13:11:00.000Z",
+    language: "en",
+    summary: "The industry update covers hydraulic systems, mobile equipment and fluid power technology for engineering teams.",
+    imageRights: "not-used",
+  }, config, new Date("2026-08-22T01:25:00.000Z"));
+  assert.equal(candidate.rejectReason, undefined);
+  assert.ok(candidate.score >= config.news.minScore);
+  assert.equal(candidate.scoreBreakdown.scope, 30);
+  assert.equal(candidate.scoreBreakdown.freshness, 6);
+});
+
 test("WordPress source APIs are normalized as metadata-only News candidates", () => {
   const source = {
     id: "wordpress-test-source",

@@ -35,7 +35,11 @@ export function scoreCandidate(input: CandidateInput, config: SiteConfig, now = 
   const sourceConfig = [...config.sources.primaryWhitelist, ...config.sources.fallbackWhitelist].find((item) => item.id === input.sourceId);
   const isSpecialistFluidPowerSource = sourceConfig?.allowedTopics.some((topic) => topic.toLowerCase() === "hydraulics")
     && /\b(?:hydraulics?|fluid power)\b/i.test(text);
-  const scope = Math.min(30, Math.max(tokenCount(text, scopeTerms) * 4, isSpecialistFluidPowerSource ? 21 : 0));
+  // A dedicated allowlisted hydraulics feed is already narrowed to this site's
+  // industry. Its relevant entries should receive the full scope allocation;
+  // otherwise a concise headline can be incorrectly rejected for lacking
+  // enough repeated keywords.
+  const scope = Math.min(30, Math.max(tokenCount(text, scopeTerms) * 4, isSpecialistFluidPowerSource ? 30 : 0));
   const buyerImpact = Math.min(20, tokenCount(text, buyerTerms) * 3);
   const freshness = age >= 0 && age <= config.news.candidateMaxAgeHours ? 15 : age >= 0 && age <= config.news.fallbackCandidateMaxAgeDays * 24 ? 6 : 0;
   const source = Math.min(15, Math.round(sourceConfig?.sourceTrustScore ?? 0) / 6);

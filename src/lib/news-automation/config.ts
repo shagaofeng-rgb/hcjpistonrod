@@ -48,11 +48,11 @@ const siteConfigs: SiteConfig[] = [
     productThemePlan,
     sources: {
       primaryWhitelist: [
+        { id: "power-motion-tech-hydraulics", name: "Power & Motion Tech", domain: "www.powermotiontech.com", type: "trade-media", allowedTopics: ["hydraulics", "fluid power", "mobile equipment", "industrial equipment"], allowedLanguages: ["en"], rssOrApiUrl: "https://www.powermotiontech.com/__rss/website-scheduled-content.xml?input=%7B%22sectionAlias%22%3A%22hydraulics%22%7D", sourceTrustScore: 90 },
         { id: "fluid-power-world", name: "Fluid Power World", domain: "www.fluidpowerworld.com", type: "trade-media", allowedTopics: ["hydraulics", "fluid power", "industrial equipment"], allowedLanguages: ["en"], rssOrApiUrl: "https://www.fluidpowerworld.com/feed/", sourceTrustScore: 80 },
-        { id: "nist-engineering", name: "NIST News", domain: "www.nist.gov", type: "research-institute", allowedTopics: ["manufacturing", "materials", "standards"], allowedLanguages: ["en"], rssOrApiUrl: "https://www.nist.gov/news-events/news/rss.xml", sourceTrustScore: 90 },
       ],
       fallbackWhitelist: [
-        { id: "nist-energy", name: "NIST Energy News", domain: "www.nist.gov", type: "research-institute", allowedTopics: ["manufacturing", "industrial energy", "materials"], allowedLanguages: ["en"], rssOrApiUrl: "https://www.nist.gov/news-events/energy/rss.xml", sourceTrustScore: 85 },
+        { id: "nist-engineering", name: "NIST News", domain: "www.nist.gov", type: "research-institute", allowedTopics: ["manufacturing", "materials", "standards"], allowedLanguages: ["en"], rssOrApiUrl: "https://www.nist.gov/news-events/news/rss.xml", sourceTrustScore: 90 },
       ],
     },
     publishing: {
