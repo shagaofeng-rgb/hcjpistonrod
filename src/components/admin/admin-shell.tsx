@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { adminModules } from "@/lib/admin/modules";
-import type { AdminUser } from "@/lib/admin/auth";
+import { hasPermission, type AdminUser } from "@/lib/admin/auth";
 
 type AdminShellProps = {
   children: React.ReactNode;
@@ -27,8 +27,8 @@ export function AdminShell({ children, user, active }: AdminShellProps) {
             <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-[#81d2f3]">Nantong HCJ Operations</div>
           </div>
         </div>
-        <nav className="grid gap-1 px-3 py-5 text-sm">
-          {adminModules.map((item) => {
+        <nav className="grid max-h-[calc(100vh-88px)] gap-1 overflow-y-auto px-3 py-5 text-sm">
+          {adminModules.filter((item) => hasPermission(user, item.permission)).map((item) => {
             const Icon = item.icon;
             const isActive = active === item.key;
             return (
@@ -51,8 +51,8 @@ export function AdminShell({ children, user, active }: AdminShellProps) {
         <header className="sticky top-0 z-30 border-b border-[#d3e0e7] bg-white/95 backdrop-blur">
           <div className="flex min-h-16 items-center justify-between gap-4 px-5 lg:px-8">
             <div>
-              <div className="text-sm font-semibold text-[#061a2f]">网站运营后台</div>
-              <div className="text-xs text-[#526a7c]">产品、询盘、SEO、内容与访问分析</div>
+              <div className="text-sm font-semibold text-[#061a2f]">网站运营与数据后台</div>
+              <div className="text-xs text-[#526a7c]">内容、询盘、SEO 与真实访问分析</div>
             </div>
             <div className="flex items-center gap-3">
               <span className="hidden rounded-md bg-[#e8f0f4] px-3 py-2 text-sm text-[#526a7c] sm:inline-flex">
@@ -68,7 +68,7 @@ export function AdminShell({ children, user, active }: AdminShellProps) {
         </header>
 
         <nav className="flex gap-2 overflow-x-auto border-b border-[#d3e0e7] bg-white px-5 py-3 lg:hidden">
-          {adminModules.map((item) => {
+          {adminModules.filter((item) => hasPermission(user, item.permission)).map((item) => {
             const Icon = item.icon;
             const isActive = active === item.key;
             return (

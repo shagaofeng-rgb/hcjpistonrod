@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { FloatingCTA } from "@/components/floating-cta";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -63,6 +65,7 @@ export default function RootLayout({
       <body>
         {children}
         <FloatingCTA />
+        <Suspense fallback={null}><AnalyticsTracker /></Suspense>
         <Analytics />
       </body>
     </html>

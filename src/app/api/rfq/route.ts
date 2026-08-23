@@ -1,7 +1,8 @@
-import { createHash, randomBytes } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { hasDatabaseConfig, query } from "@/lib/admin/db";
+import { analyticsHash, recordInquiryConversion } from "@/lib/analytics/visitor-analytics";
 import { emailConfig, getEmailTransporter } from "@/lib/email";
 
 export const runtime = "nodejs";
@@ -42,8 +43,14 @@ function clientMeta(request: Request) {
   const forwardedFor = request.headers.get("x-forwarded-for") || "";
   const ip = forwardedFor.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "";
   const userAgent = request.headers.get("user-agent") || "";
-  const secret = process.env.ADMIN_SESSION_SECRET || "";
-  const ipHash = ip && secret ? createHash("sha256").update(`${secret}:${ip}`).digest("hex") : null;
+  let ipHash: string | null = null;
+  if (ip) {
+    try {
+      ipHash = analyticsHash(ip);
+    } catch {
+      ipHash = null;
+    }
+  }
   const device = /mobile|android|iphone|ipad/i.test(userAgent) ? "mobile" : "desktop";
   return { ipHash, userAgent: userAgent.slice(0, 1000), device };
 }
@@ -164,6 +171,11 @@ export async function POST(request: Request) {
           ipHash, userAgent, device, JSON.stringify(attachmentMetadata), receivedAt],
       );
       submissionId = stored.rows[0]?.id || null;
+      if (submissionId) {
+        await recordInquiryConversion(ipHash, submissionId).catch((error) => {
+          console.error("[rfq] analytics conversion update failed", { message: error instanceof Error ? error.message : "unknown error" });
+        });
+      }
     } catch (error) {
       console.error("[rfq] database storage failed", { message: error instanceof Error ? error.message : "unknown error" });
     }

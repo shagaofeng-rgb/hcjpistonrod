@@ -23,6 +23,8 @@ export const adminModules = [
   { key: "content-ops", label: "历史自动化归档", href: "/admin/content-ops", icon: FileCheck2, permission: "news.manage" },
   { key: "leads", label: "客户表单", href: "/admin/leads", icon: Users, permission: "leads.manage" },
   { key: "analytics", label: "访问分析", href: "/admin/analytics", icon: BarChart3, permission: "analytics.view" },
+  { key: "traffic", label: "流量来源", href: "/admin/analytics/traffic", icon: BarChart3, permission: "analytics.view" },
+  { key: "analytics-quality", label: "数据质量", href: "/admin/analytics/quality", icon: ShieldCheck, permission: "analytics.view" },
   { key: "seo", label: "SEO数据", href: "/admin/seo", icon: SearchCheck, permission: "seo.manage" },
   { key: "media", label: "媒体库", href: "/admin/media", icon: Image, permission: "media.manage" },
   { key: "users", label: "用户与权限", href: "/admin/users", icon: ShieldCheck, permission: "users.manage" },

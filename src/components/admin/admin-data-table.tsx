@@ -9,7 +9,7 @@ import { AdminTimeRangeFilter } from "./admin-time-range-filter";
 export function AdminDataTable({ title, columns, rows, range, emptyMessage }: { title: string; columns: readonly string[]; rows: AdminTableRow[]; range: AdminDateRange; emptyMessage?: string }) {
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(20);
   const filtered = useMemo(() => {
     const query = keyword.trim().toLowerCase();
     return query ? rows.filter((row) => row.cells.some((cell) => cell.toLowerCase().includes(query))) : rows;
@@ -68,8 +68,25 @@ export function AdminDataTable({ title, columns, rows, range, emptyMessage }: { 
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d3e0e7] p-4 text-sm text-[#526a7c]">
-        <span>{range.label}：共 {filtered.length} 条记录，每页 {pageSize} 条</span>
+        <span>{range.label}：共 {filtered.length} 条记录</span>
         <div className="flex items-center gap-2">
+          <label className="inline-flex h-9 items-center gap-2 whitespace-nowrap text-xs text-[#526a7c]">
+            每页
+            <select
+              aria-label="每页显示条数"
+              className="h-9 rounded-md border border-[#d3e0e7] bg-white px-2 text-sm text-[#132b42] outline-none focus:ring-4 focus:ring-[#19a9e5]/20"
+              value={pageSize}
+              onChange={(event) => {
+                setPageSize(Number(event.target.value));
+                setPage(1);
+              }}
+            >
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            条
+          </label>
           <button type="button" disabled={currentPage <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} className="h-9 rounded-md border border-[#d3e0e7] px-3 transition hover:border-[#0068ae] disabled:opacity-40">上一页</button>
           <span className="grid h-9 min-w-9 place-items-center rounded-md bg-[#0068ae] px-2 text-white">{currentPage}/{totalPages}</span>
           <button type="button" disabled={currentPage >= totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))} className="h-9 rounded-md border border-[#d3e0e7] px-3 transition hover:border-[#0068ae] disabled:opacity-40">下一页</button>
