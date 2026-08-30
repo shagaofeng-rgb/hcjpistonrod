@@ -2,10 +2,10 @@ import { XMLParser } from "fast-xml-parser";
 import { composeSourceNativeNews, validateNewsDraft } from "./composer";
 import { getActiveProductTheme, getSiteConfig, validateSiteConfig } from "./config";
 import { currentWindowStart, scoreCandidate } from "./rules";
-import { assignPublicationCandidate, finishIngestRun, getPublicationRun, getRecentSuccessfulIngests, invalidateNewsCaches, markCandidateRetry, markCandidateUsed, publishNewsArticle, recordAuditEvent, reserveBestCandidate, startIngestRun, startPublicationRun, updatePublicationRun, upsertCandidate, upsertNewsSource, verifyPublicNewsDelivery, withPublicationLock } from "./repository";
+import { assignPublicationCandidate, clearPublicationCandidate, finishIngestRun, getCandidateById, getPublicationRun, getRecentSuccessfulIngests, invalidateNewsCaches, markCandidateRetry, markCandidateUsed, publishNewsArticle, recordAuditEvent, reserveBestCandidate, startIngestRun, startPublicationRun, updateNewsSourceHealth, updatePublicationRun, upsertCandidate, upsertNewsSource, verifyPublicNewsDelivery, withPublicationLock } from "./repository";
 import type { CandidateInput, SiteConfig, SiteNewsSource } from "./types";
 
-type RunResult = { ok: boolean; skipped?: boolean; reason?: string; details: Record<string, unknown> };
+type RunResult = { ok: boolean; skipped?: boolean; retryPending?: boolean; reason?: string; details: Record<string, unknown> };
 
 function automationEnabled(config: SiteConfig) {
   return config.enabled && config.news.enabled && process.env.NEWS_AUTOMATION_ENABLED === "true";
@@ -98,29 +98,36 @@ export async function runNewsIngest(siteId?: string, fetchImpl: typeof fetch = f
   let retained = 0;
   let rejected = 0;
   const errors: string[] = [];
+  const sourceHealth: Array<{ sourceId: string; ok: boolean; items?: number; newestPublishedAt?: string; error?: string }> = [];
   try {
     for (const source of sources) {
       await upsertNewsSource(config.siteId, source);
       try {
         const response = await fetchImpl(source.rssOrApiUrl, { headers: rssRequestHeaders(config), signal: AbortSignal.timeout(10_000) });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        for (const raw of parseFeedItems(await response.text(), source, config)) {
+        const items = parseFeedItems(await response.text(), source, config);
+        for (const raw of items) {
           const candidate = scoreCandidate(raw, config);
           await upsertCandidate(config.siteId, candidate);
           if (candidate.rejectReason) rejected += 1; else retained += 1;
         }
+        await updateNewsSourceHealth(config.siteId, source.domain, { ok: true });
+        sourceHealth.push({ sourceId: source.id, ok: true, items: items.length, newestPublishedAt: items[0]?.publishedAt });
       } catch (error) {
-        errors.push(`${source.id}: ${error instanceof Error ? error.message : "unknown_error"}`);
+        const message = error instanceof Error ? error.message : "unknown_error";
+        errors.push(`${source.id}: ${message}`);
+        await updateNewsSourceHealth(config.siteId, source.domain, { ok: false, error: message });
+        sourceHealth.push({ sourceId: source.id, ok: false, error: message });
       }
     }
     const healthySources = sources.length - errors.length;
-    const details = { siteId: config.siteId, cycleStart, sources: sources.length, healthySources, retained, rejected, errors, publishCalled: false };
+    const details = { siteId: config.siteId, cycleStart, sources: sources.length, healthySources, retained, rejected, errors, sourceHealth, publishCalled: false };
     const status = healthySources > 0 ? "success" : "failed";
     await finishIngestRun(runId, status, details);
     await recordAuditEvent(config.siteId, "news_ingest_completed", details, errors.length ? "warning" : "info");
     return { ok: healthySources > 0, details };
   } catch (error) {
-    const details = { siteId: config.siteId, cycleStart, retained, rejected, errors: [...errors, error instanceof Error ? error.message : "unknown_error"], publishCalled: false };
+    const details = { siteId: config.siteId, cycleStart, retained, rejected, errors: [...errors, error instanceof Error ? error.message : "unknown_error"], sourceHealth, publishCalled: false };
     await finishIngestRun(runId, "failed", details);
     await recordAuditEvent(config.siteId, "news_ingest_failed", details, "error");
     return { ok: false, details };
@@ -141,8 +148,11 @@ async function collectFallbackCandidates(config: SiteConfig, fetchImpl: typeof f
         await upsertCandidate(config.siteId, candidate);
         if (candidate.rejectReason) rejected += 1; else retained += 1;
       }
+      await updateNewsSourceHealth(config.siteId, source.domain, { ok: true });
     } catch (error) {
-      errors.push(`${source.id}: ${error instanceof Error ? error.message : "unknown_error"}`);
+      const message = error instanceof Error ? error.message : "unknown_error";
+      errors.push(`${source.id}: ${message}`);
+      await updateNewsSourceHealth(config.siteId, source.domain, { ok: false, error: message });
     }
   }
   const details = { siteId: config.siteId, sourceTier: "fallback", sources: config.sources.fallbackWhitelist.length, retained, rejected, errors, publishCalled: false };
@@ -171,28 +181,39 @@ export async function runNewsPublish(siteId?: string, fetchImpl: typeof fetch = 
       await recordAuditEvent(config.siteId, "news_publish_waiting_for_ingest_coverage", details, "warning");
       return { ok: false, reason: "insufficient_successful_ingest_coverage", details };
     }
-    let candidate = await reserveBestCandidate(config, cycleStart);
+    let selectionTier = "publication_retry";
+    let candidate = existing?.candidate_id ? await getCandidateById(config.siteId, existing.candidate_id) : null;
+    if (!candidate) {
+      selectionTier = "recent_72_hours";
+      candidate = await reserveBestCandidate(config, cycleStart, config.news.candidateMaxAgeHours);
+    }
+    if (!candidate) {
+      selectionTier = "verified_seven_day_fallback";
+      candidate = await reserveBestCandidate(config, cycleStart, config.news.fallbackCandidateMaxAgeDays * 24);
+    }
     if (!candidate) {
       const fallbackDetails = await collectFallbackCandidates(config, fetchImpl);
-      candidate = await reserveBestCandidate(config, cycleStart);
+      selectionTier = "fallback_source_collection";
+      candidate = await reserveBestCandidate(config, cycleStart, config.news.fallbackCandidateMaxAgeDays * 24);
       if (!candidate) {
         const details = { siteId: config.siteId, cycleStart, reason: "no_eligible_candidate", themeId: theme.themeId, fallback: fallbackDetails };
-        await updatePublicationRun(publicationRunId, "failed", details);
+        await updatePublicationRun(publicationRunId, "retry_pending", details);
         await recordAuditEvent(config.siteId, "news_publish_failed", details, "critical");
-        return { ok: false, reason: "no_eligible_candidate", details };
+        return { ok: false, retryPending: true, reason: "no_eligible_candidate", details };
       }
     }
     await assignPublicationCandidate(publicationRunId, candidate.id);
     try {
-      await updatePublicationRun(publicationRunId, "composing", { candidateId: candidate.id, themeId: theme.themeId });
+      await updatePublicationRun(publicationRunId, "composing", { candidateId: candidate.id, themeId: theme.themeId, selectionTier });
       const draft = composeSourceNativeNews(candidate);
       const quality = validateNewsDraft(draft, candidate, config);
       if (!quality.passed) {
         const details = { candidateId: candidate.id, themeId: theme.themeId, qualityFailures: quality.failures };
         await markCandidateRetry(config.siteId, candidate.id, quality.failures.join(","));
-        await updatePublicationRun(publicationRunId, "failed", details);
+        await clearPublicationCandidate(publicationRunId);
+        await updatePublicationRun(publicationRunId, "retry_pending", details);
         await recordAuditEvent(config.siteId, "news_publish_preflight_failed", details, "critical");
-        return { ok: false, reason: "preflight_failed", details };
+        return { ok: false, retryPending: true, reason: "preflight_failed", details };
       }
       await updatePublicationRun(publicationRunId, "publishing", { candidateId: candidate.id, slug: draft.slug });
       const published = await publishNewsArticle(config, candidate, draft, publicationRunId!);
@@ -203,19 +224,18 @@ export async function runNewsPublish(siteId?: string, fetchImpl: typeof fetch = 
         const details = { ...published, delivery };
         await updatePublicationRun(publicationRunId, "retry_pending", details);
         await recordAuditEvent(config.siteId, "news_frontend_verification_failed", details, "critical");
-        return { ok: false, reason: "frontend_verification_failed", details };
+        return { ok: false, retryPending: true, reason: "frontend_verification_failed", details };
       }
-      const details = { ...published, delivery, candidateId: candidate.id, themeId: theme.themeId };
+      const details = { ...published, delivery, candidateId: candidate.id, themeId: theme.themeId, selectionTier };
       await markCandidateUsed(config.siteId, candidate.id, published.articleId);
       await updatePublicationRun(publicationRunId, "published_success", details);
       await recordAuditEvent(config.siteId, "news_publish_success", details);
       return { ok: true, details };
     } catch (error) {
       const details = { candidateId: candidate.id, error: error instanceof Error ? error.message : "unknown_error" };
-      await markCandidateRetry(config.siteId, candidate.id, details.error);
       await updatePublicationRun(publicationRunId, "retry_pending", details);
       await recordAuditEvent(config.siteId, "news_publish_exception", details, "critical");
-      return { ok: false, details };
+      return { ok: false, retryPending: true, details };
     }
   });
 }

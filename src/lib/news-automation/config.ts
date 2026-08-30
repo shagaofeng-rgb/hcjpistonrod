@@ -49,6 +49,7 @@ const siteConfigs: SiteConfig[] = [
     sources: {
       primaryWhitelist: [
         { id: "power-motion-tech-hydraulics", name: "Power & Motion Tech", domain: "www.powermotiontech.com", type: "trade-media", allowedTopics: ["hydraulics", "fluid power", "mobile equipment", "industrial equipment"], allowedLanguages: ["en"], rssOrApiUrl: "https://www.powermotiontech.com/__rss/website-scheduled-content.xml?input=%7B%22sectionAlias%22%3A%22hydraulics%22%7D", sourceTrustScore: 90 },
+        { id: "fluid-power-journal", name: "Fluid Power Journal", domain: "fluidpowerjournal.com", type: "trade-media", allowedTopics: ["hydraulics", "fluid power", "mobile machinery", "industrial equipment"], allowedLanguages: ["en"], rssOrApiUrl: "https://fluidpowerjournal.com/feed/", sourceTrustScore: 85 },
         { id: "fluid-power-world", name: "Fluid Power World", domain: "www.fluidpowerworld.com", type: "trade-media", allowedTopics: ["hydraulics", "fluid power", "industrial equipment"], allowedLanguages: ["en"], rssOrApiUrl: "https://www.fluidpowerworld.com/feed/", sourceTrustScore: 80 },
       ],
       fallbackWhitelist: [

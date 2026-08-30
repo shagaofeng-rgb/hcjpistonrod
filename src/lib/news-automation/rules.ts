@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import type { CandidateInput, ScoredCandidate, SiteConfig } from "./types";
 
 const scopeTerms = ["hydraulic", "mobile hydraulics", "fluid power", "piston rod", "chrome", "honed", "cylinder", "manufactur", "machin", "material", "steel", "coating", "industrial", "engineering", "standard", "supply chain", "equipment"];
-const buyerTerms = ["standard", "regulation", "safety", "supply", "quality", "manufactur", "equipment", "material", "technology", "inspection", "energy"];
+const hydraulicApplicationTerms = ["off-highway", "mobile equipment", "construction machinery", "agricultural machinery", "material handling", "mining equipment", "motion control", "actuator", "pump", "valve", "filtration", "reservoir", "hydraulic reel"];
+const buyerTerms = ["standard", "regulation", "safety", "supply", "quality", "manufactur", "equipment", "material", "technology", "inspection", "energy", "off-highway", "automation", "cybersecurity", "electrification", "motion control", "reliability", "maintenance", "efficiency", "system", "application"];
 
 export function sha256(value: string) {
   return createHash("sha256").update(value).digest("hex");
@@ -33,13 +34,15 @@ export function scoreCandidate(input: CandidateInput, config: SiteConfig, now = 
   const text = `${input.title} ${input.summary}`;
   const age = ageHours(input.publishedAt, now);
   const sourceConfig = [...config.sources.primaryWhitelist, ...config.sources.fallbackWhitelist].find((item) => item.id === input.sourceId);
-  const isSpecialistFluidPowerSource = sourceConfig?.allowedTopics.some((topic) => topic.toLowerCase() === "hydraulics")
-    && /\b(?:hydraulics?|fluid power)\b/i.test(text);
+  const isSpecialistFluidPowerSource = sourceConfig?.allowedTopics.some((topic) => ["hydraulics", "fluid power"].includes(topic.toLowerCase())) ?? false;
+  const hasHydraulicContext = /\b(?:hydraulics?|fluid power)\b/i.test(text);
+  const hasRelevantApplication = tokenCount(text, hydraulicApplicationTerms) > 0;
   // A dedicated allowlisted hydraulics feed is already narrowed to this site's
   // industry. Its relevant entries should receive the full scope allocation;
   // otherwise a concise headline can be incorrectly rejected for lacking
   // enough repeated keywords.
-  const scope = Math.min(30, Math.max(tokenCount(text, scopeTerms) * 4, isSpecialistFluidPowerSource ? 30 : 0));
+  const trustedSpecialistScope = isSpecialistFluidPowerSource && (hasHydraulicContext || hasRelevantApplication) ? 30 : 0;
+  const scope = Math.min(30, Math.max(tokenCount(text, scopeTerms) * 4, trustedSpecialistScope));
   const buyerImpact = Math.min(20, tokenCount(text, buyerTerms) * 3);
   const freshness = age >= 0 && age <= config.news.candidateMaxAgeHours ? 15 : age >= 0 && age <= config.news.fallbackCandidateMaxAgeDays * 24 ? 6 : 0;
   const source = Math.min(15, Math.round(sourceConfig?.sourceTrustScore ?? 0) / 6);

@@ -54,6 +54,17 @@ export async function upsertNewsSource(siteId: string, source: SiteConfig["sourc
   );
 }
 
+export async function updateNewsSourceHealth(siteId: string, domain: string, result: { ok: true } | { ok: false; error: string }) {
+  await query(
+    `update news_sources set
+       last_success_at = case when $3::boolean then now() else last_success_at end,
+       last_error = case when $3::boolean then null else $4 end,
+       updated_at = now()
+     where site_id = $1 and domain = $2 and deleted_at is null`,
+    [siteId, domain, result.ok, result.ok ? null : result.error.slice(0, 1000)],
+  );
+}
+
 export async function upsertCandidate(siteId: string, candidate: ScoredCandidate) {
   const result = await query<{ id: string; status: string }>(
     `insert into news_candidates (
@@ -78,7 +89,7 @@ export async function upsertCandidate(siteId: string, candidate: ScoredCandidate
   return result.rows[0];
 }
 
-export async function reserveBestCandidate(config: SiteConfig, cycleStart: string): Promise<DatabaseCandidate | null> {
+export async function reserveBestCandidate(config: SiteConfig, cycleStart: string, maxAgeHours: number): Promise<DatabaseCandidate | null> {
   const result = await query<DatabaseCandidate>(
     `with selected as (
       select id from news_candidates
@@ -92,7 +103,20 @@ export async function reserveBestCandidate(config: SiteConfig, cycleStart: strin
       c.source_url as url, c.normalized_url as "normalizedUrl", c.source_published_at as "publishedAt", c.source_updated_at as "updatedAt",
       c.source_author as author, c.language, c.summary, c.image_url as "imageUrl", c.image_rights as "imageRights",
       c.url_hash as "urlHash", c.title_hash as "titleHash", c.content_fingerprint as "contentFingerprint", c.score, c.score_breakdown as "scoreBreakdown"`,
-    [config.siteId, config.news.fallbackCandidateMaxAgeDays * 24, cycleStart],
+    [config.siteId, maxAgeHours, cycleStart],
+  );
+  return result.rows[0] ?? null;
+}
+
+export async function getCandidateById(siteId: string, candidateId: string): Promise<DatabaseCandidate | null> {
+  const result = await query<DatabaseCandidate>(
+    `select id, source_id as "sourceId", source_name as "sourceName", source_domain as "sourceDomain", title,
+       source_url as url, normalized_url as "normalizedUrl", source_published_at as "publishedAt", source_updated_at as "updatedAt",
+       source_author as author, language, summary, image_url as "imageUrl", image_rights as "imageRights",
+       url_hash as "urlHash", title_hash as "titleHash", content_fingerprint as "contentFingerprint", score,
+       score_breakdown as "scoreBreakdown"
+     from news_candidates where id = $2 and site_id = $1 and deleted_at is null limit 1`,
+    [siteId, candidateId],
   );
   return result.rows[0] ?? null;
 }
@@ -130,6 +154,11 @@ export async function assignPublicationCandidate(id: string | undefined, candida
     `update news_publication_runs set candidate_id = $2, updated_at = now() where id = $1`,
     [id, candidateId],
   );
+}
+
+export async function clearPublicationCandidate(id: string | undefined) {
+  if (!id) return;
+  await query(`update news_publication_runs set candidate_id = null, updated_at = now() where id = $1`, [id]);
 }
 
 export async function publishNewsArticle(config: SiteConfig, candidate: DatabaseCandidate, draft: NewsDraft, publicationRunId: string) {

@@ -8,5 +8,5 @@ export async function GET(request: Request) {
   const authorization = validateCronRequest(request);
   if (!authorization.ok) return authorization.response;
   const result = await runNewsPublish();
-  return Response.json(result, { status: result.ok ? 200 : result.skipped ? 409 : 500 });
+  return Response.json(result, { status: result.ok ? 200 : result.retryPending ? 202 : result.skipped ? 409 : 500 });
 }

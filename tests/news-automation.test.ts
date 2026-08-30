@@ -89,6 +89,24 @@ test("a recent specialist hydraulics source can be used as the seven-day publica
   assert.equal(candidate.scoreBreakdown.freshness, 6);
 });
 
+test("a specialist hydraulics feed retains an off-highway application report within the seven-day fallback", () => {
+  const candidate = scoreCandidate({
+    sourceId: "power-motion-tech-hydraulics",
+    sourceName: "Power & Motion Tech",
+    sourceDomain: "www.powermotiontech.com",
+    title: "iVT Expo 2026: Key Trends Driving Off-Highway Machinery Designs",
+    url: "https://www.powermotiontech.com/hydraulics/article/example",
+    publishedAt: "2026-08-25T12:58:00.000Z",
+    language: "en",
+    summary: "Automation, cybersecurity, full system solutions and electrification were key off-highway equipment design trends.",
+    imageRights: "not-used",
+  }, config, new Date("2026-08-30T04:00:00.000Z"));
+  assert.equal(candidate.rejectReason, undefined);
+  assert.ok(candidate.score >= config.news.minScore);
+  assert.equal(candidate.scoreBreakdown.scope, 30);
+  assert.equal(candidate.scoreBreakdown.freshness, 6);
+});
+
 test("WordPress source APIs are normalized as metadata-only News candidates", () => {
   const source = {
     id: "wordpress-test-source",
