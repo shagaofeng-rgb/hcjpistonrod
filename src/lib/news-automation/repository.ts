@@ -115,7 +115,7 @@ export async function getCandidateById(siteId: string, candidateId: string): Pro
        source_author as author, language, summary, image_url as "imageUrl", image_rights as "imageRights",
        url_hash as "urlHash", title_hash as "titleHash", content_fingerprint as "contentFingerprint", score,
        score_breakdown as "scoreBreakdown"
-     from news_candidates where id = $2 and site_id = $1 and deleted_at is null limit 1`,
+     from news_candidates where id = $2 and site_id = $1 limit 1`,
     [siteId, candidateId],
   );
   return result.rows[0] ?? null;
