@@ -96,6 +96,7 @@ Search Console maintenance evidence:
 - Successful maintenance runs were recorded on 2026-08-19, 22, 25, 28, and 31.
 - The recorded runs skipped an external submission when the sitemap content was unchanged, preventing duplicate submissions.
 - The production cron is `20 2 */3 * *`, so the task does not run daily.
+- After the News sitemap was added to the index, a production-side manual maintenance run processed 30 URLs with zero errors. Search Console returned HTTP 204 and the audit record reports `attempted=true` and `success=true`. The temporary authenticated maintenance session was deleted immediately after the request.
 
 ## 7. Frontend, responsive, and accessibility checks
 
@@ -127,6 +128,8 @@ Google PageSpeed Insights API was attempted but returned HTTP 429 because the pu
 The desktop score is primarily constrained by main-thread blocking variability rather than paint or layout instability. Public single-request TTFB samples before deployment were approximately 1.0-1.36 seconds. Production is rechecked after deployment.
 
 Production checks after the first release returned mobile performance 98, accessibility 100, SEO 100, FCP 1.8 seconds, LCP 2.0 seconds, and CLS 0. A repeated desktop run returned performance 77, accessibility 100, SEO 100, FCP 1.7 seconds, LCP 2.0 seconds, TBT 60 milliseconds, and CLS 0.003. The first desktop sample was 47 because Speed Index and TBT varied significantly; the repeated result is retained rather than presenting the better sample as a guaranteed score.
+
+After the Vercel root hydration fix, the final desktop run returned performance 74, accessibility 100, best practices 100, SEO 100, FCP/LCP 2.4 seconds, TBT 0, CLS 0, and no console errors. Performance scores remain run-dependent; the paint, blocking, stability, and console results are the release acceptance evidence.
 
 ## 9. Test and build evidence
 
