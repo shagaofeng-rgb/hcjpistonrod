@@ -1,7 +1,7 @@
 export const SITEMAP_MAX_URLS = 50_000;
 export const SITEMAP_MAX_BYTES = 50 * 1024 * 1024;
 
-export type SitemapKind = "pages" | "categories" | "products" | "blog";
+export type SitemapKind = "pages" | "categories" | "products" | "blog" | "news";
 
 export type SitemapEntry = {
   loc: string;
@@ -109,6 +109,7 @@ export function buildSitemapDocuments(entries: SitemapEntry[], limits?: { maxUrl
 
   for (const kind of kinds) {
     const kindEntries = deduped.filter((entry) => entry.kind === kind);
+    if (kindEntries.length === 0) continue;
     const chunks = splitEntries(kindEntries, limits?.maxUrls, limits?.maxBytes);
     chunks.forEach((chunk, index) => {
       const isSplit = chunks.length > 1;

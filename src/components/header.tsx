@@ -54,12 +54,12 @@ export function Header() {
           <span className="sm:hidden">{site.brandName}</span>
           <div className="flex items-center gap-3">
             <a href={`mailto:${site.email}`} className="inline-flex items-center gap-1.5 hover:text-white">
-              <Mail size={14} /> <span className="hidden md:inline">{site.email}</span>
+              <Mail size={14} /> <span className="hidden lg:inline">{site.email}</span>
             </a>
             <a href={whatsappHref} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-white">
-              <MessageCircle size={14} /> <span className="hidden md:inline">WhatsApp</span>
+              <MessageCircle size={14} /> <span className="hidden lg:inline">WhatsApp</span>
             </a>
-            <span className="hidden items-center gap-1.5 sm:inline-flex" aria-label="Website language: English">
+            <span className="hidden items-center gap-1.5 lg:inline-flex" aria-label="Website language: English">
               <Globe2 size={14} /> English
             </span>
           </div>

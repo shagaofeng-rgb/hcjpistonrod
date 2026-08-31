@@ -1,6 +1,7 @@
 import { adminApiError, adminError, adminOk, pageParams } from "@/lib/admin/api";
 import { getCurrentAdminUser, hasPermission } from "@/lib/admin/auth";
 import { query } from "@/lib/admin/db";
+import { getAdminSyncSourceRecords } from "@/lib/admin/sync-status";
 import { getSiteConfig } from "@/lib/news-automation/config";
 
 export const runtime = "nodejs";
@@ -110,6 +111,19 @@ export async function GET(request: Request, context: { params: Promise<{ module:
     }
 
     const { page, pageSize, keyword, offset } = pageParams(request.url);
+    if (module === "sync") {
+      const records = await getAdminSyncSourceRecords();
+      const normalizedKeyword = keyword.trim().toLowerCase();
+      const filtered = normalizedKeyword
+        ? records.filter((row) => [row.code, row.name, row.source_type, row.config_status, row.connection_status]
+            .some((value) => value.toLowerCase().includes(normalizedKeyword)))
+        : records;
+      return adminOk({
+        rows: filtered.slice(offset, offset + pageSize),
+        pagination: { page, pageSize, total: filtered.length },
+      });
+    }
+
     const where: string[] = config.table === "form_submissions" ? ["archived_at is null"] : config.table === "content_ops_article_records" ? [] : ["deleted_at is null"];
     const values: unknown[] = [];
 

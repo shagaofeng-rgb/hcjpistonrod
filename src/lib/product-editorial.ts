@@ -121,7 +121,7 @@ export function getProductEditorial(product: Product): ProductEditorial {
   const entry = definitions[product.slug];
   if (!entry) {
     return {
-      title: `${product.name} | XIJIU`, description: product.shortDescription, keyword: product.name,
+      title: product.name, description: product.shortDescription, keyword: product.name,
       summary: product.definition, materials: [], specifications: [], whyItMatters: product.definition,
       manufacturing: "Manufacturing details are reviewed against the approved drawing and applicable product specification.",
       applications: product.applications, customization: "Send the drawing and applicable technical requirements for review.",
@@ -149,20 +149,20 @@ export function getProductEditorial(product: Product): ProductEditorial {
     "piston-rod": "Finished piston rod manufacturer for hydraulic cylinders, with drawing-based machining review and export support through Nantong HCJ.",
   };
   const titles: Record<string, string> = {
-    "honed-tube": "Honed Tube Manufacturer for Hydraulic Cylinders | XIJIU",
-    "st52-honed-tube": "ST52 Honed Tube Supplier for Hydraulic Cylinders | XIJIU",
-    "ck45-honed-tube": "CK45 Honed Tube Manufacturer | Hydraulic Cylinder Tube | XIJIU",
-    "skived-and-roller-burnished-tube": "Skived and Roller Burnished Tube Supplier | XIJIU",
-    "chrome-plated-rod": "Hard Chrome Plated Rod Manufacturer | XIJIU",
-    "ck45-chrome-plated-rod": "CK45 Chrome Plated Rod Supplier | XIJIU",
-    "20mnv6-chrome-plated-rod": "20MnV6 Chrome Plated Rod Manufacturer | XIJIU",
-    "induction-hardened-chrome-rod": "Induction Hardened Chrome Rod Supplier | XIJIU",
-    "hollow-chrome-plated-rod": "Hollow Chrome Plated Rod Manufacturer | XIJIU",
-    "piston-rod": "Finished Piston Rod Manufacturer for Hydraulic Cylinders | XIJIU",
+    "honed-tube": "Honed Tube Manufacturer for Hydraulic Cylinders",
+    "st52-honed-tube": "ST52 Honed Tube Supplier for Hydraulic Cylinders",
+    "ck45-honed-tube": "CK45 Honed Tube Manufacturer | Hydraulic Cylinder Tube",
+    "skived-and-roller-burnished-tube": "Skived and Roller Burnished Tube Supplier",
+    "chrome-plated-rod": "Hard Chrome Plated Rod Manufacturer",
+    "ck45-chrome-plated-rod": "CK45 Chrome Plated Rod Supplier",
+    "20mnv6-chrome-plated-rod": "20MnV6 Chrome Plated Rod Manufacturer",
+    "induction-hardened-chrome-rod": "Induction Hardened Chrome Rod Supplier",
+    "hollow-chrome-plated-rod": "Hollow Chrome Plated Rod Manufacturer",
+    "piston-rod": "Finished Piston Rod Manufacturer for Hydraulic Cylinders",
   };
   return {
     ...entry,
-    title: titles[product.slug] || `${product.name} Manufacturer | XIJIU`,
+    title: titles[product.slug] || `${product.name} Manufacturer`,
     description: descriptions[product.slug] || product.shortDescription,
     keyword: product.name.toLowerCase(),
     specifications: specs,

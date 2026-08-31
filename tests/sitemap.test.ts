@@ -41,6 +41,12 @@ test("splits large content sets and creates a valid index", () => {
   assert.equal(validateSitemapXml(renderSitemapIndex("https://hcjpistonrod.com", documents)), true);
 });
 
+test("does not generate empty sitemap documents with epoch timestamps", () => {
+  const documents = buildSitemapDocuments([entry("https://hcjpistonrod.com/products/rod")]);
+  assert.equal(documents.some((document) => document.kind === "categories"), false);
+  assert.equal(documents.some((document) => document.lastmod.startsWith("1970-01-01")), false);
+});
+
 test("atomic writes preserve the old file when validation fails", async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), "hcj-sitemap-"));
   const file = path.join(dir, "sitemap.xml");

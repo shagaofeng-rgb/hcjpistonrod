@@ -1,14 +1,15 @@
 import process from "node:process";
 
 const baseArg = process.argv.find((arg) => arg.startsWith("--base="));
-const baseUrl = (baseArg ? baseArg.split("=")[1] : process.env.SELF_CHECK_BASE_URL || "http://localhost:3000").replace(/\/$/, "");
+const positionalBase = process.argv.slice(2).find((arg) => /^https?:\/\//.test(arg));
+const baseUrl = (baseArg ? baseArg.split("=")[1] : positionalBase || process.env.SELF_CHECK_BASE_URL || "http://localhost:3000").replace(/\/$/, "");
 const productionOrigin = "https://www.hcjpistonrod.com";
 
 const keyPaths = [
   "/", "/products", "/products/chrome-plated-rod", "/products/honed-tube", "/products/ck45-chrome-plated-rod",
   "/why-xijiu", "/about", "/industries", "/news",
   "/blog", "/blog/choose-hard-chrome-plated-rod-for-mobile-machinery", "/search?q=chrome%20rod", "/contact",
-  "/sitemap.xml", "/sitemap-pages.xml", "/sitemap-categories.xml", "/sitemap-products.xml", "/blog-sitemap.xml",
+  "/sitemap.xml", "/sitemap-pages.xml", "/sitemap-products.xml", "/blog-sitemap.xml",
   "/news-sitemap.xml", "/news/rss.xml", "/robots.txt", "/admin/login",
 ];
 
@@ -72,7 +73,8 @@ for (const path of keyPaths) {
 
 const index = await fetchChecked("/sitemap.xml");
 const sitemapLocations = [...index.body.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1].replace(/&amp;/g, "&"));
-assert(sitemapLocations.length >= 4, "Sitemap index must contain pages, categories, products, and Blog URLs");
+assert(sitemapLocations.length >= 4, "Sitemap index must contain pages, products, Blog, and News URLs");
+assert(sitemapLocations.includes(`${productionOrigin}/news-sitemap.xml`), "Sitemap index is missing the News sitemap");
 
 const publicUrls = [];
 for (const location of sitemapLocations) {

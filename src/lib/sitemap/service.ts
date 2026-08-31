@@ -23,7 +23,17 @@ export async function getSitemapBundle() {
   const source = await getPublicSitemapEntries();
   const entries = dedupeEntries(source.entries);
   const documents = buildSitemapDocuments(entries);
-  const indexXml = renderSitemapIndex(site.domain, documents);
+  const newsEntries = entries.filter((entry) => entry.kind === "news");
+  const indexDocuments = newsEntries.length
+    ? [...documents, {
+        kind: "news" as const,
+        fileName: "news-sitemap.xml",
+        xml: "",
+        entries: newsEntries,
+        lastmod: newsEntries.reduce((latest, entry) => entry.lastmod > latest ? entry.lastmod : latest, newsEntries[0].lastmod),
+      }]
+    : documents;
+  const indexXml = renderSitemapIndex(site.domain, indexDocuments);
   validateSitemapXml(indexXml);
   documents.forEach((document) => validateSitemapXml(document.xml));
   return { ...source, entries, documents, indexXml };

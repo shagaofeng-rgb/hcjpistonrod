@@ -8,6 +8,7 @@ import {
   query,
 } from "./db";
 import { getSiteConfig } from "@/lib/news-automation/config";
+import { getAdminSyncSourceRecords } from "./sync-status";
 
 export type AdminTableRow = {
   id: string;
@@ -227,10 +228,8 @@ export async function getAdminModuleRows(moduleKey: string, range: AdminDateRang
     }
 
     if (moduleKey === "sync") {
-      const result = await query<{ id: string; name: string; source_type: string; config_status: string; connection_status: string; last_success_at: Date | null; next_run_at: Date | null }>(
-        "select id, name, source_type, config_status, connection_status, last_success_at, next_run_at from sync_sources order by updated_at desc limit 200",
-      );
-      return result.rows.map((row) => ({ id: row.id, cells: [row.name, row.source_type, row.config_status, row.connection_status, dateCell(row.last_success_at), dateCell(row.next_run_at)] }));
+      const rows = await getAdminSyncSourceRecords();
+      return rows.map((row) => ({ id: row.id, cells: [row.name, row.source_type, row.config_status, row.connection_status, dateCell(row.last_success_at), dateCell(row.next_run_at)] }));
     }
 
     return [];

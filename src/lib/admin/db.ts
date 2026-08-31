@@ -2,6 +2,21 @@ import { Pool, type QueryResultRow } from "pg";
 
 let pool: Pool | null = null;
 
+function normalizePostgresConnectionString(value: string) {
+  try {
+    const url = new URL(value);
+    const sslMode = url.searchParams.get("sslmode")?.toLowerCase();
+    if (sslMode === "prefer" || sslMode === "require" || sslMode === "verify-ca") {
+      // pg currently treats these aliases as verify-full, but that changes in
+      // pg v9. Preserve today's certificate verification semantics explicitly.
+      url.searchParams.set("sslmode", "verify-full");
+    }
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
 export class AdminConfigError extends Error {
   constructor(message: string) {
     super(message);
@@ -57,7 +72,7 @@ export function getPool() {
 
   if (!pool) {
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: normalizePostgresConnectionString(process.env.DATABASE_URL),
       ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: false } : undefined,
       max: Number(process.env.DATABASE_POOL_MAX ?? 8),
       idleTimeoutMillis: 30_000,
