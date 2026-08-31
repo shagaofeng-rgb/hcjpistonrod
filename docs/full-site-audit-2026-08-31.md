@@ -13,7 +13,7 @@ Project: Next.js 16 / React 19 / Neon PostgreSQL / Vercel
 - News automation is active. The latest automated article completed the publication state machine and passed list-page and detail-page delivery checks.
 - Blog content remains separate from News automation. The retired article-cycle endpoint returns HTTP 410 and is not scheduled.
 - Google sitemap maintenance is scheduled every three days. Search Console credentials and the required production flags are present in Vercel; secret values were not exposed during this audit.
-- Six implementation defects were corrected: stale admin sync status, hard-coded health status, incomplete admin sync API data, missing News sitemap index entry, duplicate product title suffixes, and tablet header overflow. PostgreSQL SSL configuration was also normalized to remove an upcoming driver warning.
+- Seven implementation defects were corrected: stale admin sync status, hard-coded health status, incomplete admin sync API data, missing News sitemap index entry, duplicate product title suffixes, tablet header overflow, and a Vercel root-element hydration warning. PostgreSQL SSL configuration was also normalized to remove an upcoming driver warning.
 
 ## 2. Backups and rollback
 
@@ -113,6 +113,7 @@ Results:
 - Pages retained one H1, `lang=en`, correct canonical behavior, and readable mobile content.
 - Lazy-loaded images loaded after scroll. The only local-only network miss was the Vercel Insights script, which is expected outside Vercel production.
 - Post-fix screenshots: `tmp/full-audit-after-desktop.png` and `tmp/full-audit-after-mobile.png`.
+- Vercel injects a deployment identifier on the root HTML element. The root now uses React's hydration-warning suppression for that host-managed attribute only; component-level hydration checks remain active.
 
 ## 8. Performance evidence
 
@@ -124,6 +125,8 @@ Google PageSpeed Insights API was attempted but returned HTTP 429 because the pu
 | Mobile | 95 | 100 | 96 | 100 | 0.6 s | 0.6 s | 250 ms | 0 | 370 KiB |
 
 The desktop score is primarily constrained by main-thread blocking variability rather than paint or layout instability. Public single-request TTFB samples before deployment were approximately 1.0-1.36 seconds. Production is rechecked after deployment.
+
+Production checks after the first release returned mobile performance 98, accessibility 100, SEO 100, FCP 1.8 seconds, LCP 2.0 seconds, and CLS 0. A repeated desktop run returned performance 77, accessibility 100, SEO 100, FCP 1.7 seconds, LCP 2.0 seconds, TBT 60 milliseconds, and CLS 0.003. The first desktop sample was 47 because Speed Index and TBT varied significantly; the repeated result is retained rather than presenting the better sample as a guaranteed score.
 
 ## 9. Test and build evidence
 
@@ -144,6 +147,7 @@ Passed before release:
 ## 10. Files changed
 
 - `scripts/site-self-check.mjs`
+- `src/app/layout.tsx`
 - `src/app/api/admin/content/[module]/route.ts`
 - `src/app/api/admin/health/route.ts`
 - `src/components/header.tsx`
@@ -179,6 +183,7 @@ Fixed:
 - Duplicate product metadata brand suffix
 - PostgreSQL SSL warning
 - Tablet horizontal overflow
+- Vercel-injected root attribute hydration warning
 
 Residual limitations:
 
