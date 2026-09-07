@@ -37,6 +37,9 @@ const rodBase = {
 const definitions: Record<string, Omit<ProductEditorial, "title" | "description" | "keyword" | "specifications" | "faqs">> = {
   "honed-tube": {
     ...tubeBase,
+    manufacturing: "For a general honed-tube requirement, the starting point is the finished bore and the cylinder-barrel dimensions around it. The technical review aligns the requested ID, OD, wall, length and bore condition before the applicable honing route and cut length are confirmed. This keeps the tube discussion tied to the cylinder design rather than to an unqualified stock description.",
+    customization: "Provide the cylinder-barrel drawing or a clear specification with ID, OD, wall thickness, finished length, material requirement, bore tolerance, surface requirement, quantity and destination. Where a mating piston or seal requirement affects the order, include that interface information for review.",
+    inspection: "The agreed inspection record can cover ID, OD, wall condition, cut length, straightness and the specified inner-bore condition. Packing protection is reviewed as a separate export requirement so handling does not compromise the finished bore before cylinder assembly.",
     summary: "Honed tube is used for hydraulic cylinder barrel work where the finished inner bore needs to be considered together with the sealing and machining requirements of the cylinder design.",
     materials: ["Material grade reviewed against the specification", "Honed inner bore", "Cut length reviewed from drawing"],
     whyItMatters: "The tube is the running surface on the cylinder side of the sealing system. Selecting a suitable material and bore-finish requirement helps an engineering buyer align the tube with the piston, seal and cylinder-barrel design instead of treating it as a commodity length of steel.",
@@ -45,6 +48,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "st52-honed-tube": {
     ...tubeBase,
+    manufacturing: "ST52 honed-tube work starts by retaining the material designation through the bore-finishing and cutting review. The team compares the drawing's tube dimensions, required bore condition and machining allowance with the requested finished form before confirming the route. This is particularly useful when the buyer is replacing a named material in an established cylinder design.",
+    customization: "Send the ST52 callout, applicable drawing, ID, OD, wall thickness, final cut length, tolerance, bore condition, quantity and any certificate or inspection-document requirement. State whether the request is for a new build, a replacement component or stock prepared for later machining.",
+    inspection: "Inspection is based on the approved ST52 tube requirement, not a generic substitute. Review points can include material identification supplied for the order, ID and OD, wall condition, cut length and the agreed bore-finish checks, with the requested documentation confirmed before production.",
     summary: "ST52 honed tube is a material-specific option for hydraulic cylinder barrel projects where the buyer has identified ST52 in the drawing or approved material schedule.",
     materials: ["ST52 material designation", "Honed inner bore", "Cut length reviewed from drawing"],
     whyItMatters: "Naming the material on the request helps prevent a cylinder barrel quotation from being evaluated against an unspecified substitute. The rest of the requirement still matters: the drawing should state the required dimensions, bore condition and inspection expectations.",
@@ -53,6 +59,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "ck45-honed-tube": {
     ...tubeBase,
+    manufacturing: "CK45 honed-tube projects are reviewed as a material-specific barrel input. The route considers the stated CK45 requirement together with bore dimensions, wall condition, finished length and any machining allowance identified on the drawing. The objective is to maintain a clear connection between the material callout and the finished cylinder-barrel requirement.",
+    customization: "For a CK45 review, provide the drawing, material callout, ID, OD, wall, length, target bore tolerance, bore condition, quantity and the planned cylinder application. If the buyer needs a particular inspection or material document, it should be listed with the request instead of assumed from the grade name.",
+    inspection: "The final check follows the agreed CK45 tube specification. Measurements may include ID, OD, length, straightness and the inner-bore requirement, while any material evidence or additional testing is handled only when it is part of the approved order documentation.",
     summary: "CK45 honed tube is a material-specific hydraulic cylinder tube option for drawings that call for a CK45 tube and a finished bore suitable for cylinder-barrel work.",
     materials: ["CK45 material designation", "Honed inner bore", "Cut length reviewed from drawing"],
     whyItMatters: "For a CK45 tube, the buyer should keep the material designation, dimensions and finished-bore requirement together in the purchasing file. That makes it easier to review machining allowance and the interfaces that will be finished during cylinder manufacture.",
@@ -61,6 +70,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "skived-and-roller-burnished-tube": {
     ...tubeBase,
+    manufacturing: "Skived and roller burnished tube is reviewed around its stated finishing route and the finished bore required by the cylinder design. The technical conversation identifies the tube dimensions, wall condition, final length and requested inner-surface condition before skiving and roller burnishing are considered. It should not be treated as interchangeable with a tube carrying a different bore specification.",
+    customization: "Share the SRB tube drawing or specification, including material, ID, OD, wall thickness, final length, bore tolerance, required surface condition, quantity and end-use. Add any handling, cut-end or packing requirement that matters before subsequent cylinder machining.",
+    inspection: "Quality review is built around the confirmed SRB requirement: dimensional checks, finished length, straightness and the agreed inner-bore condition. The order record should also identify any requested inspection documentation and packing method before the tube is released for export.",
     summary: "Skived and roller burnished tube is specified where the project calls for that bore-finishing route rather than a generic tube description.",
     materials: ["Tube material reviewed against the specification", "Skived and roller burnished inner bore", "Cut length reviewed from drawing"],
     whyItMatters: "SRB tube requirements should identify the target bore condition and the design context. This lets the buyer compare the finished tube as a cylinder-barrel input, not simply compare names for two different finishing processes.",
@@ -69,6 +81,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "chrome-plated-rod": {
     ...rodBase,
+    manufacturing: "A hard chrome plated rod requirement is reviewed from the final outside surface back through the proposed rod route. Diameter, length, straightness, chrome requirement and end features are considered together before grinding, plating, polishing or machining are confirmed. This helps keep the rod's sealing surface and connection features within one controlled purchasing requirement.",
+    customization: "Provide the drawing or specification with material, finished diameter, length, tolerance, straightness expectation, chrome requirement, end-machining details, quantity and application. Include any requested surface, certificate or packing evidence so the quotation review addresses the finished component instead of only the raw rod.",
+    inspection: "The inspection plan is agreed against the requested finished rod. Typical checks may include diameter, cut length, straightness, visible surface condition, stated end features and packing protection. Chrome-related testing is included only where it has been specified for the order.",
     summary: "Hard chrome plated rod is a precision-finished rod option for hydraulic cylinders where the specified surface condition, dimensions and end features must be reviewed as one component requirement.",
     materials: ["Material reviewed against the specification", "Hard chrome plated outer surface", "End machining reviewed from drawing"],
     whyItMatters: "A rod interacts directly with the cylinder sealing system. Purchasing decisions should therefore consider the agreed surface requirement, finished dimensions, straightness expectation and end connection details together instead of selecting by diameter alone.",
@@ -77,6 +92,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "ck45-chrome-plated-rod": {
     ...rodBase,
+    manufacturing: "CK45 chrome plated rod work maintains the grade designation through the finishing and machining review. The requested CK45 material, finished dimensions, outer-surface condition and end features are checked against the drawing before the production sequence is confirmed. This avoids quoting a material-specific rod as if it were an unspecified chrome rod.",
+    customization: "For a CK45 rod request, send the material callout, drawing, diameter, finished length, tolerance, surface or chrome requirement, straightness requirement, end machining, quantity and intended cylinder use. Any required inspection record should be identified with the technical request.",
+    inspection: "Checks are selected from the approved CK45 chrome rod specification and can cover material identification supplied for the order, finished diameter, length, straightness, visible surface condition and drawing-based end geometry. The final packing review protects the agreed finished surface for shipment.",
     summary: "CK45 chrome plated rod is a material-specific rod option for hydraulic cylinder drawings that identify CK45 together with a hard chrome plated finished surface.",
     materials: ["CK45 material designation", "Hard chrome plated outer surface", "Drawing-based end machining"],
     whyItMatters: "The CK45 designation should remain attached to the dimensional and finishing requirement during technical review. That gives the purchaser a clearer basis for discussing the rod's finished condition and compatibility with the intended cylinder assembly.",
@@ -85,6 +103,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "20mnv6-chrome-plated-rod": {
     ...rodBase,
+    manufacturing: "For 20MnV6 chrome plated rod, the material name is retained as part of the finished-part review rather than separated from it. The team evaluates the stated 20MnV6 requirement with diameter, length, surface condition, straightness and machining features on the relevant drawing. Production planning follows the approved component requirement rather than a generic material equivalence.",
+    customization: "Submit the 20MnV6 requirement together with the drawing, finished diameter and length, tolerance, straightness, chrome requirement, end features, quantity and application. Where the customer has a documentation requirement for material or inspection, it should be included in the same request.",
+    inspection: "Final checks are aligned to the approved 20MnV6 rod requirement. They can include the agreed dimensional measurements, visible finished surface, straightness, end machining and packing condition; any additional material or surface evidence is only recorded when explicitly specified.",
     summary: "20MnV6 chrome plated rod is a material-specific option for hydraulic cylinder work where the drawing or approved specification calls for 20MnV6.",
     materials: ["20MnV6 material designation", "Hard chrome plated outer surface", "Drawing-based end machining"],
     whyItMatters: "A material-specific request should not be converted into a generic rod request. The buyer should retain the material designation, finishing requirements and drawing dimensions so the proposed route can be reviewed against the actual part requirement.",
@@ -93,6 +114,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "induction-hardened-chrome-rod": {
     ...rodBase,
+    manufacturing: "Induction hardened chrome rod requires a process-specific review because the requested hardened condition and finished chrome surface must be considered together. The drawing should define the component dimensions, material requirement, hardening requirement, finished surface and end machining before the sequence is set. This is relevant for applications where the rod is selected for an identified wear or duty condition.",
+    customization: "Please provide the drawing, material, diameter, length, tolerance, required hardened condition, chrome or surface requirement, straightness, end features, quantity and application context. The request should distinguish any mandatory test evidence from general application information.",
+    inspection: "Inspection is planned from the agreed induction-hardened chrome rod specification. Depending on the requirement, the review can cover finished dimensions, straightness, visible surface condition, specified hardness evidence, end features and protected packing. No unrequested hardness claim is assumed from the product name alone.",
     summary: "Induction hardened chrome rod is intended for drawings that specifically call for a hardened surface layer together with a chrome-finished rod surface.",
     materials: ["Material reviewed against the specification", "Induction-hardening requirement", "Hard chrome plated outer surface"],
     whyItMatters: "Induction hardening is a defined process requirement, not a universal upgrade. It should be specified with the drawing, the expected surface condition and the application context so the requested hardened and finished condition can be reviewed correctly.",
@@ -101,6 +125,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "hollow-chrome-plated-rod": {
     ...rodBase,
+    manufacturing: "Hollow chrome plated rod is reviewed as a component with both internal and external geometry. The drawing review brings together OD, ID, wall condition, length, outer chrome surface and end features before the manufacturing route is confirmed. Maintaining those dimensions in one specification is important because changes to one can affect the finished rod form.",
+    customization: "Send a sectional drawing where possible, showing OD, ID, wall, length, tolerances, straightness, chrome requirement, end machining, material requirement, quantity and application. Include any internal-bore protection or export-packing concern that must be considered after finishing.",
+    inspection: "Quality checks follow the approved hollow-rod drawing and can include OD, ID, wall-related dimensions where defined, finished length, straightness, visible outer surface and end features. The packing review addresses both the finished external surface and the protection required for the internal bore.",
     summary: "Hollow chrome plated rod is an engineered rod option with both OD and internal-bore requirements to be reviewed against the cylinder design or approved drawing.",
     materials: ["Tube/rod material reviewed against the specification", "Internal bore reviewed from drawing", "Hard chrome plated outer surface"],
     whyItMatters: "A hollow rod introduces an internal dimension alongside the finished outside surface. The OD, ID, wall condition, end features and intended application should all be included in the drawing review so the final component is evaluated as a complete design input.",
@@ -109,6 +136,9 @@ const definitions: Record<string, Omit<ProductEditorial, "title" | "description"
   },
   "piston-rod": {
     ...rodBase,
+    manufacturing: "A finished piston rod is planned from the complete component drawing, not just from the rod diameter. The review aligns the material and surface requirement with threads, shoulders, grooves, holes or other end features needed for cylinder assembly. Machining and final finishing are therefore discussed as one component route before production begins.",
+    customization: "Provide the finished piston-rod drawing or clear sample information, including material, diameter, finished length, tolerance, surface condition, straightness, each end feature, quantity and target cylinder application. Note any gauge, inspection report or packing requirement that the project needs.",
+    inspection: "The final review follows the approved finished-part drawing. Common points include overall dimensions, specified end geometry, visible surface condition, straightness and protected packing. Where an inspection record is required, its content is agreed before the manufacturing route is released.",
     summary: "Finished piston rod is a drawing-based component route for hydraulic cylinder builders who need agreed end features as well as the finished rod surface and dimensions.",
     materials: ["Material reviewed against the approved drawing", "Finished rod surface reviewed against the specification", "End machining reviewed from drawing"],
     whyItMatters: "A finished piston rod carries the connection and surface requirements needed for cylinder assembly. Reviewing the complete drawing reduces the risk of separating rod supply from the threads, shoulders, grooves or other end features that determine how the component fits the cylinder design.",

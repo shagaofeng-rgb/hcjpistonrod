@@ -28,14 +28,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!article) return {};
 
+  const title = article.seoTitle || article.title;
+  const description = article.seoDescription || article.excerpt;
+
   return {
-    title: `${article.title} | Technical Blog`,
-    description: article.excerpt,
+    title,
+    description,
     keywords: [article.category, ...article.relatedProducts, "hydraulic component technical blog"],
     alternates: { canonical: `/blog/${article.slug}` },
     openGraph: {
-      title: article.title,
-      description: article.excerpt,
+      title,
+      description,
       url: `/blog/${article.slug}`,
       images: [{ url: article.image, alt: article.imageAlt }],
       type: "article",

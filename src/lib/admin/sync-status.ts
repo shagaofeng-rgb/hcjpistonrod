@@ -1,4 +1,5 @@
 import { getSiteConfig, validateSiteConfig } from "@/lib/news-automation/config";
+import { getSearchConsoleConfiguration } from "@/lib/sitemap/google";
 import { query } from "./db";
 
 export type AdminSyncSourceRecord = {
@@ -21,6 +22,14 @@ type NewsRunStatusRow = {
   latest_publication_status: string | null;
   latest_publication_at: Date | null;
   last_publication_success_at: Date | null;
+};
+
+type SitemapRunStatusRow = {
+  status: string;
+  finished_at: Date | null;
+  search_console_attempted: boolean;
+  search_console_success: boolean;
+  search_console_result: string | null;
 };
 
 function nextIntervalAfter(value: Date | null, intervalHours: number, now = new Date()) {
@@ -84,14 +93,63 @@ export async function getNewsAutomationRuntimeStatus(now = new Date()): Promise<
   };
 }
 
+export async function getSearchConsoleRuntimeStatus(now = new Date()): Promise<AdminSyncSourceRecord> {
+  const configuration = getSearchConsoleConfiguration();
+  const result = await query<SitemapRunStatusRow>(
+    `select status, finished_at, search_console_attempted, search_console_success, search_console_result
+     from sitemap_runs
+     order by finished_at desc nulls last, started_at desc
+     limit 8`,
+  );
+  const runs = result.rows;
+  const latestRun = runs[0] || null;
+  const latestSuccessfulSubmission = runs.find((row) => row.search_console_attempted && row.search_console_success) || null;
+  const latestFailedSubmission = runs.find((row) => row.search_console_attempted && !row.search_console_success) || null;
+  const lastSuccessAt = latestSuccessfulSubmission?.finished_at ? new Date(latestSuccessfulSubmission.finished_at) : null;
+  const latestAt = latestRun?.finished_at ? new Date(latestRun.finished_at) : now;
+  const threeDaysMs = 72 * 3_600_000;
+  let connectionStatus = "connected";
+  let configStatus = "configured";
+
+  if (!configuration.enabled) {
+    connectionStatus = "disabled";
+    configStatus = "disabled";
+  } else if (!configuration.ready) {
+    connectionStatus = configuration.productionSafe ? "configuration_error" : "unsafe_credential_path";
+    configStatus = "invalid";
+  } else if (latestFailedSubmission && (!lastSuccessAt || new Date(latestFailedSubmission.finished_at || 0) > lastSuccessAt)) {
+    connectionStatus = "degraded";
+  } else if (!lastSuccessAt) {
+    connectionStatus = "waiting_for_first_submission";
+  } else if (now.getTime() - lastSuccessAt.getTime() > threeDaysMs * 2) {
+    connectionStatus = "stale";
+  } else if (!latestRun?.search_console_attempted) {
+    connectionStatus = "waiting_for_sitemap_change";
+  }
+
+  return {
+    id: "google-search-console-runtime",
+    code: "google-search-console",
+    name: "Google Search Console 站点地图提交",
+    source_type: "search-console-sitemap",
+    config_status: configStatus,
+    connection_status: connectionStatus,
+    last_success_at: lastSuccessAt,
+    next_run_at: configuration.enabled ? new Date(latestAt.getTime() + threeDaysMs) : null,
+    updated_at: latestAt,
+    created_at: latestAt,
+  };
+}
+
 export async function getAdminSyncSourceRecords() {
-  const [stored, news] = await Promise.all([
+  const [stored, news, searchConsole] = await Promise.all([
     query<AdminSyncSourceRecord>(
       `select id::text, code, name, source_type, config_status, connection_status,
          last_success_at, next_run_at, updated_at, created_at
        from sync_sources where code <> 'news-automation' order by updated_at desc`,
     ),
     getNewsAutomationRuntimeStatus(),
+    getSearchConsoleRuntimeStatus(),
   ]);
-  return [news, ...stored.rows];
+  return [news, searchConsole, ...stored.rows.filter((row) => row.code !== "google-search-console")];
 }

@@ -1,4 +1,5 @@
 import { Pool, type QueryResultRow } from "pg";
+import { getSearchConsoleConfiguration } from "@/lib/sitemap/google";
 
 let pool: Pool | null = null;
 
@@ -57,12 +58,7 @@ export function hasVercelAnalyticsConfig() {
 }
 
 export function hasGoogleSearchConsoleConfig() {
-  const hasCredentials = Boolean(
-    process.env.GOOGLE_SERVICE_ACCOUNT_JSON
-      || process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH
-      || (process.env.GSC_CLIENT_EMAIL && process.env.GSC_PRIVATE_KEY),
-  );
-  return process.env.GOOGLE_SEARCH_CONSOLE_ENABLED === "true" && hasCredentials;
+  return getSearchConsoleConfiguration().ready;
 }
 
 export function getPool() {

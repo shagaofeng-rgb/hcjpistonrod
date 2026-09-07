@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { buildSitemapDocuments, diffSitemapEntries, renderSitemapIndex, renderUrlSet, shouldIncludeCmsPage, validateSitemapXml, type SitemapEntry } from "../src/lib/sitemap/core";
-import { submitSitemapToSearchConsole } from "../src/lib/sitemap/google";
+import { getSearchConsoleConfiguration, submitSitemapToSearchConsole } from "../src/lib/sitemap/google";
 import { writeXmlAtomically } from "../scripts/sitemap-generate";
 import { releaseInMemorySitemapLock, tryAcquireInMemorySitemapLock } from "../src/lib/sitemap/service";
 import { hasGoogleSearchConsoleConfig } from "../src/lib/admin/db";
@@ -72,21 +72,26 @@ test("Search Console stays disabled without calling Google", async () => {
   assert.equal(calls, 0);
 });
 
-test("admin status recognizes every supported authorized Search Console credential format", () => {
+test("admin status requires a complete production-safe Search Console credential", () => {
   const previous = {
     enabled: process.env.GOOGLE_SEARCH_CONSOLE_ENABLED,
     json: process.env.GOOGLE_SERVICE_ACCOUNT_JSON,
     path: process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH,
     email: process.env.GSC_CLIENT_EMAIL,
     key: process.env.GSC_PRIVATE_KEY,
+    siteUrl: process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL,
+    sitemapUrl: process.env.GOOGLE_SEARCH_CONSOLE_SITEMAP_URL,
   };
   try {
     process.env.GOOGLE_SEARCH_CONSOLE_ENABLED = "true";
-    process.env.GOOGLE_SERVICE_ACCOUNT_JSON = "{\\\"client_email\\\":\\\"service@example.com\\\"}";
+    process.env.GOOGLE_SERVICE_ACCOUNT_JSON = JSON.stringify({ client_email: "service@example.com", private_key: "test-key" });
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "sc-domain:hcjpistonrod.com";
+    process.env.GOOGLE_SEARCH_CONSOLE_SITEMAP_URL = "https://www.hcjpistonrod.com/sitemap.xml";
     delete process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH;
     delete process.env.GSC_CLIENT_EMAIL;
     delete process.env.GSC_PRIVATE_KEY;
     assert.equal(hasGoogleSearchConsoleConfig(), true);
+    assert.equal(getSearchConsoleConfiguration().credentialSource, "environment-json");
     process.env.GOOGLE_SEARCH_CONSOLE_ENABLED = "false";
     assert.equal(hasGoogleSearchConsoleConfig(), false);
   } finally {
@@ -95,6 +100,8 @@ test("admin status recognizes every supported authorized Search Console credenti
     if (previous.path === undefined) delete process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH; else process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_PATH = previous.path;
     if (previous.email === undefined) delete process.env.GSC_CLIENT_EMAIL; else process.env.GSC_CLIENT_EMAIL = previous.email;
     if (previous.key === undefined) delete process.env.GSC_PRIVATE_KEY; else process.env.GSC_PRIVATE_KEY = previous.key;
+    if (previous.siteUrl === undefined) delete process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL; else process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = previous.siteUrl;
+    if (previous.sitemapUrl === undefined) delete process.env.GOOGLE_SEARCH_CONSOLE_SITEMAP_URL; else process.env.GOOGLE_SEARCH_CONSOLE_SITEMAP_URL = previous.sitemapUrl;
   }
 });
 

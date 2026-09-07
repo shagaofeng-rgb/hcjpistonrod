@@ -17,6 +17,9 @@ export type NewsArticle = {
   category: string;
   author: string;
   excerpt: string;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  robots?: string;
   geoSummary: string;
   keyTakeaways: string[];
   image: string;

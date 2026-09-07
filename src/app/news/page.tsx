@@ -26,7 +26,7 @@ const filters = ["All", "Piston Rod", "Chrome Plated Rod", "Honed Tube", "Manufa
 export const revalidate = 300;
 
 export default async function NewsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
-  const newsArticles = await getPublishedNewsArticles();
+  const newsArticles = await getPublishedNewsArticles({ includeNoindex: true });
   const { category } = await searchParams;
   const activeCategory = category || "All";
   const visibleArticles = activeCategory === "All" ? newsArticles : newsArticles.filter((article) => article.category === activeCategory);

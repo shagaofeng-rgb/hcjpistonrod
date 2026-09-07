@@ -11,6 +11,9 @@ type NewsRow = {
   slug: string;
   title: string;
   excerpt: string;
+  seo_title: string | null;
+  seo_description: string | null;
+  robots: string;
   body_html: string;
   author: string | null;
   image_url: string;
@@ -51,6 +54,9 @@ function toArticle(row: NewsRow): NewsArticle {
     category: row.category || "Industry News",
     author: row.author || "XIJIU Editorial Team",
     excerpt: row.excerpt,
+    seoTitle: row.seo_title,
+    seoDescription: row.seo_description,
+    robots: row.robots,
     geoSummary: row.geo_summary || row.excerpt,
     keyTakeaways: Array.isArray(row.key_takeaways) ? row.key_takeaways : [],
     image: row.image_url.startsWith("https://") ? `/api/media/news-image/${row.id}` : row.image_url,
@@ -82,7 +88,7 @@ async function getDatabaseNews(slug?: string, includeNoindex = false) {
   const indexSql = includeNoindex ? "" : "and na.robots not ilike '%noindex%'";
   if (slug) values.push(slug);
   const result = await query<NewsRow>(
-    `select na.id, na.slug, coalesce(na.english_title, na.title) as title, na.excerpt, na.body_html, na.author,
+    `select na.id, na.slug, coalesce(na.english_title, na.title) as title, na.excerpt, na.seo_title, na.seo_description, na.robots, na.body_html, na.author,
       coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt, na.cover_image_source_url,
       coalesce(nc.english_name, nc.name, 'Industry News') as category, na.tags, na.related_products,
       na.published_at, na.updated_at, na.source_title, na.source_publisher, na.source_author, na.source_url,
@@ -104,7 +110,7 @@ async function getDatabaseBlog(slug?: string) {
   const slugSql = slug ? `and na.slug = $${values.length + 1}` : "";
   if (slug) values.push(slug);
   const result = await query<NewsRow>(
-    `select na.id, na.slug, coalesce(na.english_title, na.title) as title, na.excerpt, na.body_html, na.author,
+    `select na.id, na.slug, coalesce(na.english_title, na.title) as title, na.excerpt, na.seo_title, na.seo_description, na.robots, na.body_html, na.author,
       coalesce(na.cover_image_url, ma.url) as image_url, na.image_alt, na.cover_image_source_url,
       coalesce(nc.english_name, nc.name, 'Industry News') as category, na.tags, na.related_products,
       na.published_at, na.updated_at, na.source_title, na.source_publisher, na.source_author, na.source_url,
@@ -134,10 +140,12 @@ const getCachedDatabaseBlog = unstable_cache(
   { revalidate: 300, tags: ["site:hcj-pistonrod:blog"] },
 );
 
-export async function getPublishedNewsArticles(options?: { fresh?: boolean }) {
+export async function getPublishedNewsArticles(options?: { fresh?: boolean; includeNoindex?: boolean }) {
   if (!hasDatabaseConfig()) return [];
   try {
-    const databaseArticles = options?.fresh ? await getDatabaseNews() : await getCachedDatabaseNews();
+    const databaseArticles = options?.includeNoindex
+      ? await getDatabaseNews(undefined, true)
+      : options?.fresh ? await getDatabaseNews() : await getCachedDatabaseNews();
     return databaseArticles.filter((article) => !newsToBlogRedirects[article.slug] && !historicalNoindexNewsSlugs.has(article.slug));
   } catch (error) {
     console.error("[news] database read failed", { message: error instanceof Error ? error.message : "unknown error" });
@@ -148,9 +156,7 @@ export async function getPublishedNewsArticles(options?: { fresh?: boolean }) {
 export async function getPublishedNewsArticle(slug: string) {
   if (hasDatabaseConfig()) {
     try {
-      const rows = historicalNoindexNewsSlugs.has(slug)
-        ? await getDatabaseNews(slug, true)
-        : await getCachedDatabaseNews();
+      const rows = await getDatabaseNews(slug, true);
       const article = rows.find((row) => row.slug === slug);
       if (article) return article;
     } catch (error) {

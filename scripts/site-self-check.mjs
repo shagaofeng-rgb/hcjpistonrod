@@ -9,8 +9,7 @@ const keyPaths = [
   "/", "/products", "/products/chrome-plated-rod", "/products/honed-tube", "/products/ck45-chrome-plated-rod",
   "/why-xijiu", "/about", "/industries", "/news",
   "/blog", "/blog/choose-hard-chrome-plated-rod-for-mobile-machinery", "/search?q=chrome%20rod", "/contact",
-  "/sitemap.xml", "/sitemap-pages.xml", "/sitemap-products.xml", "/blog-sitemap.xml",
-  "/news-sitemap.xml", "/news/rss.xml", "/robots.txt", "/admin/login",
+  "/sitemap.xml", "/news/rss.xml", "/robots.txt", "/admin/login",
 ];
 
 function assert(condition, message) {
@@ -92,6 +91,7 @@ for (const url of publicUrls) {
   const canonical = /<link[^>]+rel="canonical"[^>]+href="([^"]+)"/.exec(page.body)?.[1]
     || /<link[^>]+href="([^"]+)"[^>]+rel="canonical"/.exec(page.body)?.[1];
   assert(canonical && comparableUrl(canonical) === comparableUrl(url), `Canonical mismatch for ${url}: ${canonical || "missing"}`);
+  assert(!/<meta[^>]+name="robots"[^>]+content="[^"]*noindex/i.test(page.body), `Indexable sitemap URL is marked noindex: ${url}`);
 }
 
 const newsSitemap = await fetchChecked("/news-sitemap.xml");

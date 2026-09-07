@@ -172,7 +172,7 @@ export async function publishNewsArticle(config: SiteConfig, candidate: Database
       auto_published_at, editorial_disclaimer, news_publication_run_id
     ) values (
       $1, $2, $2, $3, $4, $5, $6, '/images/factory/chrome-rod-stock.jpg', $2, $7::jsonb, $8::jsonb,
-      'published', now(), $2, $9, $10, 'index,follow', $11::jsonb, $12, $13, $13, $14, $15, $15, $12, $16::timestamptz, now(), $17,
+      'published', now(), $2, $9, $10, $23, $11::jsonb, $12, $13, $13, $14, $15, $15, $12, $16::timestamptz, now(), $17,
       'owned:hcj-factory-asset', $18, $19, $20, $21::jsonb, 'news-automation-v2', 'news', true, now(), $22, $23
     ) on conflict (site_id, slug) where news_articles.deleted_at is null do update set
       title = excluded.title, english_title = excluded.english_title, excerpt = excluded.excerpt, body_html = excluded.body_html,
@@ -189,7 +189,7 @@ export async function publishNewsArticle(config: SiteConfig, candidate: Database
       publicUrl, JSON.stringify({ title: draft.title, description: draft.description, image: "/images/factory/chrome-rod-stock.jpg" }), config.publicationLanguage,
       candidate.sourceName, candidate.author ?? null, candidate.normalizedUrl, candidate.publishedAt, config.timezone,
       candidate.contentFingerprint, candidate.contentFingerprint, draft.excerpt, JSON.stringify(["Independent editorial summary", "Original source and publication date are displayed on this page."]),
-      draft.editorialDisclaimer, publicationRunId],
+      draft.editorialDisclaimer, publicationRunId, draft.publicationMode === "source-native" ? "noindex,follow" : "index,follow"],
   );
   const articleId = result.rows[0]?.id;
   if (!articleId) throw new Error("News CMS did not return an article id");

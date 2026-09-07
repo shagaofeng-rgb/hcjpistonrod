@@ -57,6 +57,21 @@ export default async function ProductDetailPage({ params }: Props) {
     ],
   };
   const pageJsonLd = { "@context": "https://schema.org", "@type": "ItemPage", name: product.name, url, description: editorial.description, isPartOf: { "@type": "WebSite", name: site.brandName, url: site.domain } };
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: editorial.description,
+    url,
+    image: `${site.domain}${product.image}`,
+    category: product.category,
+    brand: { "@type": "Brand", name: site.brandName },
+    manufacturer: { "@type": "Organization", name: site.factoryName, url: site.domain },
+    additionalProperty: Object.entries(product.specs)
+      .filter(([, value]) => Boolean(value))
+      .slice(0, 12)
+      .map(([name, value]) => ({ "@type": "PropertyValue", name, value })),
+  };
   const faqJsonLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: editorial.faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) };
 
   return (
@@ -65,6 +80,7 @@ export default async function ProductDetailPage({ params }: Props) {
       <main>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
         <section className="bg-white py-14">
           <div className="container">

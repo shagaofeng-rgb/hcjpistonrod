@@ -6,7 +6,11 @@ function escapeHtml(value: string) {
 }
 
 function clipSourceSummary(value: string) {
-  const normalized = value.replace(/\s+/g, " ").trim();
+  const normalized = value
+    .replace(/&#8230;|&hellip;|…/gi, " ")
+    .replace(/\[?\s*The post\s+.+?\s+appeared first\s+.+?\]?/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (normalized.length <= 560) return normalized;
   const boundary = normalized.lastIndexOf(" ", 560);
   return `${normalized.slice(0, boundary > 220 ? boundary : 560).trim()}...`;
@@ -21,8 +25,9 @@ export function composeSourceNativeNews(candidate: ScoredCandidate): NewsDraft {
   const sourceSummary = escapeHtml(clipSourceSummary(candidate.summary || "The source supplied no usable summary."));
   const sourceDate = escapeHtml(new Date(candidate.publishedAt).toISOString().slice(0, 10));
   const title = `Source Brief: ${candidate.title}`;
-  const description = `Source brief from ${candidate.sourceName}: ${clipSourceSummary(candidate.summary || candidate.title).slice(0, 150)}`;
-  const excerpt = `A source-attributed industry brief from ${candidate.sourceName}. ${clipSourceSummary(candidate.summary || candidate.title).slice(0, 220)}`;
+  const cleanedSummary = clipSourceSummary(candidate.summary || candidate.title);
+  const description = `Source brief from ${candidate.sourceName}: ${cleanedSummary.slice(0, 150)}`;
+  const excerpt = `A source-attributed industry brief from ${candidate.sourceName}. ${cleanedSummary.slice(0, 220)}`;
   const bodyHtml = `<h2>Source brief</h2><p>${sourceName} published <strong>“${sourceTitle}”</strong> on ${sourceDate}. This automated News entry preserves the available source metadata and short summary for readers following hydraulic, manufacturing and industrial-equipment developments.</p><h2>Available source summary</h2><p>${sourceSummary}</p><h2>Reader note</h2><p>This is a concise source-attributed brief, not a rewritten article or an independent technical assessment. The site does not add performance, market, certification or purchasing claims beyond the cited source. Please review the original publication for full context, complete attribution and any subsequent updates.</p><h2>Source and editorial note</h2><p>The original item remains the authoritative record. This page is published only after the source URL, publication date, language, relevance and duplicate checks pass.</p>`;
   return {
     title,

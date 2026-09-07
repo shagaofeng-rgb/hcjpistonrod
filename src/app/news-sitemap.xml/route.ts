@@ -2,6 +2,7 @@ import { site } from "@/lib/site";
 import { getPublishedNewsArticles } from "@/lib/news-content";
 
 export const revalidate = 1800;
+export const dynamic = "force-dynamic";
 
 function escapeXml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

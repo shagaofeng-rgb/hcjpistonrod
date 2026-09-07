@@ -30,15 +30,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!article) return {};
 
+  const title = article.seoTitle || article.title;
+  const description = article.seoDescription || article.excerpt;
+
   return {
-    title: article.title,
-    description: article.excerpt,
+    title,
+    description,
     keywords: [article.category, ...article.relatedProducts, "hydraulic piston rod news", "chrome plated rod supplier"],
     alternates: { canonical: `/news/${article.slug}` },
-    robots: historicalNoindexNewsSlugs.has(article.slug) ? { index: false, follow: true } : undefined,
+    robots: historicalNoindexNewsSlugs.has(article.slug) || article.robots?.toLowerCase().includes("noindex") ? { index: false, follow: true } : undefined,
     openGraph: {
-      title: article.title,
-      description: article.excerpt,
+      title,
+      description,
       url: `/news/${article.slug}`,
       images: [{ url: article.image, alt: article.imageAlt }],
       type: "article",
@@ -112,7 +115,7 @@ export default async function NewsDetailPage({ params }: Props) {
     <>
       <Header />
       <main>
-        {!historicalNoindexNewsSlugs.has(article.slug) && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />}
+        {!historicalNoindexNewsSlugs.has(article.slug) && !article.robots?.toLowerCase().includes("noindex") && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />

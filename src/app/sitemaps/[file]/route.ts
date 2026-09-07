@@ -2,6 +2,7 @@ import { findSitemapDocument, getSitemapBundle, xmlResponse } from "@/lib/sitema
 import type { SitemapKind } from "@/lib/sitemap/core";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 export async function GET(_request: Request, context: { params: Promise<{ file: string }> }) {

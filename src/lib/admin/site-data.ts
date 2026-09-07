@@ -8,7 +8,7 @@ import {
   query,
 } from "./db";
 import { getSiteConfig } from "@/lib/news-automation/config";
-import { getAdminSyncSourceRecords } from "./sync-status";
+import { getAdminSyncSourceRecords, getSearchConsoleRuntimeStatus } from "./sync-status";
 
 export type AdminTableRow = {
   id: string;
@@ -17,6 +17,7 @@ export type AdminTableRow = {
 
 export async function getAdminOverview(range: AdminDateRange) {
   const db = await databaseHealth();
+  const searchConsole = db.ok ? await getSearchConsoleRuntimeStatus().catch(() => null) : null;
   let productCount = "-";
   let categoryCount = "-";
   let newsCount = "-";
@@ -66,12 +67,14 @@ export async function getAdminOverview(range: AdminDateRange) {
       { label: "对象存储", ok: hasObjectStorageConfig(), message: getObjectStorageMessage() },
       {
         label: "外部SEO/分析",
-        ok: hasExternalMetrics(),
-        message: hasVercelAnalyticsConfig()
-          ? hasGoogleSearchConsoleConfig()
-            ? "Vercel 分析与 Google Search Console 已连接。"
-            : "Vercel Web Analytics 已连接；Google Search Console 待授权。"
-          : "未连接外部数据源。",
+        ok: hasExternalMetrics() && (!searchConsole || ["connected", "waiting_for_sitemap_change"].includes(searchConsole.connection_status)),
+        message: searchConsole
+          ? `Google Search Console：${searchConsole.connection_status}；最近成功提交：${searchConsole.last_success_at ? searchConsole.last_success_at.toISOString() : "尚无记录"}。`
+          : hasVercelAnalyticsConfig()
+            ? hasGoogleSearchConsoleConfig()
+              ? "Vercel 分析与 Google Search Console 已配置；提交运行记录暂不可读取。"
+              : "Vercel Web Analytics 已连接；Google Search Console 待授权。"
+            : "未连接外部数据源。",
       },
     ],
   };
