@@ -1,12 +1,18 @@
 export type AdminSearchParams = Record<string, string | string[] | undefined>;
 
-export type AdminDateRangePreset = "all" | "today" | "week" | "month" | "custom";
+export type AdminDateRangePreset = "today" | "week" | "month" | "custom";
 
 export type AdminDateRange = {
   preset: AdminDateRangePreset;
   startDate?: string;
   endDate?: string;
   label: string;
+};
+
+export type AdminListParams = {
+  page: number;
+  pageSize: number;
+  keyword: string;
 };
 
 function valueOf(value: string | string[] | undefined) {
@@ -38,7 +44,7 @@ export function resolveAdminDateRange(searchParams: AdminSearchParams = {}): Adm
   const presetValue = valueOf(searchParams.range);
   const preset: AdminDateRangePreset = ["today", "week", "month", "custom"].includes(presetValue ?? "")
     ? presetValue as AdminDateRangePreset
-    : "all";
+    : "month";
   const today = shanghaiToday();
 
   if (preset === "today") return { preset, startDate: today, endDate: today, label: "当天" };
@@ -59,7 +65,21 @@ export function resolveAdminDateRange(searchParams: AdminSearchParams = {}): Adm
     return { preset, label: "自定义日期" };
   }
 
-  return { preset, label: "全部时间" };
+  return { preset: "month", startDate: `${today.slice(0, 8)}01`, endDate: today, label: "本月" };
+}
+
+export function parseAdminListParams(searchParams: AdminSearchParams = {}): AdminListParams {
+  const pageValue = valueOf(searchParams.page);
+  const pageSizeValue = valueOf(searchParams.pageSize);
+  const keyword = valueOf(searchParams.q)?.trim().slice(0, 120) || "";
+  const page = Math.max(1, Number(pageValue || 1) || 1);
+  const requestedPageSize = Number(pageSizeValue || 20);
+
+  return {
+    page,
+    pageSize: [20, 50, 100].includes(requestedPageSize) ? requestedPageSize : 20,
+    keyword,
+  };
 }
 
 export function appendDateRangeCondition(where: string[], values: unknown[], column: string, range: AdminDateRange) {

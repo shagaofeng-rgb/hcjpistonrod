@@ -108,60 +108,95 @@ export async function getAnalyticsDashboard(range: AdminDateRange) {
 
 export async function getVisitorSessions(range: AdminDateRange, filters: AnalyticsFilters) {
   const values: unknown[] = [siteId()];
-  const where = rangeWhere(range, "s.last_seen_at", ["s.site_id = $1"], values);
+  const where = rangeWhere(range, "v.last_seen_at", ["v.site_id = $1"], values);
   if (filters.country) {
     values.push(filters.country.toUpperCase());
-    where.push(`s.country = $${values.length}`);
+    where.push(`v.country = $${values.length}`);
   }
   if (filters.channel) {
     values.push(filters.channel);
-    where.push(`s.source_channel = $${values.length}`);
+    where.push(`v.source_channel = $${values.length}`);
   }
   if (filters.classification) {
     values.push(filters.classification);
-    where.push(`s.classification = $${values.length}`);
+    where.push(`v.classification = $${values.length}`);
   }
   if (filters.device) {
     values.push(filters.device);
-    where.push(`s.device_type = $${values.length}`);
+    where.push(`v.device_type = $${values.length}`);
   }
   if (filters.keyword) {
     values.push(`%${filters.keyword}%`);
-    where.push(`(s.ip_masked ilike $${values.length} or s.landing_path ilike $${values.length} or s.last_page_path ilike $${values.length} or coalesce(s.referrer_host,'') ilike $${values.length})`);
+    where.push(`(v.ip_masked ilike $${values.length} or coalesce(v.referrer_host,'') ilike $${values.length} or exists (select 1 from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash and (s.landing_path ilike $${values.length} or s.last_page_path ilike $${values.length})))`);
   }
   const whereSql = where.join(" and ");
   const [totalResult, rowsResult] = await Promise.all([
-    query<CountRow>(`select count(*)::text as count from analytics_sessions s where ${whereSql}`, values),
-    query<{ id: string; first_seen_at: Date; last_seen_at: Date; visit_number: number; landing_path: string | null; last_page_path: string | null; country: string | null; source_channel: string | null; referrer_host: string | null; device_type: string | null; browser: string | null; page_views: number; conversion_count: number; classification: string; ip_masked: string | null }>(
-      `select s.id,s.first_seen_at,s.last_seen_at,s.visit_number,s.landing_path,s.last_page_path,s.country,s.source_channel,s.referrer_host,s.device_type,s.browser,s.page_views,s.conversion_count,s.classification,s.ip_masked from analytics_sessions s where ${whereSql} order by s.last_seen_at desc limit $${values.length + 1} offset $${values.length + 2}`,
+    query<CountRow>(`select count(*)::text as count from analytics_visitors v where ${whereSql}`, values),
+    query<{ id: string; first_seen_at: Date; last_seen_at: Date; visit_number: number; landing_path: string | null; last_page_path: string | null; country: string | null; source_channel: string | null; initial_source_channel: string | null; referrer_host: string | null; device_type: string | null; browser: string | null; page_views: string; conversion_count: number; classification: string; ip_masked: string | null; session_count: string }>(
+      `select v.id,v.first_seen_at,v.last_seen_at,v.visit_count as visit_number,
+        (select s.landing_path from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash order by s.first_seen_at asc limit 1) as landing_path,
+        (select s.last_page_path from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash order by s.last_seen_at desc limit 1) as last_page_path,
+        v.country,v.source_channel,
+        (select s.source_channel from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash order by s.first_seen_at asc limit 1) as initial_source_channel,
+        v.referrer_host,v.device_type,v.browser,
+        coalesce((select sum(s.page_views) from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash), 0)::text as page_views,
+        v.conversion_count,v.classification,v.ip_masked,
+        (select count(*) from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash)::text as session_count
+       from analytics_visitors v where ${whereSql} order by v.last_seen_at desc limit $${values.length + 1} offset $${values.length + 2}`,
       [...values, filters.pageSize, (filters.page - 1) * filters.pageSize],
     ),
   ]);
   return {
     total: count(totalResult.rows[0]?.count),
-    rows: rowsResult.rows.map((row) => ({ ...row, countryLabel: countryLabel(row.country) })),
+    rows: rowsResult.rows.map((row) => ({ ...row, page_views: count(row.page_views), session_count: count(row.session_count), countryLabel: countryLabel(row.country) })),
   };
 }
 
 export async function getVisitorSessionDetail(id: string) {
-  const sessionResult = await query<{ id: string; visitor_id_hash: string; first_seen_at: Date; last_seen_at: Date; visit_number: number; landing_path: string | null; last_page_path: string | null; country: string | null; source_channel: string | null; referrer_host: string | null; device_type: string | null; browser: string | null; os: string | null; language: string | null; page_views: number; conversion_count: number; classification: string; ip_masked: string | null }>(
-    `select id,visitor_id_hash,first_seen_at,last_seen_at,visit_number,landing_path,last_page_path,country,source_channel,referrer_host,device_type,browser,os,language,page_views,conversion_count,classification,ip_masked from analytics_sessions where id=$1 and site_id=$2 limit 1`,
+  let visitorResult = await query<{ id: string; visitor_id_hash: string; first_seen_at: Date; last_seen_at: Date; visit_count: number; country: string | null; source_channel: string | null; referrer_host: string | null; device_type: string | null; browser: string | null; os: string | null; language: string | null; conversion_count: number; classification: string; ip_masked: string | null }>(
+    `select id,visitor_id_hash,first_seen_at,last_seen_at,visit_count,country,source_channel,referrer_host,device_type,browser,os,language,conversion_count,classification,ip_masked from analytics_visitors where id=$1 and site_id=$2 limit 1`,
     [id, siteId()],
   );
-  const session = sessionResult.rows[0];
-  if (!session) return null;
-  const events = await query<{ id: string; event_name: string; page_url: string | null; occurred_at: Date; source_channel: string | null; referrer_host: string | null }>(
-    `select id,event_name,page_url,occurred_at,source_channel,referrer_host from analytics_events where site_id=$1 and session_id_hash=(select session_id_hash from analytics_sessions where id=$2) order by occurred_at asc`,
-    [siteId(), id],
-  );
-  return { ...session, countryLabel: countryLabel(session.country), events: events.rows };
+  if (!visitorResult.rows[0]) {
+    const legacySession = await query<{ visitor_id_hash: string }>("select visitor_id_hash from analytics_sessions where id=$1 and site_id=$2 limit 1", [id, siteId()]);
+    if (legacySession.rows[0]) {
+      visitorResult = await query("select id,visitor_id_hash,first_seen_at,last_seen_at,visit_count,country,source_channel,referrer_host,device_type,browser,os,language,conversion_count,classification,ip_masked from analytics_visitors where visitor_id_hash=$1 and site_id=$2 limit 1", [legacySession.rows[0].visitor_id_hash, siteId()]);
+    }
+  }
+  const visitor = visitorResult.rows[0];
+  if (!visitor) return null;
+  const [sessions, events, inquiries] = await Promise.all([
+    query<{ id: string; first_seen_at: Date; last_seen_at: Date; visit_number: number; landing_path: string | null; last_page_path: string | null; page_views: number; conversion_count: number; source_channel: string | null; referrer_host: string | null; device_type: string | null; browser: string | null }>(
+      `select id,first_seen_at,last_seen_at,visit_number,landing_path,last_page_path,page_views,conversion_count,source_channel,referrer_host,device_type,browser from analytics_sessions where site_id=$1 and visitor_id_hash=$2 order by first_seen_at asc`,
+      [siteId(), visitor.visitor_id_hash],
+    ),
+    query<{ id: string; event_name: string; page_url: string | null; occurred_at: Date; source_channel: string | null; referrer_host: string | null; session_id_hash: string | null; utm: Record<string, string> }>(
+      `select id,event_name,page_url,occurred_at,source_channel,referrer_host,session_id_hash,coalesce(utm, '{}'::jsonb) as utm from analytics_events where site_id=$1 and visitor_id_hash=$2 order by occurred_at asc`,
+      [siteId(), visitor.visitor_id_hash],
+    ),
+    query<{ id: string; form_number: string; status: string; submitted_at: Date }>(
+      `select id,form_number,status,submitted_at from form_submissions where visitor_id_hash=$1 and archived_at is null order by submitted_at asc`,
+      [visitor.visitor_id_hash],
+    ),
+  ]);
+  const pageViews = sessions.rows.reduce((total, session) => total + session.page_views, 0);
+  return {
+    ...visitor,
+    visit_number: visitor.visit_count,
+    page_views: pageViews,
+    session_count: sessions.rows.length,
+    countryLabel: countryLabel(visitor.country),
+    sessions: sessions.rows,
+    events: events.rows,
+    inquiries: inquiries.rows,
+  };
 }
 
 export async function getAnalyticsOptions(range: AdminDateRange) {
   const values: unknown[] = [siteId()];
   const where = rangeWhere(range, "last_seen_at", ["site_id = $1"], values);
   const result = await query<{ country: string | null; source_channel: string | null; classification: string | null; device_type: string | null }>(
-    `select distinct country, source_channel, classification, device_type from analytics_sessions where ${where.join(" and ")} order by country nulls last`,
+    `select distinct country, source_channel, classification, device_type from analytics_visitors where ${where.join(" and ")} order by country nulls last`,
     values,
   );
   return {

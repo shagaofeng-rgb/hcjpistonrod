@@ -21,6 +21,8 @@ export function RfqForm() {
     setStatus("sending");
     setFeedback("");
     try {
+      const visitorId = window.localStorage.getItem("hcj_visitor_id");
+      if (visitorId) formData.set("analyticsVisitorId", visitorId.slice(0, 200));
       const response = await fetch("/api/rfq", { method: "POST", body: formData });
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.ok) {

@@ -26,6 +26,7 @@ test("excludes non-production, automated and explicitly marked test traffic befo
   assert.equal(exclusionReason(event, { ...context, host: "localhost" }), "non_production_host");
   assert.equal(exclusionReason(event, { ...context, userAgent: "Mozilla Playwright" }), "automated_client");
   assert.equal(exclusionReason({ ...event, utm: { utm_source: "codex-test" } }, context), "test_marker");
+  assert.equal(exclusionReason({ ...event, utm: { utm_source: "collect" } }, context), "test_marker");
   assert.equal(exclusionReason(event, context, [{ rule_type: "ip_hash", match_value: analyticsHash(context.ip) }]), "admin_exclusion_rule");
 });
 

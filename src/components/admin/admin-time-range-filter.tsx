@@ -28,13 +28,13 @@ export function AdminTimeRangeFilter({ range }: { range: AdminDateRange }) {
       params.delete("from");
       params.delete("to");
     }
+    params.delete("page");
     router.push(`${pathname}?${params.toString()}`);
   }
 
   return (
     <div className="flex flex-wrap items-center gap-2" aria-label="数据时间范围">
       <span className="inline-flex h-10 items-center gap-2 text-sm font-medium text-slate-600"><CalendarDays size={16} /> 时间</span>
-      <button type="button" onClick={() => navigate("all")} className={`h-10 rounded-md border px-3 text-sm font-semibold ${range.preset === "all" ? "border-[#174a8b] bg-[#174a8b] text-white" : "border-slate-200 text-slate-700"}`}>全部</button>
       {options.map(([preset, label]) => (
         <button key={preset} type="button" onClick={() => navigate(preset)} className={`h-10 rounded-md border px-3 text-sm font-semibold ${range.preset === preset ? "border-[#174a8b] bg-[#174a8b] text-white" : "border-slate-200 text-slate-700"}`}>{label}</button>
       ))}

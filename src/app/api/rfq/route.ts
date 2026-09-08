@@ -101,6 +101,7 @@ export async function POST(request: Request) {
   const requirement = volume ? `${message}\n\nQuantity / Annual Volume: ${volume}` : message;
   const drawing = formData.get("drawing");
   const privacyConsent = formData.get("privacy") === "on";
+  const analyticsVisitorId = getString(formData, "analyticsVisitorId");
 
   if (getString(formData, "website")) {
     return NextResponse.json({ ok: true });
@@ -143,6 +144,14 @@ export async function POST(request: Request) {
     }
   }
   const { ipHash, userAgent, device } = clientMeta(request);
+  let visitorIdHash: string | null = null;
+  if (/^[a-zA-Z0-9-]{16,200}$/.test(analyticsVisitorId)) {
+    try {
+      visitorIdHash = analyticsHash(analyticsVisitorId);
+    } catch {
+      visitorIdHash = null;
+    }
+  }
   const source = sourceMeta(request);
   let submissionId: string | null = null;
 
@@ -161,18 +170,18 @@ export async function POST(request: Request) {
         `insert into form_submissions
           (form_number, form_type, name, company_name, email, phone, country, buyer_profile, message,
            related_product, source_page, page_url, source_channel, utm_source, utm_medium, utm_campaign,
-           utm_content, utm_term, referrer, ip_hash, browser, device_type, submit_language,
+           utm_content, utm_term, referrer, ip_hash, visitor_id_hash, browser, device_type, submit_language,
            privacy_consent, status, email_status, attachment_metadata, submitted_at)
-         values ($1,'rfq',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,'en',true,'new','pending',$22::jsonb,$23)
+         values ($1,'rfq',$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,'en',true,'new','pending',$23::jsonb,$24)
          returning id`,
         [number, name, company || null, email, phone || null, country || null, profile || null, requirement,
           product || null, source.sourcePage, source.pageUrl, source.sourceChannel, source.utmSource,
           source.utmMedium, source.utmCampaign, source.utmContent, source.utmTerm, source.referrer,
-          ipHash, userAgent, device, JSON.stringify(attachmentMetadata), receivedAt],
+          ipHash, visitorIdHash, userAgent, device, JSON.stringify(attachmentMetadata), receivedAt],
       );
       submissionId = stored.rows[0]?.id || null;
       if (submissionId) {
-        await recordInquiryConversion(ipHash, submissionId).catch((error) => {
+        await recordInquiryConversion(visitorIdHash, submissionId).catch((error) => {
           console.error("[rfq] analytics conversion update failed", { message: error instanceof Error ? error.message : "unknown error" });
         });
       }

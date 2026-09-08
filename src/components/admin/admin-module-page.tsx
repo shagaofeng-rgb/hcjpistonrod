@@ -1,6 +1,6 @@
 import { moduleContent, type AdminModuleKey } from "@/lib/admin/modules";
-import { resolveAdminDateRange, type AdminSearchParams } from "@/lib/admin/date-range";
-import { getAdminModuleDataStatus, getAdminModuleRows } from "@/lib/admin/site-data";
+import { parseAdminListParams, resolveAdminDateRange, type AdminSearchParams } from "@/lib/admin/date-range";
+import { getAdminModuleDataStatus, getAdminModulePage } from "@/lib/admin/site-data";
 import { AdminDataTable } from "./admin-data-table";
 
 type AdminModulePageProps = {
@@ -10,8 +10,10 @@ type AdminModulePageProps = {
 
 export async function AdminModulePage({ moduleKey, searchParams }: AdminModulePageProps) {
   const config = moduleContent[moduleKey];
-  const range = resolveAdminDateRange(await searchParams);
-  const [rows, dataStatus] = await Promise.all([getAdminModuleRows(moduleKey, range), getAdminModuleDataStatus()]);
+  const params = await searchParams;
+  const range = resolveAdminDateRange(params);
+  const pagination = parseAdminListParams(params);
+  const [page, dataStatus] = await Promise.all([getAdminModulePage(moduleKey, range, pagination), getAdminModuleDataStatus()]);
 
   return (
     <div className="grid gap-6">
@@ -23,7 +25,7 @@ export async function AdminModulePage({ moduleKey, searchParams }: AdminModulePa
         </div>
       </div>
       {dataStatus && <p role="alert" className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">{dataStatus}</p>}
-      <AdminDataTable title={config.title} columns={config.columns} rows={rows} range={range} emptyMessage={dataStatus || undefined} />
+      <AdminDataTable title={config.title} columns={config.columns} rows={page.rows} total={page.total} pagination={pagination} range={range} emptyMessage={dataStatus || undefined} />
     </div>
   );
 }

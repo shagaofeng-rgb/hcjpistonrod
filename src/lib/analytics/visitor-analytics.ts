@@ -198,12 +198,12 @@ export async function collectVisitorEvent(input: VisitorEventInput, context: Vis
   return { accepted: true as const, visitNumber };
 }
 
-export async function recordInquiryConversion(ipHash: string | null, submissionId: string) {
-  if (!ipHash) return;
+export async function recordInquiryConversion(visitorIdHash: string | null, submissionId: string) {
+  if (!visitorIdHash) return;
   const siteId = getSiteConfig().siteId;
   const visitor = await query<{ visitor_id_hash: string; conversion_count: number }>(
-    "update analytics_visitors set conversion_count=conversion_count+1, classification='lead', updated_at=now() where site_id=$1 and ip_hash=$2 and last_seen_at > now() - interval '30 days' returning visitor_id_hash, conversion_count",
-    [siteId, ipHash],
+    "update analytics_visitors set conversion_count=conversion_count+1, classification='lead', updated_at=now() where site_id=$1 and visitor_id_hash=$2 returning visitor_id_hash, conversion_count",
+    [siteId, visitorIdHash],
   );
   if (!visitor.rows[0]) return;
   await query(
@@ -211,8 +211,8 @@ export async function recordInquiryConversion(ipHash: string | null, submissionI
     [siteId, visitor.rows[0].visitor_id_hash],
   );
   await query(
-    `insert into analytics_events (site_id,event_name,visitor_id_hash,ip_hash,event_source,consent_status,utm)
-     values ($1,'rfq_submitted',$2,$3,'rfq','legitimate_interest',$4::jsonb)`,
-    [siteId, visitor.rows[0].visitor_id_hash, ipHash, JSON.stringify({ submission_id: submissionId })],
+    `insert into analytics_events (site_id,event_name,visitor_id_hash,event_source,consent_status,utm)
+     values ($1,'rfq_submitted',$2,'rfq','legitimate_interest',$3::jsonb)`,
+    [siteId, visitor.rows[0].visitor_id_hash, JSON.stringify({ submission_id: submissionId })],
   );
 }
