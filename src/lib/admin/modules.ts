@@ -1,13 +1,10 @@
 import {
   BarChart3,
-  DatabaseZap,
   FileText,
   FolderTree,
   Image,
   LayoutDashboard,
-  LockKeyhole,
   Newspaper,
-  FileCheck2,
   SearchCheck,
   Settings,
   ShieldCheck,
@@ -20,17 +17,13 @@ export const adminModules = [
   { key: "categories", label: "产品分类", href: "/admin/categories", icon: FolderTree, permission: "categories.manage" },
   { key: "news", label: "新闻管理", href: "/admin/news", icon: Newspaper, permission: "news.manage" },
   { key: "blog", label: "Blog 管理", href: "/admin/blog", icon: FileText, permission: "news.manage" },
-  { key: "content-ops", label: "历史自动化归档", href: "/admin/content-ops", icon: FileCheck2, permission: "news.manage" },
   { key: "leads", label: "客户表单", href: "/admin/leads", icon: Users, permission: "leads.manage" },
   { key: "analytics", label: "访问分析", href: "/admin/analytics", icon: BarChart3, permission: "analytics.view" },
   { key: "traffic", label: "流量来源", href: "/admin/analytics/traffic", icon: BarChart3, permission: "analytics.view" },
-  { key: "analytics-quality", label: "数据质量", href: "/admin/analytics/quality", icon: ShieldCheck, permission: "analytics.view" },
   { key: "seo", label: "SEO数据", href: "/admin/seo", icon: SearchCheck, permission: "seo.manage" },
   { key: "media", label: "媒体库", href: "/admin/media", icon: Image, permission: "media.manage" },
   { key: "users", label: "用户与权限", href: "/admin/users", icon: ShieldCheck, permission: "users.manage" },
-  { key: "audit-logs", label: "操作日志", href: "/admin/audit-logs", icon: LockKeyhole, permission: "audit.view" },
   { key: "settings", label: "系统设置", href: "/admin/settings", icon: Settings, permission: "settings.manage" },
-  { key: "sync", label: "数据同步", href: "/admin/sync", icon: DatabaseZap, permission: "sync.manage" },
 ];
 
 export const moduleContent = {
@@ -64,7 +57,7 @@ export const moduleContent = {
   },
   "content-ops": {
     title: "历史自动化归档",
-    description: "仅供审计旧内容自动化记录。该归档不具备发布能力；当前 News 自动化的运行记录会写入独立的 News 审计表。",
+    description: "查看历史内容记录。",
     apiModule: "content-ops",
     columns: ["标题", "Slug", "状态", "验证状态", "创建时间", "更新时间"],
     actions: ["检索", "导出", "刷新"],
@@ -78,7 +71,7 @@ export const moduleContent = {
   },
   analytics: {
     title: "访问分析",
-    description: "仅展示已同步到本站数据库的真实访问汇总；Vercel Web Analytics 的连接状态在数据概览中显示。",
+    description: "查看网站访问、访客、来源和询盘转化表现。",
     apiModule: "analytics",
     columns: ["范围", "访问量", "访客数", "维度值", "转化", "日期"],
     actions: ["检索", "导出", "刷新"],
@@ -113,14 +106,14 @@ export const moduleContent = {
   },
   settings: {
     title: "系统设置",
-    description: "查看当前网站名称、域名、时区和询盘接收邮箱等运行配置。敏感值不会在后台展示。",
+    description: "管理网站的基础运营配置。",
     apiModule: "settings",
     columns: ["配置项", "值", "敏感", "更新时间"],
     actions: ["检索", "导出", "刷新"],
   },
   sync: {
     title: "数据同步",
-    description: "查看数据库中已登记的数据源及其最近一次真实同步状态；外部服务配置状态在数据概览中显示。",
+    description: "查看已接入业务数据的更新情况。",
     apiModule: "sync",
     columns: ["数据源", "类型", "配置状态", "连接状态", "最后同步", "下次运行"],
     actions: ["检索", "导出", "刷新"],

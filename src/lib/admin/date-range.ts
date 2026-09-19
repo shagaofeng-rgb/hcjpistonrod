@@ -87,7 +87,9 @@ export function appendDateRangeCondition(where: string[], values: unknown[], col
   values.push(range.startDate, range.endDate);
   const start = `$${values.length - 1}`;
   const end = `$${values.length}`;
-  where.push(`(${column} at time zone 'Asia/Shanghai')::date between ${start}::date and ${end}::date`);
+  // Keep the indexed timestamp column bare. Converting the user-entered Shanghai dates
+  // to UTC boundaries lets Postgres use the existing site/time indexes.
+  where.push(`${column} >= (${start}::date::timestamp at time zone 'Asia/Shanghai') and ${column} < ((${end}::date + interval '1 day')::timestamp at time zone 'Asia/Shanghai')`);
 }
 
 export function appendDateOnlyRangeCondition(where: string[], values: unknown[], column: string, range: AdminDateRange) {

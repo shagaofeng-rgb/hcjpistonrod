@@ -133,16 +133,19 @@ export async function getVisitorSessions(range: AdminDateRange, filters: Analyti
   const [totalResult, rowsResult] = await Promise.all([
     query<CountRow>(`select count(*)::text as count from analytics_visitors v where ${whereSql}`, values),
     query<{ id: string; first_seen_at: Date; last_seen_at: Date; visit_number: number; landing_path: string | null; last_page_path: string | null; country: string | null; source_channel: string | null; initial_source_channel: string | null; referrer_host: string | null; device_type: string | null; browser: string | null; page_views: string; conversion_count: number; classification: string; ip_masked: string | null; session_count: string }>(
-      `select v.id,v.first_seen_at,v.last_seen_at,v.visit_count as visit_number,
-        (select s.landing_path from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash order by s.first_seen_at asc limit 1) as landing_path,
-        (select s.last_page_path from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash order by s.last_seen_at desc limit 1) as last_page_path,
-        v.country,v.source_channel,
-        (select s.source_channel from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash order by s.first_seen_at asc limit 1) as initial_source_channel,
-        v.referrer_host,v.device_type,v.browser,
-        coalesce((select sum(s.page_views) from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash), 0)::text as page_views,
-        v.conversion_count,v.classification,v.ip_masked,
-        (select count(*) from analytics_sessions s where s.site_id=v.site_id and s.visitor_id_hash=v.visitor_id_hash)::text as session_count
-       from analytics_visitors v where ${whereSql} order by v.last_seen_at desc limit $${values.length + 1} offset $${values.length + 2}`,
+      `with selected_visitors as (
+         select v.id,v.site_id,v.visitor_id_hash,v.first_seen_at,v.last_seen_at,v.visit_count,v.country,v.source_channel,v.referrer_host,v.device_type,v.browser,v.conversion_count,v.classification,v.ip_masked
+         from analytics_visitors v where ${whereSql} order by v.last_seen_at desc limit $${values.length + 1} offset $${values.length + 2}
+       ), session_rollup as (
+         select s.site_id,s.visitor_id_hash,
+           (array_agg(s.landing_path order by s.first_seen_at asc))[1] as landing_path,
+           (array_agg(s.last_page_path order by s.last_seen_at desc))[1] as last_page_path,
+           (array_agg(s.source_channel order by s.first_seen_at asc))[1] as initial_source_channel,
+           sum(s.page_views)::text as page_views,count(*)::text as session_count
+         from analytics_sessions s join selected_visitors v on v.site_id=s.site_id and v.visitor_id_hash=s.visitor_id_hash
+         group by s.site_id,s.visitor_id_hash
+       ) select v.id,v.first_seen_at,v.last_seen_at,v.visit_count as visit_number,r.landing_path,r.last_page_path,v.country,v.source_channel,r.initial_source_channel,v.referrer_host,v.device_type,v.browser,coalesce(r.page_views,'0') as page_views,v.conversion_count,v.classification,v.ip_masked,coalesce(r.session_count,'0') as session_count
+       from selected_visitors v left join session_rollup r on r.site_id=v.site_id and r.visitor_id_hash=v.visitor_id_hash order by v.last_seen_at desc`,
       [...values, filters.pageSize, (filters.page - 1) * filters.pageSize],
     ),
   ]);
