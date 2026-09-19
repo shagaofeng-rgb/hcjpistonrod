@@ -31,7 +31,9 @@ export function RfqForm() {
         return;
       }
       setStatus("sent");
-      setFeedback(`Thank you. Your inquiry has been recorded and emailed to our sales team. Reference: ${result.reference}`);
+      setFeedback(result.emailDelivered === false
+        ? `Thank you. Your inquiry is safely recorded. Our email alert is delayed, but our sales team can access it. Reference: ${result.reference}`
+        : `Thank you. Your inquiry has been recorded and emailed to our sales team. Reference: ${result.reference}`);
     } catch {
       setStatus("error");
       setFeedback("The inquiry service is temporarily unavailable. Please email ada@hcjpistonrod.com directly.");
@@ -39,7 +41,7 @@ export function RfqForm() {
   }
 
   return (
-    <form action={submit} className="grid gap-5 rounded-md border border-[var(--line)] bg-white p-5 sm:p-6">
+    <form action={submit} aria-busy={status === "sending"} className="grid gap-5 rounded-md border border-[var(--line)] bg-white p-5 sm:p-6">
       <label className="hidden" aria-hidden="true">
         Website
         <input name="website" tabIndex={-1} autoComplete="off" />
@@ -134,7 +136,7 @@ export function RfqForm() {
         {status === "sent" ? "Inquiry Sent" : "Submit Inquiry"}
       </button>
       {feedback && (
-        <p className={`text-sm ${status === "error" ? "text-red-700" : "text-[var(--teal-dark)]"}`}>
+        <p role="status" aria-live="polite" className={`text-sm ${status === "error" ? "text-red-700" : "text-[var(--teal-dark)]"}`}>
           {feedback}
         </p>
       )}

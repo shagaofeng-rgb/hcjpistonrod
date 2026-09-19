@@ -112,6 +112,10 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+  if (!hasDatabaseConfig()) {
+    console.error("[rfq] database storage is not configured");
+    return NextResponse.json({ ok: false, error: "Inquiry storage is temporarily unavailable. Please contact us by WhatsApp or email." }, { status: 503 });
+  }
 
   const attachments: Array<{ filename: string; content: Buffer; contentType?: string }> = [];
   const attachmentMetadata: Array<{ filename: string; size: number; contentType: string; storage?: { provider: string; pathname: string; url: string } }> = [];
@@ -155,8 +159,7 @@ export async function POST(request: Request) {
   const source = sourceMeta(request);
   let submissionId: string | null = null;
 
-  if (hasDatabaseConfig()) {
-    try {
+  try {
       if (ipHash) {
         const recent = await query<{ count: string }>(
           "select count(*)::text as count from form_submissions where ip_hash=$1 and submitted_at > now() - interval '10 minutes'",
@@ -185,9 +188,13 @@ export async function POST(request: Request) {
           console.error("[rfq] analytics conversion update failed", { message: error instanceof Error ? error.message : "unknown error" });
         });
       }
-    } catch (error) {
-      console.error("[rfq] database storage failed", { message: error instanceof Error ? error.message : "unknown error" });
-    }
+  } catch (error) {
+    console.error("[rfq] database storage failed", { message: error instanceof Error ? error.message : "unknown error" });
+    return NextResponse.json({ ok: false, error: "We could not securely record this inquiry. Please try again or contact us by WhatsApp or email." }, { status: 503 });
+  }
+  if (!submissionId) {
+    console.error("[rfq] database storage returned no submission id");
+    return NextResponse.json({ ok: false, error: "We could not securely record this inquiry. Please try again or contact us by WhatsApp or email." }, { status: 503 });
   }
 
   const fields = { name, email, phone: phone || "Not specified", company: company || "Not specified", country: country || "Not specified", profile: profile || "Not specified", product: product || "Not specified", volume: volume || "Not specified" };
@@ -212,11 +219,11 @@ export async function POST(request: Request) {
       await query("update form_submissions set email_status='failed', internal_notes=$2, updated_at=now() where id=$1", [submissionId, "Automatic email delivery failed; inquiry retained in admin."]).catch(() => undefined);
     }
     console.error("[rfq] email delivery failed", { submissionId, message: error instanceof Error ? error.message : "unknown error" });
-    return NextResponse.json({ ok: false, error: "Your inquiry was saved, but the email notification failed. Please email us directly." }, { status: 502 });
+    return NextResponse.json({ ok: true, emailDelivered: false, receivedAt: receivedAt.toISOString(), reference: number });
   }
 
   if (submissionId) {
     await query("update form_submissions set email_status='sent', email_sent_at=now(), updated_at=now() where id=$1", [submissionId]).catch(() => undefined);
   }
-  return NextResponse.json({ ok: true, receivedAt: receivedAt.toISOString(), reference: number });
+  return NextResponse.json({ ok: true, emailDelivered: true, receivedAt: receivedAt.toISOString(), reference: number });
 }

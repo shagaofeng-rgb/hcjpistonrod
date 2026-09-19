@@ -3,9 +3,9 @@ import Link from "next/link";
 import { ArrowRight, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import { megaMenuGroups, site } from "@/lib/site";
 
-export function Footer({ homepage = false }: { homepage?: boolean }) {
+export function Footer() {
   const whatsappHref = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
-  const layoutClass = homepage ? "home-container" : "container";
+  const layoutClass = "container";
 
   return (
     <footer className="bg-[#061a2f] pb-16 text-white md:pb-0">
@@ -71,7 +71,7 @@ export function Footer({ homepage = false }: { homepage?: boolean }) {
         <div>
           <div className="text-sm font-semibold uppercase tracking-[0.18em] text-white/50">Contact</div>
           <div className="mt-4 grid gap-3 text-sm text-white/72">
-            <a className="flex items-center gap-3 hover:text-white" href={`tel:${site.tel}`}>
+            <a className="flex items-center gap-3 hover:text-white" href={whatsappHref} target="_blank" rel="noreferrer" aria-label="Chat with XIJIU on WhatsApp">
               <Phone size={16} /> {site.telLabel}
             </a>
             <a className="flex items-center gap-3 hover:text-white" href={`mailto:${site.email}`}>

@@ -7,7 +7,7 @@ export function Hero() {
       <div className="grid md:min-h-[590px] md:grid-cols-2 lg:min-h-[492px]">
         <div className="relative min-h-[270px] overflow-hidden border-b border-[#d9e3e9] sm:min-h-[340px] md:order-1 md:min-h-[590px] md:border-b-0 md:border-r lg:min-h-[492px]">
           <Image
-            src="/images/home-redesign/template-hero-rods.png"
+            src="/images/factory/machined-rod-ends-front.jpg"
             alt="Precision machined piston rod ends"
             fill
             priority

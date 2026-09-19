@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 };
 
 const productRows = [
-  { name: "Piston Rods", description: "Precision turned and ground for strength, straightness and fatigue resistance.", spec: "Diameter: 20 - 500 mm\nLength: Up to 12 m", href: "/products/chrome-plated-rod", icon: "/images/home-redesign/icons/product-piston-rod.png" },
+  { name: "Piston Rods", description: "Precision turned and ground for strength, straightness and fatigue resistance.", spec: "Diameter: 20 - 500 mm\nLength: Up to 12 m", href: "/products/piston-rod", icon: "/images/home-redesign/icons/product-piston-rod.png" },
   { name: "Hard Chrome Plated Rods", description: "Hard chrome finish for wear resistance and corrosion protection.", spec: "Chrome thickness: 15 - 60 μm\nDiameter: 20 - 500 mm", href: "/products/chrome-plated-rod", icon: "/images/home-redesign/icons/product-chrome-rod.png" },
   { name: "Honed Tubes", description: "Precision honed bore and fine surface finish for smooth sealing and tight tolerances.", spec: "ID: 25 - 600 mm\nLength: Up to 12 m", href: "/products/honed-tube", icon: "/images/home-redesign/icons/product-honed-tube.png" },
   { name: "Custom-Machined Components", description: "Turned, milled and drilled components built to your specification.", spec: "Materials: Carbon Steel, Alloy Steel,\nStainless Steel & more", href: "/products", icon: "/images/home-redesign/icons/product-machined-component.png" },
@@ -81,7 +81,7 @@ export default function Home() {
               ["Machined Components", "/images/home-redesign/icons/product-machined-component.png"],
               ["Custom Solutions", "/images/home-redesign/icons/product-custom-solution.png"],
             ].map(([item, icon], index) => (
-              <Link key={item} href={index === 2 ? "/products/honed-tube" : "/products/chrome-plated-rod"} className="inline-flex shrink-0 items-center gap-2 border-r border-[#d9e3e9] px-5 first:pl-0 last:border-r-0 hover:text-[#0068ae] sm:px-7">
+              <Link key={item} href={["/products/piston-rod", "/products/chrome-plated-rod", "/products/honed-tube", "/products", "/contact"][index]} className="inline-flex shrink-0 items-center gap-2 border-r border-[#d9e3e9] px-5 first:pl-0 last:border-r-0 hover:text-[#0068ae] sm:px-7">
                 <Image src={icon} alt="" width={18} height={18} className="h-[18px] w-[18px] object-contain" /> {item}
               </Link>
             ))}
@@ -117,7 +117,7 @@ export default function Home() {
         </section>
 
         <section className="relative overflow-hidden bg-[#061a2f] py-16 text-white sm:py-20">
-          <Image src="/images/home-redesign/template-process-line.png" alt="Precision rod processing line" fill className="object-cover object-right opacity-35" sizes="100vw" />
+          <Image src="/images/factory/heavy-processing-line.jpg" alt="Precision rod processing line" fill className="object-cover object-center opacity-35" sizes="100vw" />
           <div className="absolute inset-0 bg-[#061a2f]/72" />
           <div className="home-container relative">
             <div className="max-w-xl">
@@ -177,7 +177,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <Footer homepage />
+      <Footer />
     </>
   );
 }
