@@ -19,6 +19,10 @@ export const site = {
   qq: company.qq,
   address: company.address,
   cnAddress: "江苏省南通海安市曲塘镇东联路29号",
+  googleMapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=No.%2029%2C%20Donglian%20Road%2C%20Qutang%20Town%2C%20Haian%20City%2C%20Nantong%20City%2C%20Jiangsu%20Province%2C%20China",
+  googleMapsEmbedUrl:
+    "https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d2033.6724448912032!2d120.35127725302301!3d32.51238500813398!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sNo.%2029%2C%20Donglian%20Road%2C%20Qutang%20Town%2C%20Haian%20City%2C%20Nantong%20City%2C%20Jiangsu%20Province%2C%20China!5e1!3m2!1sen!2suk!4v1789374378451!5m2!1sen!2suk",
   since: company.since,
 };
 

@@ -80,9 +80,9 @@ export function Footer({ homepage = false }: { homepage?: boolean }) {
             <a className="flex items-center gap-3 hover:text-white" href={whatsappHref} target="_blank" rel="noreferrer">
               <MessageCircle size={16} /> WhatsApp
             </a>
-            <span className="flex items-start gap-3">
+            <a className="flex items-start gap-3 hover:text-white" href={site.googleMapsUrl} target="_blank" rel="noreferrer">
               <MapPin className="mt-1 shrink-0" size={16} /> {site.address}
-            </span>
+            </a>
           </div>
         </div>
       </div>
