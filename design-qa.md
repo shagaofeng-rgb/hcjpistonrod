@@ -55,3 +55,15 @@
 - No P3 changes are necessary before deployment. The new footer is intentional because the selected source did not include one.
 
 final result: passed
+
+## Admin Precision Console QA (2026-10-10)
+
+**Visual source:** `/Users/apple/.codex/generated_images/01a09db8-2957-7af2-a2ee-9cff3d969575/exec-06537d20-222b-4068-9f89-ee11b920b1e2.png` (selected scheme 1). The existing HCJ logo and Lucide icon set covered all needed symbols, so no generated icon asset was required.
+
+**Implementation review:** Local Next.js preview at `127.0.0.1:3127`, checked in the in-app browser at 1440×1024, 768×1024, and 390×844 CSS pixels. The desktop view uses the selected navy sidebar, pale work area, compact blue-accent KPI cards, traffic/source chart, and content-status panel. Tablet uses two KPI columns; phone uses one and the same permission-filtered navigation in a drawer. Document scroll width equalled viewport width on the checked phone and tablet views. The phone drawer opened and closed by Escape with focus restored to its trigger.
+
+**Data and interaction:** Dashboard and visitor analytics rendered database-backed 90-day counts and lists. Today and a custom 2026-09-01–2026-09-30 selection changed the URL and displayed period-specific database counts; opening custom dates did not trigger a premature query. The leads page showed a genuine zero-record state and disabled CSV export. Visitor analytics displayed paginated rows and linked to details. Loading and query-failure views were checked; no fabricated fallback number is shown. A transient failed query in the local development preview displayed the error state and recovered on refresh; production should be monitored for recurrence.
+
+**Accessibility/content:** Date controls expose selected state, the custom panel exposes expanded state, the trend has a tabular alternative, list tables have labels, and keyboard Escape closes the mobile navigation. Customer-facing admin copy avoids demo/AI claims and uses localized visitor, device, source and country labels. All five date choices are 今天、本周、本月、90天、自定义.
+
+**Verification:** ESLint, TypeScript, admin date-range/password tests, and production build passed. The temporary localhost-only QA access code was removed before final build and deployment. The production login/permission flow must be checked separately after deployment with a valid administrator account.

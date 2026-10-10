@@ -1,6 +1,6 @@
 export type AdminSearchParams = Record<string, string | string[] | undefined>;
 
-export type AdminDateRangePreset = "today" | "week" | "month" | "custom";
+export type AdminDateRangePreset = "today" | "week" | "month" | "90days" | "custom";
 
 export type AdminDateRange = {
   preset: AdminDateRangePreset;
@@ -20,7 +20,9 @@ function valueOf(value: string | string[] | undefined) {
 }
 
 function isDate(value: string | undefined): value is string {
-  return Boolean(value && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`)));
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 }
 
 function shanghaiToday() {
@@ -42,12 +44,12 @@ function addDays(value: string, days: number) {
 
 export function resolveAdminDateRange(searchParams: AdminSearchParams = {}): AdminDateRange {
   const presetValue = valueOf(searchParams.range);
-  const preset: AdminDateRangePreset = ["today", "week", "month", "custom"].includes(presetValue ?? "")
+  const preset: AdminDateRangePreset = ["today", "week", "month", "90days", "custom"].includes(presetValue ?? "")
     ? presetValue as AdminDateRangePreset
     : "month";
   const today = shanghaiToday();
 
-  if (preset === "today") return { preset, startDate: today, endDate: today, label: "当天" };
+  if (preset === "today") return { preset, startDate: today, endDate: today, label: "今天" };
 
   if (preset === "week") {
     const dayOfWeek = new Date(`${today}T00:00:00Z`).getUTCDay() || 7;
@@ -56,13 +58,15 @@ export function resolveAdminDateRange(searchParams: AdminSearchParams = {}): Adm
 
   if (preset === "month") return { preset, startDate: `${today.slice(0, 8)}01`, endDate: today, label: "本月" };
 
+  if (preset === "90days") return { preset, startDate: addDays(today, -89), endDate: today, label: "90天" };
+
   if (preset === "custom") {
     const startDate = valueOf(searchParams.from);
     const endDate = valueOf(searchParams.to);
     if (isDate(startDate) && isDate(endDate) && startDate <= endDate) {
       return { preset, startDate, endDate, label: `${startDate} 至 ${endDate}` };
     }
-    return { preset, label: "自定义日期" };
+    return { preset: "month", startDate: `${today.slice(0, 8)}01`, endDate: today, label: "本月" };
   }
 
   return { preset: "month", startDate: `${today.slice(0, 8)}01`, endDate: today, label: "本月" };

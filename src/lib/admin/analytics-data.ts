@@ -1,6 +1,7 @@
 import { appendDateRangeCondition, type AdminDateRange } from "@/lib/admin/date-range";
 import { query } from "@/lib/admin/db";
 import { getSiteConfig } from "@/lib/news-automation/config";
+import { sourceChannelLabel } from "./analytics-labels";
 
 type CountRow = { count: string };
 
@@ -22,6 +23,22 @@ export type AnalyticsMetric = {
 
 function count(value: string | number | null | undefined) {
   return Number(value || 0);
+}
+
+function completeDailyTrend(rows: Array<{ day: string; page_views: string; visitors: string }>, range: AdminDateRange) {
+  const recorded = new Map(rows.map((row) => [row.day, row]));
+  if (!range.startDate || !range.endDate) return rows.map((row) => ({ day: row.day, pageViews: count(row.page_views), visitors: count(row.visitors) }));
+  const first = new Date(`${range.startDate}T00:00:00Z`);
+  const last = new Date(`${range.endDate}T00:00:00Z`);
+  const days = Math.round((last.getTime() - first.getTime()) / 86_400_000) + 1;
+  if (days < 1 || days > 180) return rows.map((row) => ({ day: row.day, pageViews: count(row.page_views), visitors: count(row.visitors) }));
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(first);
+    date.setUTCDate(date.getUTCDate() + index);
+    const day = date.toISOString().slice(0, 10);
+    const row = recorded.get(day);
+    return { day, pageViews: count(row?.page_views), visitors: count(row?.visitors) };
+  });
 }
 
 function siteId() {
@@ -49,9 +66,9 @@ export function parseAnalyticsFilters(searchParams: Record<string, string | stri
 }
 
 export function countryLabel(code: string | null) {
-  if (!code) return "Unknown";
+  if (!code) return "未知地区";
   try {
-    return new Intl.DisplayNames(["en"], { type: "region" }).of(code) || code;
+    return new Intl.DisplayNames(["zh-CN"], { type: "region" }).of(code) || code;
   } catch {
     return code;
   }
@@ -62,12 +79,16 @@ export async function getAnalyticsDashboard(range: AdminDateRange) {
   const eventWhere = rangeWhere(range, "occurred_at", ["site_id = $1"], values);
   const sessionValues: unknown[] = [siteId()];
   const sessionWhere = rangeWhere(range, "last_seen_at", ["site_id = $1"], sessionValues);
+  const inquiryValues: unknown[] = [];
+  const inquiryWhere = rangeWhere(range, "submitted_at", ["archived_at is null", "form_type = 'rfq'"], inquiryValues);
+  const qualityValues: unknown[] = [siteId()];
+  const qualityWhere = rangeWhere(range, "rollup_hour", ["site_id = $1"], qualityValues);
 
   const [pageViewsResult, visitorsResult, sessionsResult, conversionsResult, trendResult, countriesResult, channelsResult, pagesResult, qualityResult] = await Promise.all([
     query<CountRow>(`select count(*)::text as count from analytics_events where ${eventWhere.join(" and ")} and event_name = 'page_view'`, values),
     query<CountRow>(`select count(distinct visitor_id_hash)::text as count from analytics_events where ${eventWhere.join(" and ")} and event_name = 'page_view'`, values),
     query<CountRow>(`select count(*)::text as count from analytics_sessions where ${sessionWhere.join(" and ")}`, sessionValues),
-    query<CountRow>(`select count(*)::text as count from analytics_events where ${eventWhere.join(" and ")} and event_name = 'rfq_submitted'`, values),
+    query<CountRow>(`select count(*)::text as count from form_submissions where ${inquiryWhere.join(" and ")}`, inquiryValues),
     query<{ day: string; page_views: string; visitors: string }>(
       `select (occurred_at at time zone 'Asia/Shanghai')::date::text as day, count(*) filter (where event_name='page_view')::text as page_views, count(distinct visitor_id_hash) filter (where event_name='page_view')::text as visitors from analytics_events where ${eventWhere.join(" and ")} group by 1 order by 1`,
       values,
@@ -85,22 +106,22 @@ export async function getAnalyticsDashboard(range: AdminDateRange) {
       values,
     ),
     query<{ outcome: string; reason: string; count: string }>(
-      `select outcome, reason, sum(event_count)::text as count from analytics_collection_rollups where site_id=$1 ${range.startDate && range.endDate ? "and (rollup_hour at time zone 'Asia/Shanghai')::date between $2::date and $3::date" : ""} group by outcome, reason order by sum(event_count) desc limit 10`,
-      range.startDate && range.endDate ? [siteId(), range.startDate, range.endDate] : [siteId()],
+      `select outcome, reason, sum(event_count)::text as count from analytics_collection_rollups where ${qualityWhere.join(" and ")} group by outcome, reason order by sum(event_count) desc limit 10`,
+      qualityValues,
     ),
   ]);
 
   return {
     hasData: count(pageViewsResult.rows[0]?.count) > 0,
     metrics: [
-      { label: "页面浏览", value: count(pageViewsResult.rows[0]?.count), detail: `${range.label}内已过滤的真实页面访问` },
+      { label: "页面浏览", value: count(pageViewsResult.rows[0]?.count), detail: `${range.label}内的页面访问` },
       { label: "独立访客", value: count(visitorsResult.rows[0]?.count), detail: "按匿名访客标识去重" },
       { label: "访问会话", value: count(sessionsResult.rows[0]?.count), detail: "同一浏览器会话只计一次访问" },
-      { label: "已识别询盘", value: count(conversionsResult.rows[0]?.count), detail: "仅统计成功写入的官网表单" },
+      { label: "收到的客户表单", value: count(conversionsResult.rows[0]?.count), detail: `${range.label}内成功入库的官网询盘` },
     ] satisfies AnalyticsMetric[],
-    trend: trendResult.rows.map((row) => ({ day: row.day, pageViews: count(row.page_views), visitors: count(row.visitors) })),
+    trend: completeDailyTrend(trendResult.rows, range),
     countries: countriesResult.rows.map((row) => ({ label: countryLabel(row.value), code: row.value || "--", pageViews: count(row.page_views), visitors: count(row.visitors) })),
-    channels: channelsResult.rows.map((row) => ({ label: row.value || "direct", pageViews: count(row.page_views), visitors: count(row.visitors) })),
+    channels: channelsResult.rows.map((row) => ({ label: sourceChannelLabel(row.value), pageViews: count(row.page_views), visitors: count(row.visitors) })),
     pages: pagesResult.rows.map((row) => ({ path: row.value || "/", pageViews: count(row.page_views) })),
     quality: qualityResult.rows.map((row) => ({ outcome: row.outcome, reason: row.reason, count: count(row.count) })),
   };
@@ -210,11 +231,15 @@ export async function getAnalyticsOptions(range: AdminDateRange) {
   };
 }
 
-export async function getAnalyticsCollectionStatus() {
+export async function getAnalyticsCollectionStatus(range: AdminDateRange) {
+  const eventValues: unknown[] = [siteId()];
+  const eventWhere = rangeWhere(range, "occurred_at", ["site_id = $1"], eventValues);
+  const sessionValues: unknown[] = [siteId()];
+  const sessionWhere = rangeWhere(range, "last_seen_at", ["site_id = $1"], sessionValues);
   const [events, sessions, latest, rules] = await Promise.all([
-    query<CountRow>("select count(*)::text as count from analytics_events where site_id=$1", [siteId()]),
-    query<CountRow>("select count(*)::text as count from analytics_sessions where site_id=$1", [siteId()]),
-    query<{ latest: Date | null }>("select max(occurred_at) as latest from analytics_events where site_id=$1", [siteId()]),
+    query<CountRow>(`select count(*)::text as count from analytics_events where ${eventWhere.join(" and ")}`, eventValues),
+    query<CountRow>(`select count(*)::text as count from analytics_sessions where ${sessionWhere.join(" and ")}`, sessionValues),
+    query<{ latest: Date | null }>(`select max(occurred_at) as latest from analytics_events where ${eventWhere.join(" and ")}`, eventValues),
     query<{ id: string; rule_type: string; label: string; created_at: Date; expires_at: Date | null }>("select id,rule_type,label,created_at,expires_at from analytics_exclusion_rules where site_id=$1 and enabled=true order by created_at desc", [siteId()]),
   ]);
   return {

@@ -1,0 +1,63 @@
+.admin-shell {
+  --admin-navy: #061a2f;
+  --admin-ink: #132b42;
+  --admin-blue: #0068ae;
+  --admin-line: #d7e2e9;
+  --admin-muted: #526a7c;
+  background: #f3f7fa;
+  color: var(--admin-ink);
+}
+
+.admin-shell .admin-panel,
+.admin-shell .admin-stat {
+  border: 1px solid var(--admin-line);
+  border-radius: 0.55rem;
+  background: white;
+  box-shadow: 0 5px 22px rgba(6, 26, 47, 0.035);
+}
+
+.admin-shell .admin-page-title {
+  color: var(--admin-navy);
+  font-size: clamp(1.65rem, 2.2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.admin-shell .admin-page-description {
+  color: var(--admin-muted);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.admin-shell .admin-icon-button {
+  display: grid;
+  height: 2.75rem;
+  width: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--admin-line);
+  border-radius: 0.45rem;
+  background: white;
+  color: var(--admin-navy);
+}
+
+@media (min-width: 1024px) {
+  .admin-shell .admin-icon-button { display: none; }
+}
+
+.admin-shell :is(button, a, input, select):focus-visible {
+  outline: 3px solid #1aa0df;
+  outline-offset: 2px;
+}
+
+.admin-shell table th {
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell *, .admin-shell *::before, .admin-shell *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

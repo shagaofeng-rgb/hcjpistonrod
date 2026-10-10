@@ -3,6 +3,7 @@
 import { Filter, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { sourceChannelLabel } from "@/lib/admin/analytics-labels";
 
 type Option = { value: string; label: string };
 
@@ -13,9 +14,13 @@ type AnalyticsFilterBarProps = {
   devices: string[];
 };
 
-function options(values: string[], fallback: string): Option[] {
-  return [{ value: "", label: fallback }, ...values.map((value) => ({ value, label: value }))];
+function countryName(code: string) {
+  try { return new Intl.DisplayNames(["zh-CN"], { type: "region" }).of(code) || code; }
+  catch { return code; }
 }
+
+const classificationNames: Record<string, string> = { new: "新访客", returning: "回访", engaged: "深度访问" };
+const deviceNames: Record<string, string> = { desktop: "电脑", mobile: "手机", tablet: "平板" };
 
 export function AnalyticsFilterBar({ countries, channels, classifications, devices }: AnalyticsFilterBarProps) {
   const router = useRouter();
@@ -45,10 +50,10 @@ export function AnalyticsFilterBar({ countries, channels, classifications, devic
     <section className="border-y border-[#d3e0e7] bg-white px-4 py-4">
       <div className="flex flex-wrap items-end gap-3">
         <div className="flex h-10 items-center gap-2 text-sm font-semibold text-[#132b42]"><Filter size={16} className="text-[#0068ae]" /> 筛选访客</div>
-        {select("country", "国家 / 地区", options(countries, "全部国家"))}
-        {select("channel", "来源渠道", options(channels, "全部渠道"))}
-        {select("classification", "访客分类", options(classifications, "全部分类"))}
-        {select("device", "设备", options(devices, "全部设备"))}
+        {select("country", "国家 / 地区", [{ value: "", label: "全部国家" }, ...countries.map((value) => ({ value, label: countryName(value) }))])}
+        {select("channel", "来源渠道", [{ value: "", label: "全部渠道" }, ...channels.map((value) => ({ value, label: sourceChannelLabel(value) }))])}
+        {select("classification", "访客分类", [{ value: "", label: "全部分类" }, ...classifications.map((value) => ({ value, label: classificationNames[value] || value }))])}
+        {select("device", "设备", [{ value: "", label: "全部设备" }, ...devices.map((value) => ({ value, label: deviceNames[value] || value }))])}
         <form onSubmit={submit} className="grid min-w-52 flex-1 gap-1 text-xs font-medium text-[#526a7c]">
           关键词
           <div className="relative"><Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#7890a0]" /><input value={keyword} onChange={(event) => setKeyword(event.target.value)} placeholder="IP 掩码、访问页面或来源" className="h-10 w-full rounded-md border border-[#d3e0e7] py-2 pl-9 pr-3 text-sm text-[#132b42] outline-none transition focus:border-[#0068ae] focus:ring-2 focus:ring-[#0068ae]/15" /></div>

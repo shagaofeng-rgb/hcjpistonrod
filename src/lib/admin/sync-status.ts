@@ -11,8 +11,8 @@ export type AdminSyncSourceRecord = {
   connection_status: string;
   last_success_at: Date | null;
   next_run_at: Date | null;
-  updated_at: Date;
-  created_at: Date;
+  updated_at: Date | null;
+  created_at: Date | null;
 };
 
 type NewsRunStatusRow = {
@@ -42,6 +42,15 @@ function nextIntervalAfter(value: Date | null, intervalHours: number, now = new 
 
 function ageHours(value: Date | null, now = new Date()) {
   return value ? (now.getTime() - value.getTime()) / 3_600_000 : Number.POSITIVE_INFINITY;
+}
+
+function nextMondayUtc(now: Date) {
+  const next = new Date(now);
+  next.setUTCHours(0, 0, 0, 0);
+  const daysUntilMonday = (8 - next.getUTCDay()) % 7;
+  next.setUTCDate(next.getUTCDate() + daysUntilMonday);
+  if (next <= now) next.setUTCDate(next.getUTCDate() + 7);
+  return next;
 }
 
 export async function getNewsAutomationRuntimeStatus(now = new Date()): Promise<AdminSyncSourceRecord> {
@@ -88,8 +97,8 @@ export async function getNewsAutomationRuntimeStatus(now = new Date()): Promise<
     connection_status: connectionStatus,
     last_success_at: lastSuccessAt,
     next_run_at: enabled ? nextIntervalAfter(latestIngestAt || ingestSuccess, config.news.ingestIntervalHours, now) : null,
-    updated_at: latestIngestAt || latestPublicationAt || now,
-    created_at: latestIngestAt || latestPublicationAt || now,
+    updated_at: latestIngestAt || latestPublicationAt,
+    created_at: latestIngestAt || latestPublicationAt,
   };
 }
 
@@ -106,8 +115,8 @@ export async function getSearchConsoleRuntimeStatus(now = new Date()): Promise<A
   const latestSuccessfulSubmission = runs.find((row) => row.search_console_attempted && row.search_console_success) || null;
   const latestFailedSubmission = runs.find((row) => row.search_console_attempted && !row.search_console_success) || null;
   const lastSuccessAt = latestSuccessfulSubmission?.finished_at ? new Date(latestSuccessfulSubmission.finished_at) : null;
-  const latestAt = latestRun?.finished_at ? new Date(latestRun.finished_at) : now;
-  const threeDaysMs = 72 * 3_600_000;
+  const latestAt = latestRun?.finished_at ? new Date(latestRun.finished_at) : null;
+  const twoWeeksMs = 14 * 24 * 3_600_000;
   let connectionStatus = "connected";
   let configStatus = "configured";
 
@@ -121,10 +130,10 @@ export async function getSearchConsoleRuntimeStatus(now = new Date()): Promise<A
     connectionStatus = "degraded";
   } else if (!lastSuccessAt) {
     connectionStatus = "waiting_for_first_submission";
-  } else if (now.getTime() - lastSuccessAt.getTime() > threeDaysMs * 2) {
-    connectionStatus = "stale";
   } else if (!latestRun?.search_console_attempted) {
     connectionStatus = "waiting_for_sitemap_change";
+  } else if (now.getTime() - lastSuccessAt.getTime() > twoWeeksMs) {
+    connectionStatus = "stale";
   }
 
   return {
@@ -135,7 +144,7 @@ export async function getSearchConsoleRuntimeStatus(now = new Date()): Promise<A
     config_status: configStatus,
     connection_status: connectionStatus,
     last_success_at: lastSuccessAt,
-    next_run_at: configuration.enabled ? new Date(latestAt.getTime() + threeDaysMs) : null,
+    next_run_at: configuration.enabled ? nextMondayUtc(now) : null,
     updated_at: latestAt,
     created_at: latestAt,
   };

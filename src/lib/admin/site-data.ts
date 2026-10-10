@@ -1,14 +1,10 @@
 import { appendDateOnlyRangeCondition, appendDateRangeCondition, type AdminDateRange, type AdminListParams } from "./date-range";
 import {
   databaseHealth,
-  getObjectStorageMessage,
-  hasGoogleSearchConsoleConfig,
-  hasObjectStorageConfig,
-  hasVercelAnalyticsConfig,
   query,
 } from "./db";
 import { getSiteConfig } from "@/lib/news-automation/config";
-import { getAdminSyncSourceRecords, getSearchConsoleRuntimeStatus } from "./sync-status";
+import { getAdminSyncSourceRecords } from "./sync-status";
 
 export type AdminTableRow = {
   id: string;
@@ -18,18 +14,17 @@ export type AdminTableRow = {
 export type AdminTablePage = {
   rows: AdminTableRow[];
   total: number;
+  available: boolean;
 };
 
 export async function getAdminOverview(range: AdminDateRange) {
-  const db = await databaseHealth();
-  const searchConsole = db.ok ? await getSearchConsoleRuntimeStatus().catch(() => null) : null;
   let productCount = "-";
   let categoryCount = "-";
   let newsCount = "-";
   let seoIssueCount = "-";
-  let metricsAvailable = db.ok;
+  let metricsAvailable = true;
 
-  if (metricsAvailable) {
+  {
     const productWhere = ["deleted_at is null", "status = 'published'"];
     const categoryWhere = ["deleted_at is null", "is_enabled = true"];
     const newsWhere = ["deleted_at is null", "status = 'published'", "published_at <= now()", "site_id = $1", "content_channel = 'news'"];
@@ -61,37 +56,17 @@ export async function getAdminOverview(range: AdminDateRange) {
 
   return {
     cards: [
-      { label: "已发布产品", value: productCount, detail: metricsAvailable ? `${range.label}内更新的数据库记录` : "数据库不可用，未显示替代数据" },
-      { label: "启用产品分类", value: categoryCount, detail: metricsAvailable ? `${range.label}内更新的数据库记录` : "数据库不可用，未显示替代数据" },
-      { label: "已发布新闻", value: newsCount, detail: metricsAvailable ? `${range.label}内发布的数据库记录` : "数据库不可用，未显示替代数据" },
-      { label: "SEO问题", value: seoIssueCount, detail: metricsAvailable ? "SEO 问题库中的真实记录" : "数据库不可用，未显示替代数据" },
-    ],
-    status: [
-      { label: "内容数据", ok: metricsAvailable, message: metricsAvailable ? "CMS 数据库读取正常；前台产品内容同步状态见“数据同步”。" : "数据库读取异常，未显示静态或模拟替代数据。" },
-      { label: "客户表单数据库", ok: db.ok, message: db.ok ? "数据库连接正常。" : "数据库连接失败。" },
-      { label: "对象存储", ok: hasObjectStorageConfig(), message: getObjectStorageMessage() },
-      {
-        label: "外部SEO/分析",
-        ok: hasExternalMetrics() && (!searchConsole || ["connected", "waiting_for_sitemap_change"].includes(searchConsole.connection_status)),
-        message: searchConsole
-          ? `Google Search Console：${searchConsole.connection_status}；最近成功提交：${searchConsole.last_success_at ? searchConsole.last_success_at.toISOString() : "尚无记录"}。`
-          : hasVercelAnalyticsConfig()
-            ? hasGoogleSearchConsoleConfig()
-              ? "Vercel 分析与 Google Search Console 已配置；提交运行记录暂不可读取。"
-              : "Vercel Web Analytics 已连接；Google Search Console 待授权。"
-            : "未连接外部数据源。",
-      },
+      { label: "更新的已发布产品", value: productCount, detail: metricsAvailable ? `${range.label}内更新` : "暂不可用" },
+      { label: "更新的启用分类", value: categoryCount, detail: metricsAvailable ? `${range.label}内更新` : "暂不可用" },
+      { label: "发布的新闻", value: newsCount, detail: metricsAvailable ? `${range.label}内发布` : "暂不可用" },
+      { label: "新增 SEO 问题", value: seoIssueCount, detail: metricsAvailable ? `${range.label}内发现` : "暂不可用" },
     ],
   };
 }
 
-export function hasExternalMetrics() {
-  return hasVercelAnalyticsConfig() || hasGoogleSearchConsoleConfig() || Boolean(process.env.ANALYTICS_PROVIDER && process.env.ANALYTICS_API_KEY);
-}
-
 export async function getAdminModuleDataStatus() {
   const db = await databaseHealth();
-  return db.ok ? null : "数据库当前不可读取。为避免误导，本页面未显示静态缓存或模拟替代数据。";
+  return db.ok ? null : "数据暂时无法加载，请稍后重试。";
 }
 
 function dateCell(value: unknown) {
@@ -322,22 +297,28 @@ function modulePageConfig(moduleKey: string): ModulePageConfig | null {
 }
 
 export async function getAdminModulePage(moduleKey: string, range: AdminDateRange, pagination: AdminListParams): Promise<AdminTablePage> {
-  const db = await databaseHealth();
-  if (!db.ok) return { rows: [], total: 0 };
-
   try {
     if (moduleKey === "sync") {
       const rows = await getAdminSyncSourceRecords();
-      const matchingRows = rows.filter((row) => !pagination.keyword || [row.name, row.source_type, row.config_status, row.connection_status].join(" ").toLowerCase().includes(pagination.keyword.toLowerCase()));
+      const matchingRows = rows.filter((row) => {
+        if (!row.updated_at) return false;
+        const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(row.updated_at);
+        const datePart = (type: string) => parts.find((part) => part.type === type)?.value ?? "";
+        const updatedDate = `${datePart("year")}-${datePart("month")}-${datePart("day")}`;
+        const inRange = !range.startDate || !range.endDate || (updatedDate >= range.startDate && updatedDate <= range.endDate);
+        const matchesKeyword = !pagination.keyword || [row.name, row.source_type, row.config_status, row.connection_status].join(" ").toLowerCase().includes(pagination.keyword.toLowerCase());
+        return inRange && matchesKeyword;
+      });
       const start = (pagination.page - 1) * pagination.pageSize;
       return {
         total: matchingRows.length,
+        available: true,
         rows: matchingRows.slice(start, start + pagination.pageSize).map((row) => ({ id: row.id, cells: [row.name, row.source_type, row.config_status, row.connection_status, dateCell(row.last_success_at), dateCell(row.next_run_at)] })),
       };
     }
 
     const config = modulePageConfig(moduleKey);
-    if (!config) return { rows: [], total: 0 };
+    if (!config) return { rows: [], total: 0, available: false };
     const where = [...config.where];
     const values = [...config.values];
     if (config.dateKind === "date") appendDateOnlyRangeCondition(where, values, config.dateColumn, range);
@@ -354,10 +335,11 @@ export async function getAdminModulePage(moduleKey: string, range: AdminDateRang
     ]);
     return {
       total: Number(totalResult.rows[0]?.count || 0),
+      available: true,
       rows: rowResult.rows.map((row) => ({ id: row.id, cells: JSON.parse(row.cells).map((cell: unknown) => cell == null ? "-" : String(cell)) })),
     };
   } catch (error) {
     console.error("[admin] module paged database read failed", { moduleKey, message: error instanceof Error ? error.message : "unknown error" });
-    return { rows: [], total: 0 };
+    return { rows: [], total: 0, available: false };
   }
 }

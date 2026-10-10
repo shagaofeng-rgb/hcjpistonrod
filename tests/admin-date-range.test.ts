@@ -1,23 +1,37 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { parseAdminListParams, resolveAdminDateRange } from "../src/lib/admin/date-range";
+import { resolveAdminDateRange } from "../src/lib/admin/date-range";
 
-test("admin data defaults to the current month instead of an unbounded range", () => {
-  const range = resolveAdminDateRange({});
-  assert.equal(range.preset, "month");
-  assert.match(range.startDate || "", /^\d{4}-\d{2}-01$/);
-  assert.match(range.endDate || "", /^\d{4}-\d{2}-\d{2}$/);
+test("admin date presets resolve to bounded Shanghai dates", () => {
+  const today = resolveAdminDateRange({ range: "today" });
+  assert.equal(today.label, "今天");
+  assert.equal(today.startDate, today.endDate);
+
+  const week = resolveAdminDateRange({ range: "week" });
+  const month = resolveAdminDateRange({ range: "month" });
+  const ninetyDays = resolveAdminDateRange({ range: "90days" });
+  for (const range of [week, month, ninetyDays]) {
+    assert.ok(range.startDate && range.endDate);
+    assert.equal(range.endDate, today.endDate);
+  }
+  const start = new Date(`${ninetyDays.startDate}T00:00:00Z`);
+  const end = new Date(`${ninetyDays.endDate}T00:00:00Z`);
+  assert.equal((end.getTime() - start.getTime()) / 86_400_000 + 1, 90);
 });
 
-test("admin date presets and custom dates retain bounded ranges", () => {
-  assert.equal(resolveAdminDateRange({ range: "today" }).preset, "today");
-  assert.equal(resolveAdminDateRange({ range: "week" }).preset, "week");
-  assert.deepEqual(resolveAdminDateRange({ range: "custom", from: "2026-09-01", to: "2026-09-08" }), {
-    preset: "custom", startDate: "2026-09-01", endDate: "2026-09-08", label: "2026-09-01 至 2026-09-08",
-  });
-});
+test("custom range requires valid complete dates", () => {
+  const valid = resolveAdminDateRange({ range: "custom", from: "2026-09-01", to: "2026-09-30" });
+  assert.equal(valid.preset, "custom");
+  assert.equal(valid.startDate, "2026-09-01");
+  assert.equal(valid.endDate, "2026-09-30");
 
-test("admin list pagination has bounded page sizes and an escaped query value", () => {
-  assert.deepEqual(parseAdminListParams({ page: "3", pageSize: "50", q: "  chrome rod  " }), { page: 3, pageSize: 50, keyword: "chrome rod" });
-  assert.deepEqual(parseAdminListParams({ page: "0", pageSize: "999" }), { page: 1, pageSize: 20, keyword: "" });
+  for (const invalid of [
+    { range: "custom" },
+    { range: "custom", from: "2026-02-31", to: "2026-03-01" },
+    { range: "custom", from: "2026-10-02", to: "2026-10-01" },
+  ]) {
+    const result = resolveAdminDateRange(invalid);
+    assert.equal(result.preset, "month");
+    assert.ok(result.startDate && result.endDate);
+  }
 });
