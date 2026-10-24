@@ -40,7 +40,7 @@ export function RfqForm() {
       }
       setStatus("sent");
       setFeedback(result.emailDelivered === false
-        ? `Thank you. Your inquiry is safely recorded. Our email alert is delayed, but our sales team can access it. Reference: ${result.reference}`
+        ? `Thank you. Your inquiry is recorded in our system. Our email notification is currently unavailable. For urgent requests, please contact us by WhatsApp or email. Reference: ${result.reference}`
         : `Thank you. Your inquiry has been recorded and emailed to our sales team. Reference: ${result.reference}`);
     } catch {
       setStatus("error");

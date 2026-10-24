@@ -142,10 +142,10 @@ export async function getAdminModuleRows(moduleKey: string, range: AdminDateRang
       const where = ["archived_at is null"];
       const values: unknown[] = [];
       appendDateRangeCondition(where, values, "submitted_at", range);
-      const result = await query<{ id: string; form_number: string; name: string | null; company_name: string | null; email: string | null; country: string | null; status: string; submitted_at: Date }>(
-        `select id, form_number, name, company_name, email, country, status, submitted_at from form_submissions where ${where.join(" and ")} order by submitted_at desc limit 200`, values,
+      const result = await query<{ id: string; form_number: string; name: string | null; company_name: string | null; email: string | null; country: string | null; status: string; email_status: string | null; submitted_at: Date }>(
+        `select id, form_number, name, company_name, email, country, status, email_status, submitted_at from form_submissions where ${where.join(" and ")} order by submitted_at desc limit 200`, values,
       );
-      return result.rows.map((row) => ({ id: row.id, cells: [row.form_number, row.name || "-", row.company_name || "-", row.email || "-", row.country || "-", row.status, dateCell(row.submitted_at)] }));
+      return result.rows.map((row) => ({ id: row.id, cells: [row.form_number, row.name || "-", row.company_name || "-", row.email || "-", row.country || "-", row.status, row.email_status === "sent" ? "已发送" : row.email_status === "failed" ? "发送失败" : row.email_status === "pending" ? "待发送" : row.email_status || "未记录", dateCell(row.submitted_at)] }));
     }
 
     if (moduleKey === "analytics") {
@@ -261,7 +261,7 @@ function modulePageConfig(moduleKey: string): ModulePageConfig | null {
   if (moduleKey === "leads") return {
     from: "form_submissions f", where: ["f.archived_at is null"], values: [], dateColumn: "f.submitted_at", orderBy: "f.submitted_at desc",
     searchExpression: "concat_ws(' ', f.form_number, f.name, f.company_name, f.email, f.country, f.status, f.related_product)",
-    select: "f.id::text as id, json_build_array(f.form_number, coalesce(f.name, '-'), coalesce(f.company_name, '-'), coalesce(f.email, '-'), coalesce(f.country, '-'), f.status, to_char(f.submitted_at at time zone 'Asia/Shanghai', 'YYYY-MM-DD'))::text as cells",
+    select: "f.id::text as id, json_build_array(f.form_number, coalesce(f.name, '-'), coalesce(f.company_name, '-'), coalesce(f.email, '-'), coalesce(f.country, '-'), f.status, case f.email_status when 'sent' then '已发送' when 'failed' then '发送失败' when 'pending' then '待发送' else coalesce(f.email_status, '未记录') end, to_char(f.submitted_at at time zone 'Asia/Shanghai', 'YYYY-MM-DD'))::text as cells",
   };
   if (moduleKey === "analytics") return {
     from: "analytics_daily_summary a", where: [], values: [], dateColumn: "a.summary_date", dateKind: "date", orderBy: "a.summary_date desc",

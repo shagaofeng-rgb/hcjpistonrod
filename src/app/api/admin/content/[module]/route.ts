@@ -43,7 +43,7 @@ const modules = {
     table: "form_submissions",
     permission: "leads.manage",
     search: ["form_number", "name", "company_name", "email", "phone", "country"],
-    fields: "id, form_number, name, company_name, email, country, status, submitted_at, updated_at",
+    fields: "id, form_number, name, company_name, email, country, status, email_status, submitted_at, updated_at",
   },
   analytics: {
     table: "analytics_daily_summary",

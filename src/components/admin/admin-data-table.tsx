@@ -68,7 +68,7 @@ export function AdminDataTable({ title, columns, rows, total, available, paginat
           <tbody>
             {rows.length > 0 ? rows.map((row) => (
               <tr key={row.id} className="border-t border-[#edf2f5] transition hover:bg-[#f7fafb]">
-                {row.cells.map((cell, index) => <td key={`${row.id}-${index}`} className="max-w-[320px] truncate px-4 py-3 text-[#526a7c]" title={cell}>{cell}</td>)}
+                {row.cells.map((cell, index) => <td key={`${row.id}-${index}`} className={`max-w-[320px] truncate px-4 py-3 ${cell === "发送失败" ? "font-semibold text-red-700" : "text-[#526a7c]"}`} title={cell}>{cell}</td>)}
               </tr>
             )) : (
               <tr><td colSpan={columns.length} className="px-4 py-16 text-center text-sm leading-6 text-slate-500" role={available ? undefined : "alert"}>{available ? "当前筛选范围暂无记录，请调整条件后重试。" : "数据暂时无法加载，请稍后重试。"}</td></tr>

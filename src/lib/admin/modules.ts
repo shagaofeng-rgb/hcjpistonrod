@@ -66,7 +66,7 @@ export const moduleContent = {
     title: "客户表单",
     description: "查看官网收到的客户询盘。",
     apiModule: "leads",
-    columns: ["编号", "姓名", "公司", "邮箱", "国家", "状态", "提交时间"],
+    columns: ["编号", "姓名", "公司", "邮箱", "国家", "状态", "邮件通知", "提交时间"],
     actions: ["检索", "导出", "刷新"],
   },
   analytics: {
