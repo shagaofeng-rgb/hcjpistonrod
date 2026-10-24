@@ -1,4 +1,5 @@
 import { Pool, type QueryResultRow } from "pg";
+import { attachDatabasePool } from "@vercel/functions";
 import { getSearchConsoleConfiguration } from "@/lib/sitemap/google";
 
 let pool: Pool | null = null;
@@ -74,6 +75,13 @@ export function getPool() {
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 8_000,
     });
+    pool.on("error", (error) => {
+      // An idle connection can be closed by the remote pooler. pg removes the
+      // client automatically; logging prevents an unhandled error from
+      // terminating the function while the next request opens a fresh one.
+      console.error("[database] idle connection closed", { message: error.message });
+    });
+    if (process.env.VERCEL === "1") attachDatabasePool(pool);
   }
 
   return pool;

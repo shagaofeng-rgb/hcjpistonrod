@@ -7,7 +7,8 @@ import { emailConfig, getEmailTransporter } from "@/lib/email";
 
 export const runtime = "nodejs";
 
-const MAX_ATTACHMENT_SIZE = 8 * 1024 * 1024;
+// Keep the complete multipart request below Vercel Functions' 4.5 MB limit.
+const MAX_ATTACHMENT_SIZE = 4 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = new Set(["pdf", "doc", "docx", "jpg", "jpeg", "png", "dwg", "dxf"]);
 const ALLOWED_MIME_TYPES = new Set([
   "application/pdf",
@@ -88,7 +89,12 @@ function safeFilename(name: string) {
 }
 
 export async function POST(request: Request) {
-  const formData = await request.formData();
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return NextResponse.json({ ok: false, error: "Please submit the inquiry form and try again." }, { status: 400 });
+  }
   const name = getString(formData, "name");
   const email = getString(formData, "email");
   const phone = getString(formData, "phone");
@@ -122,7 +128,7 @@ export async function POST(request: Request) {
   if (drawing instanceof File && drawing.size > 0) {
     const extension = drawing.name.split(".").pop()?.toLowerCase() || "";
     if (drawing.size > MAX_ATTACHMENT_SIZE) {
-      return NextResponse.json({ ok: false, error: "Attachment must be smaller than 8 MB." }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "Attachment must be 4 MB or smaller." }, { status: 400 });
     }
     if (!ALLOWED_EXTENSIONS.has(extension) || (drawing.type && !ALLOWED_MIME_TYPES.has(drawing.type))) {
       return NextResponse.json({ ok: false, error: "Attachment must be a PDF, Word, JPG, PNG, DWG, or DXF file." }, { status: 400 });

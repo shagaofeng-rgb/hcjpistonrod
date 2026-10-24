@@ -55,8 +55,24 @@ function assertHtml(path, body) {
 }
 
 const results = [];
+const internalLinks = new Set();
+const checkedPaths = new Set();
+
+function collectInternalLinks(body) {
+  for (const match of body.matchAll(/<a\b[^>]*\bhref="([^"]+)"/g)) {
+    const href = match[1].replaceAll("&amp;", "&");
+    if (href.startsWith("#") || /^(?:mailto:|tel:|javascript:)/i.test(href)) continue;
+    let url;
+    try { url = new URL(href, baseUrl); } catch { continue; }
+    if (url.origin !== new URL(baseUrl).origin && url.origin !== productionOrigin) continue;
+    if (url.pathname.startsWith("/admin") || url.pathname.startsWith("/api")) continue;
+    internalLinks.add(`${url.pathname}${url.search}`);
+  }
+}
+
 for (const path of keyPaths) {
   const item = await fetchChecked(path);
+  checkedPaths.add(path);
   const contentType = item.response.headers.get("content-type") || "";
   if (path.endsWith(".xml")) {
     assert(item.body.startsWith('<?xml version="1.0" encoding="UTF-8"?>'), `${path} is not UTF-8 XML`);
@@ -66,6 +82,7 @@ for (const path of keyPaths) {
     assert(contentType.includes("text/plain"), "robots.txt has the wrong content type");
   } else {
     assertHtml(new URL(item.response.url).pathname, item.body);
+    if (!path.startsWith("/admin")) collectInternalLinks(item.body);
   }
   results.push({ path, status: item.response.status, bytes: item.body.length, durationMs: item.durationMs });
 }
@@ -87,7 +104,9 @@ for (const url of publicUrls) {
   assert(url.startsWith(`${productionOrigin}/`) || url === `${productionOrigin}/`, `Non-canonical sitemap host: ${url}`);
   assert(!url.includes("/admin") && !url.includes("/search") && !url.includes("?"), `Non-indexable URL is present in sitemap: ${url}`);
   const page = await fetchChecked(localizeUrl(url));
+  checkedPaths.add(`${new URL(url).pathname}${new URL(url).search}`);
   assertHtml(new URL(url).pathname, page.body);
+  collectInternalLinks(page.body);
   const canonical = /<link[^>]+rel="canonical"[^>]+href="([^"]+)"/.exec(page.body)?.[1]
     || /<link[^>]+href="([^"]+)"[^>]+rel="canonical"/.exec(page.body)?.[1];
   assert(canonical && comparableUrl(canonical) === comparableUrl(url), `Canonical mismatch for ${url}: ${canonical || "missing"}`);
@@ -102,5 +121,11 @@ for (const url of newsUrls) {
   assertHtml(new URL(url).pathname, page.body);
 }
 
+for (const path of internalLinks) {
+  if (checkedPaths.has(path)) continue;
+  await fetchChecked(path);
+  checkedPaths.add(path);
+}
+
 console.table(results);
-console.log(`Self-check passed: ${results.length} key routes, ${sitemapLocations.length} sitemap files, ${publicUrls.length} Blog/index URLs, and ${newsUrls.length} News URLs on ${baseUrl}.`);
+console.log(`Self-check passed: ${results.length} key routes, ${sitemapLocations.length} sitemap files, ${publicUrls.length} Blog/index URLs, ${newsUrls.length} News URLs, and ${internalLinks.size} internal links on ${baseUrl}.`);

@@ -21,12 +21,11 @@ export async function generateMetadata({
   };
 }
 
-const filters = ["All", "Piston Rod", "Chrome Plated Rod", "Honed Tube", "Manufacturing", "Quality Control", "Purchasing Guide"];
-
 export const revalidate = 300;
 
 export default async function NewsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
   const newsArticles = await getPublishedNewsArticles({ includeNoindex: true });
+  const filters = ["All", ...new Set(newsArticles.map((article) => article.category))];
   const { category } = await searchParams;
   const activeCategory = category || "All";
   const visibleArticles = activeCategory === "All" ? newsArticles : newsArticles.filter((article) => article.category === activeCategory);
@@ -69,6 +68,12 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
                 <NewsCard key={article.slug} article={article} />
               ))}
             </div>
+            {visibleArticles.length === 0 && (
+              <div className="mt-8 rounded-md border border-[var(--line)] bg-white p-8 text-center">
+                <p className="font-semibold text-[var(--ink)]">No articles are available in this category.</p>
+                <Link href="/news" className="mt-3 inline-flex text-sm font-semibold text-[var(--teal)] underline">View all news</Link>
+              </div>
+            )}
             <div className="mt-8 flex gap-2 text-sm font-semibold text-[var(--steel)]">
               <span>{visibleArticles.length} published article(s)</span>
             </div>

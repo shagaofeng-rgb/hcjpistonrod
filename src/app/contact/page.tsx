@@ -54,18 +54,18 @@ export default function ContactPage() {
         <section className="section">
           <div className="container grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
             <RfqForm />
-            <div className="grid gap-5">
-              <div className="rounded-md border border-[var(--line)] bg-white p-6">
+            <div className="grid min-w-0 gap-5">
+              <div className="min-w-0 rounded-md border border-[var(--line)] bg-white p-6">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--amber)]">Contact Information</p>
                 <div className="mt-5 grid gap-4">
                   {cards.map(({ icon: Icon, label, value, href, external = false }) => (
-                    <a key={label} href={href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} className="flex gap-4 rounded-md border border-[var(--line)] bg-[var(--background)] p-4 transition hover:border-[var(--teal)]">
+                    <a key={label} href={href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} className="flex min-w-0 gap-4 rounded-md border border-[var(--line)] bg-[var(--background)] p-4 transition hover:border-[var(--teal)]">
                       <span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-white text-[var(--teal)]">
                         <Icon size={20} />
                       </span>
-                      <span>
+                      <span className="min-w-0">
                         <span className="block text-sm font-semibold uppercase tracking-[0.16em] text-[var(--steel)]">{label}</span>
-                        <span className="mt-1 block text-base font-semibold leading-7 text-[var(--ink)]">{value}</span>
+                        <span className="mt-1 block text-base font-semibold leading-7 text-[var(--ink)] [overflow-wrap:anywhere]">{value}</span>
                       </span>
                     </a>
                   ))}

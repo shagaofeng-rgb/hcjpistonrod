@@ -32,13 +32,13 @@ export function Footer() {
       </div>
       <div className={`${layoutClass} grid gap-10 py-12 md:grid-cols-[1.2fr_0.8fr_0.8fr_1fr]`}>
         <div>
-          <Image
-            src="/images/home-redesign/template-brand-lockup.png"
-            alt="Nantong HCJ | Xijiu Intelligent Equipment"
-            width={235}
-            height={70}
-            className="h-auto w-[195px]"
-          />
+          <div className="flex items-center gap-2">
+            <Image src="/xijiu-logo.png" alt="" width={48} height={48} className="h-12 w-12 shrink-0 object-contain" sizes="48px" />
+            <div className="leading-tight">
+              <div className="text-sm font-bold tracking-wide">NANTONG HCJ</div>
+              <div className="text-[10px] text-white/80">XIJIU Intelligent Equipment</div>
+            </div>
+          </div>
           <p className="mt-4 max-w-xl text-sm leading-7 text-white/70">
             Piston rods, hard chrome plated rods, honed tubes, and drawing-based hydraulic components
             for OEM machinery and industrial hydraulic systems.
@@ -89,7 +89,7 @@ export function Footer() {
       <div className="border-t border-white/10 py-5">
         <div className={`${layoutClass} flex flex-col gap-2 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between`}>
           <span>© 2026 Nantong HCJ. Factory: {site.factoryName}. Trading company: {site.exportCompanyName}.</span>
-          <span>Privacy Policy &nbsp;|&nbsp; Terms of Use</span>
+          <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
         </div>
       </div>
     </footer>

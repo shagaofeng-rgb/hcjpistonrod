@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { CheckCircle2, FileUp, Loader2, Send } from "lucide-react";
 
+const MAX_ATTACHMENT_SIZE = 4 * 1024 * 1024;
+
 const interestedProducts = [
   "Chrome Plated Rod",
   "Hydraulic Piston Rod",
@@ -21,6 +23,12 @@ export function RfqForm() {
     setStatus("sending");
     setFeedback("");
     try {
+      const drawing = formData.get("drawing");
+      if (drawing instanceof File && drawing.size > MAX_ATTACHMENT_SIZE) {
+        setStatus("error");
+        setFeedback("Please choose a drawing no larger than 4 MB, or email a larger file to ada@hcjpistonrod.com.");
+        return;
+      }
       const visitorId = window.localStorage.getItem("hcj_visitor_id");
       if (visitorId) formData.set("analyticsVisitorId", visitorId.slice(0, 200));
       const response = await fetch("/api/rfq", { method: "POST", body: formData });
@@ -104,6 +112,7 @@ export function RfqForm() {
             className="sr-only"
             onChange={(event) => setDrawingName(event.target.files?.[0]?.name || "Choose PDF, Word, image, DWG, or DXF")}
           />
+          <span className="text-xs font-normal text-[var(--steel)]">Maximum file size: 4 MB. For larger drawings, email ada@hcjpistonrod.com.</span>
         </label>
       </div>
       <label className="grid gap-2 text-sm font-medium text-[var(--ink)]">

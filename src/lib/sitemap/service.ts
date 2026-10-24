@@ -78,10 +78,10 @@ export type SitemapMaintenanceOptions = {
   verbose?: boolean;
 };
 
-const configuredSearchConsoleInterval = Number(process.env.GOOGLE_SITEMAP_SUBMIT_INTERVAL_HOURS || 72);
+const configuredSearchConsoleInterval = Number(process.env.GOOGLE_SITEMAP_SUBMIT_INTERVAL_HOURS || 168);
 const SEARCH_CONSOLE_MIN_INTERVAL_HOURS = Number.isFinite(configuredSearchConsoleInterval)
-  ? Math.max(72, configuredSearchConsoleInterval)
-  : 72;
+  ? Math.max(168, configuredSearchConsoleInterval)
+  : 168;
 
 async function searchConsoleSubmissionAllowed(client: PoolClient | null, options: SitemapMaintenanceOptions) {
   if (!options.submit) return { allowed: false, message: "Submission not requested" };
@@ -96,6 +96,10 @@ async function searchConsoleSubmissionAllowed(client: PoolClient | null, options
   const elapsedHours = (Date.now() - new Date(lastAttempt).getTime()) / 3_600_000;
   if (elapsedHours >= SEARCH_CONSOLE_MIN_INTERVAL_HOURS) return { allowed: true, message: "Submission interval elapsed" };
   return { allowed: false, message: `Search Console submission is rate-limited for ${SEARCH_CONSOLE_MIN_INTERVAL_HOURS} hours` };
+}
+
+export function shouldSubmitSitemap(options: SitemapMaintenanceOptions, changed: boolean, allowed: boolean) {
+  return Boolean(!options.dryRun && options.submit && allowed && (changed || options.trigger === "cron"));
 }
 
 export async function runSitemapMaintenance(options: SitemapMaintenanceOptions) {
@@ -129,10 +133,12 @@ export async function runSitemapMaintenance(options: SitemapMaintenanceOptions) 
     const changes = diffSitemapEntries(previousEntries, bundle.entries);
     const changed = options.force || manifestHash !== previousHash;
     const submissionEligibility = await searchConsoleSubmissionAllowed(client, options);
-    const shouldSubmit = Boolean(!options.dryRun && changed && submissionEligibility.allowed);
+    // The scheduled Monday handshake is independent of sitemap content changes.
+    // Content-triggered and manual runs still submit only when appropriate.
+    const shouldSubmit = shouldSubmitSitemap(options, changed, submissionEligibility.allowed);
     const searchConsole = shouldSubmit
       ? await submitSitemapToSearchConsole({ sitemapUrl: process.env.GOOGLE_SEARCH_CONSOLE_SITEMAP_URL || `${site.domain}/sitemap.xml` })
-      : { attempted: false, success: false, message: !options.submit ? "Submission not requested" : !changed ? "No sitemap changes to submit" : submissionEligibility.message };
+      : { attempted: false, success: false, message: !options.submit ? "Submission not requested" : !changed && options.trigger !== "cron" ? "No sitemap changes to submit" : submissionEligibility.message };
     const finishedAt = new Date();
     const result = {
       ok: true,

@@ -6,7 +6,7 @@ import test from "node:test";
 import { buildSitemapDocuments, diffSitemapEntries, renderSitemapIndex, renderUrlSet, shouldIncludeCmsPage, validateSitemapXml, type SitemapEntry } from "../src/lib/sitemap/core";
 import { getSearchConsoleConfiguration, submitSitemapToSearchConsole } from "../src/lib/sitemap/google";
 import { writeXmlAtomically } from "../scripts/sitemap-generate";
-import { releaseInMemorySitemapLock, tryAcquireInMemorySitemapLock } from "../src/lib/sitemap/service";
+import { releaseInMemorySitemapLock, shouldSubmitSitemap, tryAcquireInMemorySitemapLock } from "../src/lib/sitemap/service";
 import { hasGoogleSearchConsoleConfig } from "../src/lib/admin/db";
 
 const entry = (loc: string, lastmod = "2026-07-01T00:00:00.000Z", kind: SitemapEntry["kind"] = "products"): SitemapEntry => ({ loc, lastmod, kind });
@@ -63,6 +63,13 @@ test("concurrent sitemap maintenance is rejected by the task lock", () => {
   releaseInMemorySitemapLock();
   assert.equal(tryAcquireInMemorySitemapLock(), true);
   releaseInMemorySitemapLock();
+});
+
+test("Monday Search Console submission runs even without sitemap changes", () => {
+  assert.equal(shouldSubmitSitemap({ trigger: "cron", submit: true }, false, true), true);
+  assert.equal(shouldSubmitSitemap({ trigger: "manual", submit: true }, false, true), false);
+  assert.equal(shouldSubmitSitemap({ trigger: "cron", submit: true, dryRun: true }, false, true), false);
+  assert.equal(shouldSubmitSitemap({ trigger: "cron", submit: true }, false, false), false);
 });
 
 test("Search Console stays disabled without calling Google", async () => {
